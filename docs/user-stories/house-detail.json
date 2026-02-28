@@ -1,0 +1,29 @@
+[
+  {
+    "category": "functional",
+    "description": "House detail page renders at /houses/:id",
+    "steps": [
+      "Verify route 'houses/:id' is registered in packages/web/app/routes.ts pointing to routes/houses.$id.tsx",
+      "Verify houses.$id.tsx fetches house data using getHouse from firestore",
+      "Verify the page displays house title, address, description, and price",
+      "Verify the page shows a specs grid with bedrooms, bathrooms, area, lot size, stories",
+      "Verify the page shows house type badge and status badge",
+      "Verify the page has a Reserve button for authenticated users",
+      "Verify the page has a Contact Company / Message button",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "HouseCard component displays house listing information",
+    "steps": [
+      "Verify HouseCard component exists at packages/web/components/HouseCard.tsx",
+      "Verify it displays house cover image, title, price, and address",
+      "Verify it shows house type badge (detached, villa, etc.)",
+      "Verify it shows bedroom, bathroom, and lot size specs",
+      "Verify it links to /houses/:id"
+    ],
+    "passes": true
+  }
+]

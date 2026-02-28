@@ -1,0 +1,32 @@
+[
+  {
+    "description": "Company contractor directory page renders at /company/contractors",
+    "steps": [
+      "Verify routes.ts includes route('company/contractors', 'routes/company.contractors.tsx')",
+      "Open company.contractors.tsx and verify it uses RoleGuard with allowedRole='company'",
+      "Verify it renders Navbar, CompanySidebar, and main content area",
+      "Verify it displays directoryTitle and directoryDesc from i18n"
+    ],
+    "passes": true
+  },
+  {
+    "description": "Contractor directory has specialty filter and name search",
+    "steps": [
+      "Open company.contractors.tsx and verify Select component with CONTRACTOR_SPECIALTIES options",
+      "Verify Select uses options prop (not children) matching the Select component API",
+      "Verify Input component for name search with onKeyDown Enter handler",
+      "Verify search button that triggers loadContractors with filter values"
+    ],
+    "passes": true
+  },
+  {
+    "description": "ContractorProfileCard component displays contractor info",
+    "steps": [
+      "Open ContractorProfileCard.tsx and verify it renders contractor logo or Wrench icon fallback",
+      "Verify it shows displayName, companyName, specialty badge",
+      "Verify it links to /contractors/{id} for the public profile",
+      "Verify it uses memo for performance"
+    ],
+    "passes": true
+  }
+]

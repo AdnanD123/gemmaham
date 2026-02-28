@@ -1,0 +1,31 @@
+[
+  {
+    "description": "ContractorApplication type and ApplicationStatus are defined in shared types",
+    "steps": [
+      "Open packages/shared/src/types.ts",
+      "Verify ApplicationStatus type exists as 'pending' | 'accepted' | 'rejected' | 'withdrawn'",
+      "Verify ContractorApplication interface exists with all required fields: id, buildingId, companyId, contractorUserId, contractorName, contractorCompanyName, contractorSpecialty, contractorLogoUrl, message, specialty, proposedRate, currency, status, companyNotes, reviewedAt, createdAt, updatedAt",
+      "Verify ContractorApplicationInput type is exported"
+    ],
+    "passes": true
+  },
+  {
+    "description": "NotificationType includes application-related values",
+    "steps": [
+      "Open packages/shared/src/types.ts",
+      "Verify NotificationType union includes 'application_received'",
+      "Verify NotificationType union includes 'application_accepted'",
+      "Verify NotificationType union includes 'application_rejected'"
+    ],
+    "passes": true
+  },
+  {
+    "description": "Badge component has accepted and withdrawn variants",
+    "steps": [
+      "Open packages/web/components/ui/Badge.tsx",
+      "Verify variant map includes 'accepted' with green styling",
+      "Verify variant map includes 'withdrawn' with gray styling"
+    ],
+    "passes": true
+  }
+]

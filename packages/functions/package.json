@@ -1,0 +1,23 @@
+{
+  "name": "@gemmaham/functions",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "firebase-functions": "^6.3.0",
+    "@google-cloud/vertexai": "^1.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}

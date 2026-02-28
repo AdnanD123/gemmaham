@@ -1,0 +1,19 @@
+{
+  "name": "gemmaham",
+  "private": true,
+  "workspaces": [
+    "packages/shared",
+    "packages/web",
+    "packages/functions"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=packages/web",
+    "build": "npm run build --workspace=packages/web",
+    "start": "npm run start --workspace=packages/web",
+    "dev:functions": "npm run build:watch --workspace=packages/functions",
+    "build:functions": "npm run build --workspace=packages/functions",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "typecheck": "npm run typecheck --workspace=packages/web",
+    "user-stories:verify": "node scripts/verify-user-stories.mjs"
+  }
+}

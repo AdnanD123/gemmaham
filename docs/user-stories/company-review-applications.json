@@ -1,0 +1,43 @@
+[
+  {
+    "description": "Building detail page has Applications tab",
+    "steps": [
+      "Open company.buildings.$id.tsx and verify Tab type includes 'applications'",
+      "Verify tabs array includes { key: 'applications', label: t('buildings.tabApplications') }",
+      "Verify ApplicationList component is rendered when activeTab is 'applications'",
+      "Verify ApplicationList import is present at top of file"
+    ],
+    "passes": true
+  },
+  {
+    "description": "ApplicationList component displays applications with status filters",
+    "steps": [
+      "Open ApplicationList.tsx and verify it calls getApplicationsForBuilding on mount",
+      "Verify it has filter tabs: All, Pending, Accepted, Rejected",
+      "Verify changing filter tab reloads applications with the selected status",
+      "Verify it shows pending count when filter is 'all'"
+    ],
+    "passes": true
+  },
+  {
+    "description": "ApplicationCard component shows application details with Accept/Reject actions",
+    "steps": [
+      "Open ApplicationCard.tsx and verify it displays contractor logo, name (linked to profile), company name",
+      "Verify it shows specialty badge, message content, proposed rate with currency",
+      "Verify Accept button calls onAccept when application is pending",
+      "Verify Reject button reveals notes textarea, then calls onReject with notes",
+      "Verify Accept/Reject buttons only show when status is 'pending'"
+    ],
+    "passes": true
+  },
+  {
+    "description": "Accepting an application creates contractor assignment",
+    "steps": [
+      "Open ApplicationList.tsx and verify handleAccept calls acceptApplicationAndAssign",
+      "Verify success shows toast and reloads the list",
+      "Open ApplicationList.tsx and verify handleReject calls updateApplicationStatus with 'rejected' and notes",
+      "Verify reject success shows toast and reloads the list"
+    ],
+    "passes": true
+  }
+]

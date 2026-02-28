@@ -1,0 +1,17 @@
+[
+  {
+    "category": "functional",
+    "description": "All new features have i18n translations in EN, BS, and DE",
+    "steps": [
+      "Verify en.json has keys: nav.browseProperties, nav.properties, nav.projects, nav.analytics",
+      "Verify en.json has houses section with keys: title, create, edit, notFound, type.*",
+      "Verify en.json has charts section with keys: monthlyRevenue, occupancy, projectProgress, revenueByProperty",
+      "Verify en.json has dashboard section with keys: active, planned, completed, totalRevenue, pendingActions, viewAll, totalProjects",
+      "Verify en.json has priority section with keys: inProgress, planned, completed",
+      "Verify en.json has analytics section with keys: title, last30, last90, lastYear, allTime",
+      "Verify bs.json has the same keys as en.json with Bosnian translations",
+      "Verify de.json has the same keys as en.json with German translations"
+    ],
+    "passes": true
+  }
+]

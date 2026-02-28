@@ -1,0 +1,29 @@
+[
+  {
+    "category": "functional",
+    "description": "Contractor projects list page shows assignments grouped by status",
+    "steps": [
+      "Verify route 'contractor/projects' is registered in routes.ts",
+      "Verify contractor.projects._index.tsx renders assignments grouped by in_progress, upcoming, completed",
+      "Verify each assignment shows building name, trade, category, progress bar, and status badge",
+      "Verify assignments link to /contractor/projects/:buildingId",
+      "Verify RoleGuard uses allowedRole='contractor' prop",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Contractor project detail page shows building and assignment info",
+    "steps": [
+      "Verify route 'contractor/projects/:id' is registered in routes.ts",
+      "Verify contractor.projects.$id.tsx displays building title, address, status badge",
+      "Verify the page shows contractor's assignment details (trade, status, progress)",
+      "Verify the page shows construction updates timeline if available",
+      "Verify back link points to /contractor/projects",
+      "Verify RoleGuard uses allowedRole='contractor' prop",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  }
+]

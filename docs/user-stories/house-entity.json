@@ -1,0 +1,33 @@
+[
+  {
+    "category": "functional",
+    "description": "House type is defined and exported from shared package",
+    "steps": [
+      "Verify House interface exists in packages/shared/src/types.ts with fields: companyId, title, description, address, price, currency, bedrooms, bathrooms, area, areaUnit, lotSize, houseType, status",
+      "Verify HouseInput, HouseStatus, HouseType, HouseFilters types are exported",
+      "Verify PropertyType union includes 'flat' and 'house'",
+      "Verify shared package builds without errors: npm run build --workspace=packages/shared"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Reservation supports both flat and house property types",
+    "steps": [
+      "Verify Reservation type has propertyType field of type PropertyType",
+      "Verify Reservation type has houseId field (string | null)",
+      "Verify Reservation.flatId allows null (string | null)",
+      "Verify Conversation type has propertyType and houseId fields"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Contractor type includes contract value fields",
+    "steps": [
+      "Verify Contractor type has contractValue field (number | null)",
+      "Verify Contractor type has currency field (string)"
+    ],
+    "passes": true
+  }
+]

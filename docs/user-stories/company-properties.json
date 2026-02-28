@@ -1,0 +1,44 @@
+[
+  {
+    "category": "functional",
+    "description": "Company can manage both flats and houses from properties page",
+    "steps": [
+      "Verify route 'company/properties' is registered in routes.ts",
+      "Verify company.properties._index.tsx renders tab toggle for Flats and Houses",
+      "Verify the page shows flat list with edit and delete buttons",
+      "Verify the page shows house list with edit and delete buttons",
+      "Verify 'Add Flat' button links to /company/flats/new",
+      "Verify 'Add House' button links to /company/properties/houses/new",
+      "Verify RoleGuard uses allowedRole='company' prop",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Company can create a new house",
+    "steps": [
+      "Verify route 'company/properties/houses/new' is registered in routes.ts",
+      "Verify company.properties.houses.new.tsx renders HouseForm component",
+      "Verify HouseForm has fields for title, description, address, price, bedrooms, bathrooms, area, lot size, house type",
+      "Verify HouseForm supports cover image and floor plan uploads",
+      "Verify successful creation navigates to /company/properties",
+      "Verify RoleGuard uses allowedRole='company' prop",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Company can edit and delete an existing house",
+    "steps": [
+      "Verify route 'company/properties/houses/:id' is registered in routes.ts",
+      "Verify company.properties.houses.$id.tsx pre-fills HouseForm with existing data",
+      "Verify the page has a delete button with confirmation dialog",
+      "Verify successful deletion navigates to /company/properties",
+      "Verify RoleGuard uses allowedRole='company' prop (in all 3 render paths)",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  }
+]

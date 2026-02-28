@@ -1,0 +1,17 @@
+[
+  {
+    "category": "functional",
+    "description": "Revenue derivation utilities compute financials from existing data",
+    "steps": [
+      "Verify packages/web/lib/revenue.ts exports deriveCompanyRevenue function",
+      "Verify deriveCompanyRevenue returns { total, monthly[], byType: { flat, house } }",
+      "Verify packages/web/lib/revenue.ts exports deriveContractorRevenue function",
+      "Verify deriveContractorRevenue returns { total, monthly[] }",
+      "Verify packages/web/lib/revenue.ts exports deriveUserExpenses function",
+      "Verify deriveUserExpenses returns { total, items[] }",
+      "Verify revenue is derived from completed reservations using property prices",
+      "Verify contractor revenue is derived from completed assignments using contractValue"
+    ],
+    "passes": true
+  }
+]

@@ -1,0 +1,45 @@
+[
+  {
+    "category": "functional",
+    "description": "User dashboard shows stat cards with priority-ordered reservations",
+    "steps": [
+      "Verify user.dashboard.tsx imports and renders StatCard components",
+      "Verify stat cards show: Active, Planned, Completed, Messages, Customizations",
+      "Verify user.dashboard.tsx imports and renders DashboardPropertyList",
+      "Verify DashboardPropertyList groups reservations by priority: in-progress > planned > completed",
+      "Verify completed section is collapsed by default",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Company dashboard shows stats, charts, and pending actions",
+    "steps": [
+      "Verify company.dashboard.tsx imports and renders StatCard components",
+      "Verify stat cards show: Buildings, Flats, Houses, Revenue, Pending Reservations",
+      "Verify company.dashboard.tsx renders RevenueChart with monthly revenue data",
+      "Verify company.dashboard.tsx renders OccupancyChart with available/reserved/sold data",
+      "Verify company.dashboard.tsx shows Pending Actions section with approve/reject buttons",
+      "Verify pending actions are limited to 5 items with a View All link",
+      "Verify RoleGuard uses allowedRole='company' prop",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Contractor dashboard shows stats, charts, and priority-ordered projects",
+    "steps": [
+      "Verify contractor.dashboard.tsx imports and renders StatCard components",
+      "Verify stat cards show: Active Projects, Total Projects, Completed, Revenue",
+      "Verify contractor.dashboard.tsx renders ProjectProgressChart for in-progress projects",
+      "Verify contractor.dashboard.tsx renders RevenueChart with monthly data",
+      "Verify contractor.dashboard.tsx renders PrioritySection components for in_progress, upcoming, completed",
+      "Verify completed section uses defaultCollapsed prop",
+      "Verify RoleGuard uses allowedRole='contractor' prop",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  }
+]

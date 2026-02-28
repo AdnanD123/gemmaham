@@ -1,0 +1,22 @@
+[
+  {
+    "category": "functional",
+    "description": "All new routes are registered and old routes remain functional",
+    "steps": [
+      "Verify routes.ts has route for 'properties' (unified browse)",
+      "Verify routes.ts has route for 'houses/:id' (house detail)",
+      "Verify routes.ts has route for 'company/properties' (manage properties)",
+      "Verify routes.ts has route for 'company/properties/houses/new' (create house)",
+      "Verify routes.ts has route for 'company/properties/houses/:id' (edit house)",
+      "Verify routes.ts has route for 'company/analytics' (analytics page)",
+      "Verify routes.ts has route for 'contractor/projects' (projects list)",
+      "Verify routes.ts has route for 'contractor/projects/:id' (project detail)",
+      "Verify old route 'flats' still exists in routes.ts",
+      "Verify old route 'buildings' still exists in routes.ts",
+      "Verify old route 'contractor/buildings' still exists in routes.ts",
+      "Verify old route 'contractor/buildings/:id' still exists in routes.ts",
+      "Build succeeds with no errors: npm run build"
+    ],
+    "passes": true
+  }
+]

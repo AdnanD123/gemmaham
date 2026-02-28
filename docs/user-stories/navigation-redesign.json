@@ -1,0 +1,49 @@
+[
+  {
+    "category": "functional",
+    "description": "UserSidebar links to unified properties browse page",
+    "steps": [
+      "Verify UserSidebar has a 'Browse Properties' link pointing to /properties",
+      "Verify UserSidebar does NOT have a 'Browse Flats' link pointing to /flats"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "CompanySidebar includes Properties and Analytics links",
+    "steps": [
+      "Verify CompanySidebar has a 'Properties' link pointing to /company/properties",
+      "Verify CompanySidebar has an 'Analytics' link pointing to /company/analytics"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "ContractorSidebar uses Projects instead of Buildings",
+    "steps": [
+      "Verify ContractorSidebar has a 'Projects' link pointing to /contractor/projects",
+      "Verify ContractorSidebar does NOT have a 'My Buildings' link pointing to /contractor/buildings"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Navbar has updated role-conditional links",
+    "steps": [
+      "Verify Navbar shows 'Browse Properties' link for all users",
+      "Verify Navbar shows 'Properties' and 'Analytics' links for company role",
+      "Verify Navbar shows 'Projects' link for contractor role"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "MobileMenu has updated navigation links for all roles",
+    "steps": [
+      "Verify MobileMenu includes 'Browse Properties' link",
+      "Verify MobileMenu includes company section with Properties and Analytics",
+      "Verify MobileMenu includes contractor section with Projects link"
+    ],
+    "passes": true
+  }
+]

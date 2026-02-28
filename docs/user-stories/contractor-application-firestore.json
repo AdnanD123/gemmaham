@@ -1,0 +1,54 @@
+[
+  {
+    "description": "Firestore has CRUD functions for contractor applications",
+    "steps": [
+      "Open packages/web/lib/firestore.ts",
+      "Verify createApplication function exists and writes to 'applications' collection with serverTimestamp",
+      "Verify getContractorApplicationForBuilding function exists for duplicate guard check",
+      "Verify getApplicationsForBuilding function exists with optional status filter",
+      "Verify getContractorApplications function exists to get all applications by contractor",
+      "Verify getCompanyApplications function exists with optional status filter",
+      "Verify updateApplicationStatus function exists that updates status, companyNotes, reviewedAt",
+      "Verify withdrawApplication function exists that sets status to 'withdrawn'",
+      "Verify listBrowsableProjects function exists querying buildings with status 'planning' or 'under_construction'"
+    ],
+    "passes": true
+  },
+  {
+    "description": "acceptApplicationAndAssign creates contractor assignment and sends notification",
+    "steps": [
+      "Open packages/web/lib/firestore.ts",
+      "Verify acceptApplicationAndAssign function exists",
+      "Verify it calls updateApplicationStatus with 'accepted'",
+      "Verify it calls addContractor to create a building contractor assignment",
+      "Verify it calls createNotification with type 'application_accepted'"
+    ],
+    "passes": true
+  },
+  {
+    "description": "Firestore security rules protect applications collection",
+    "steps": [
+      "Open firestore.rules",
+      "Verify applications match block exists at /applications/{applicationId}",
+      "Verify read requires authentication and checks contractorUserId or companyMember",
+      "Verify create requires 'contractor' role and contractorUserId matches auth uid",
+      "Verify update allows company member or contractor can only set status to 'withdrawn'",
+      "Verify delete is false"
+    ],
+    "passes": true
+  },
+  {
+    "description": "Firestore indexes exist for applications queries",
+    "steps": [
+      "Open firestore.indexes.json",
+      "Verify index for applications(buildingId, createdAt DESC) exists",
+      "Verify index for applications(buildingId, status, createdAt DESC) exists",
+      "Verify index for applications(contractorUserId, createdAt DESC) exists",
+      "Verify index for applications(contractorUserId, buildingId, status) exists for duplicate guard",
+      "Verify index for applications(companyId, createdAt DESC) exists",
+      "Verify index for applications(companyId, status, createdAt DESC) exists",
+      "Verify index for buildings(status, createdAt DESC) exists for browsable projects"
+    ],
+    "passes": true
+  }
+]

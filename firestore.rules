@@ -1,0 +1,166 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() && (
+        request.auth.token.role == role
+        || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role
+      );
+    }
+
+    function isCompanyMember(companyId) {
+      return hasRole('company') && (
+        request.auth.token.companyId == companyId
+        || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId == companyId
+      );
+    }
+
+    // Users — owner-only read for privacy (agencies read userSnapshot from reservations)
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid);
+      allow update: if isOwner(uid);
+      allow delete: if false;
+
+      // Notifications subcollection
+      match /notifications/{notificationId} {
+        allow read: if isOwner(uid);
+        allow update: if isOwner(uid);
+        allow create: if isAuthenticated(); // Cloud Functions + agency assignment notifications
+        allow delete: if false;
+      }
+    }
+
+    // Contractor profiles (top-level collection, registered contractor users)
+    match /contractors/{contractorId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && request.auth.uid == contractorId;
+      allow update: if isAuthenticated() && request.auth.uid == contractorId;
+      allow delete: if false;
+    }
+
+    // Companies
+    match /companies/{companyId} {
+      allow read: if true;
+      allow create: if hasRole('company');
+      allow update: if isCompanyMember(companyId);
+      allow delete: if false;
+    }
+
+    // Houses
+    match /houses/{houseId} {
+      allow read: if true;
+      allow create: if isCompanyMember(request.resource.data.companyId);
+      allow update: if isCompanyMember(resource.data.companyId);
+      allow delete: if isCompanyMember(resource.data.companyId);
+    }
+
+    // Flats
+    match /flats/{flatId} {
+      allow read: if true;
+      allow create: if isCompanyMember(request.resource.data.companyId);
+      allow update: if isCompanyMember(resource.data.companyId);
+      allow delete: if isCompanyMember(resource.data.companyId);
+
+      // Customization options subcollection — only owning company can modify
+      match /customizations/{optionId} {
+        allow read: if true;
+        allow create, update, delete: if isCompanyMember(
+          get(/databases/$(database)/documents/flats/$(flatId)).data.companyId
+        );
+      }
+    }
+
+    // Buildings
+    match /buildings/{buildingId} {
+      allow read: if true;
+      allow create: if isCompanyMember(request.resource.data.companyId);
+      allow update: if isCompanyMember(resource.data.companyId);
+      allow delete: if isCompanyMember(resource.data.companyId);
+
+      // Construction updates subcollection — only owning company can modify
+      match /updates/{updateId} {
+        allow read: if true;
+        allow create, update, delete: if isCompanyMember(
+          get(/databases/$(database)/documents/buildings/$(buildingId)).data.companyId
+        );
+      }
+
+      // Contractors subcollection — only owning company can modify
+      match /contractors/{contractorId} {
+        allow read: if true;
+        allow create, update, delete: if isCompanyMember(
+          get(/databases/$(database)/documents/buildings/$(buildingId)).data.companyId
+        );
+      }
+    }
+
+    // Customization Requests
+    match /customizationRequests/{requestId} {
+      allow read: if isOwner(resource.data.userId)
+                  || hasRole('company');
+      allow create: if hasRole('user')
+                    && request.resource.data.userId == request.auth.uid;
+      allow update: if hasRole('company')
+                    || (isOwner(resource.data.userId)
+                        && request.resource.data.status == 'cancelled');
+      allow delete: if false;
+    }
+
+    // Contractor Applications
+    match /applications/{applicationId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.contractorUserId
+        || isCompanyMember(resource.data.companyId)
+      );
+      allow create: if hasRole('contractor')
+                    && request.resource.data.contractorUserId == request.auth.uid;
+      allow update: if isCompanyMember(resource.data.companyId)
+                    || (request.auth.uid == resource.data.contractorUserId
+                        && request.resource.data.status == 'withdrawn');
+      allow delete: if false;
+    }
+
+    // Reservations
+    match /reservations/{reservationId} {
+      allow read: if isOwner(resource.data.userId)
+                  || isCompanyMember(resource.data.companyId);
+      allow create: if hasRole('user')
+                    && request.resource.data.userId == request.auth.uid;
+      allow update: if isCompanyMember(resource.data.companyId)
+                    || (isOwner(resource.data.userId)
+                        && request.resource.data.status == 'cancelled');
+      allow delete: if false;
+    }
+
+    // Conversations
+    match /conversations/{conversationId} {
+      allow read: if isOwner(resource.data.userId)
+                  || isCompanyMember(resource.data.companyId);
+      allow create: if hasRole('user')
+                    && request.resource.data.userId == request.auth.uid;
+      allow update: if isOwner(resource.data.userId)
+                    || isCompanyMember(resource.data.companyId);
+
+      // Messages subcollection
+      match /messages/{messageId} {
+        allow read: if isAuthenticated()
+                    && (get(/databases/$(database)/documents/conversations/$(conversationId)).data.userId == request.auth.uid
+                        || isCompanyMember(get(/databases/$(database)/documents/conversations/$(conversationId)).data.companyId));
+        allow create: if isAuthenticated()
+                      && request.resource.data.senderId == request.auth.uid
+                      && (get(/databases/$(database)/documents/conversations/$(conversationId)).data.userId == request.auth.uid
+                          || isCompanyMember(get(/databases/$(database)/documents/conversations/$(conversationId)).data.companyId));
+      }
+    }
+  }
+}

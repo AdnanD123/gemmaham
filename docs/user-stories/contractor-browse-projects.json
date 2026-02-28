@@ -1,0 +1,43 @@
+[
+  {
+    "description": "Contractor browse projects page renders at /contractor/browse",
+    "steps": [
+      "Verify routes.ts includes route('contractor/browse', 'routes/contractor.browse.tsx')",
+      "Open contractor.browse.tsx and verify it uses RoleGuard with allowedRole='contractor'",
+      "Verify it renders Navbar, ContractorSidebar, and main content area",
+      "Verify it displays browseProjectsTitle and browseProjectsDesc from i18n"
+    ],
+    "passes": true
+  },
+  {
+    "description": "Browse projects page loads browsable buildings and checks existing applications",
+    "steps": [
+      "Open contractor.browse.tsx and verify useEffect calls listBrowsableProjects",
+      "Verify it calls getContractorProfile for the current user",
+      "Verify it fetches company names via getCompany for each unique companyId",
+      "Verify it checks existing applications via getContractorApplicationForBuilding for each building",
+      "Verify appliedIds state tracks which buildings have been applied to"
+    ],
+    "passes": true
+  },
+  {
+    "description": "ProjectCard component displays building info with Apply button",
+    "steps": [
+      "Open ProjectCard.tsx and verify it renders building cover image or placeholder",
+      "Verify it shows title, status badge, company name, address, estimated completion",
+      "Verify Apply button is disabled with 'Already Applied' text when alreadyApplied is true",
+      "Verify Apply button calls onApply callback when not already applied"
+    ],
+    "passes": true
+  },
+  {
+    "description": "ApplicationModal allows contractor to submit application",
+    "steps": [
+      "Open ApplicationModal.tsx and verify it renders a Modal with form",
+      "Verify form includes message textarea (required), specialty select, proposed rate input, currency select",
+      "Verify on submit it calls createApplication with correct data",
+      "Verify on success it calls onSuccess callback, shows toast, and closes modal"
+    ],
+    "passes": true
+  }
+]

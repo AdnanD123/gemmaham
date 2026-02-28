@@ -1,0 +1,47 @@
+[
+  {
+    "category": "functional",
+    "description": "Unified property listing queries both flats and houses",
+    "steps": [
+      "Verify listAllProperties function is exported from packages/web/lib/firestore.ts",
+      "Verify getFeaturedProperties function is exported from packages/web/lib/firestore.ts",
+      "Verify PropertyItem type includes __propertyType discriminator"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Unified properties browse page renders at /properties",
+    "steps": [
+      "Verify route 'properties' is registered in packages/web/app/routes.ts pointing to routes/properties._index.tsx",
+      "Verify properties._index.tsx imports and uses PropertyFilters component",
+      "Verify properties._index.tsx imports and uses PropertyCard component",
+      "Verify the page has a type toggle for All/Flats/Houses filtering",
+      "Verify the page renders price and bedroom filter controls",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "PropertyFilters component provides type, price, and bedroom filtering",
+    "steps": [
+      "Verify PropertyFilters component exists at packages/web/components/PropertyFilters.tsx",
+      "Verify it renders type toggle buttons (All, Flats, Houses)",
+      "Verify it renders price range inputs (min, max)",
+      "Verify it renders bedroom filter",
+      "Verify it calls onFilterChange callback when filters change"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "PropertyCard component renders FlatCard or HouseCard based on type",
+    "steps": [
+      "Verify PropertyCard component exists at packages/web/components/PropertyCard.tsx",
+      "Verify it renders FlatCard when __propertyType is 'flat'",
+      "Verify it renders HouseCard when __propertyType is 'house'"
+    ],
+    "passes": true
+  }
+]

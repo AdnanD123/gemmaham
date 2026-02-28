@@ -1,0 +1,44 @@
+[
+  {
+    "category": "functional",
+    "description": "House CRUD operations exist in firestore library",
+    "steps": [
+      "Verify createHouse function is exported from packages/web/lib/firestore.ts",
+      "Verify getHouse function is exported from packages/web/lib/firestore.ts",
+      "Verify updateHouse function is exported from packages/web/lib/firestore.ts",
+      "Verify deleteHouse function is exported from packages/web/lib/firestore.ts",
+      "Verify listHouses function is exported with filter support",
+      "Verify listCompanyHouses function is exported",
+      "Verify getFeaturedHouses function is exported"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "House storage upload helpers exist",
+    "steps": [
+      "Verify uploadHouseCover function is exported from packages/web/lib/storage.ts",
+      "Verify uploadHouseFloorPlan function is exported from packages/web/lib/storage.ts"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Firestore rules allow house collection access",
+    "steps": [
+      "Verify firestore.rules contains a match rule for /houses/{houseId}",
+      "Verify houses collection allows public read",
+      "Verify houses collection restricts write to company members"
+    ],
+    "passes": true
+  },
+  {
+    "category": "functional",
+    "description": "Storage rules allow house image uploads",
+    "steps": [
+      "Verify storage.rules contains a match rule for /houses/{companyId}/{houseId}/{allPaths=**}",
+      "Verify house storage allows public read and authenticated write with size/type limits"
+    ],
+    "passes": true
+  }
+]

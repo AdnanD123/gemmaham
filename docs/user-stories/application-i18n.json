@@ -1,0 +1,30 @@
+[
+  {
+    "description": "All three locale files have nav keys for role-based navigation",
+    "steps": [
+      "Open packages/web/lib/i18n/en.json and verify nav.findContractors, nav.browseProjects, nav.myProjects exist",
+      "Open packages/web/lib/i18n/bs.json and verify same keys exist with Bosnian translations",
+      "Open packages/web/lib/i18n/de.json and verify same keys exist with German translations"
+    ],
+    "passes": true
+  },
+  {
+    "description": "All three locale files have applications section with full translation keys",
+    "steps": [
+      "Open en.json and verify applications section exists with keys: applyToProject, browseProjectsTitle, browseProjectsDesc, messageLabel, messagePlaceholder, specialtyLabel, proposedRate, currency, optional, submitApplication, submitSuccess, submitFailed, alreadyApplied, applyNow, noProjects, noApplications, total, pendingCount, filterAll, filterPending, filterAccepted, filterRejected, accept, reject, rejectReason, rejectReasonPlaceholder, confirmReject, acceptSuccess, acceptFailed, rejectSuccess, rejectFailed, companyNotes, status.pending, status.accepted, status.rejected, status.withdrawn",
+      "Open bs.json and verify same applications section keys exist",
+      "Open de.json and verify same applications section keys exist"
+    ],
+    "passes": true
+  },
+  {
+    "description": "Locale files have contractor directory and building tab keys",
+    "steps": [
+      "Open en.json and verify contractors.directoryTitle and contractors.directoryDesc exist",
+      "Open en.json and verify buildings.tabApplications exists",
+      "Open bs.json and verify same keys exist",
+      "Open de.json and verify same keys exist"
+    ],
+    "passes": true
+  }
+]

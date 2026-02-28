@@ -1,0 +1,30 @@
+[
+  {
+    "category": "ui",
+    "description": "Chart components render using recharts library",
+    "steps": [
+      "Verify recharts is listed as a dependency in packages/web/package.json",
+      "Verify RevenueChart component exists at packages/web/components/charts/RevenueChart.tsx",
+      "Verify OccupancyChart component exists at packages/web/components/charts/OccupancyChart.tsx",
+      "Verify ProjectProgressChart component exists at packages/web/components/charts/ProjectProgressChart.tsx",
+      "Verify RevenueByPropertyChart component exists at packages/web/components/charts/RevenueByPropertyChart.tsx",
+      "Verify ChartContainer wrapper exists at packages/web/components/charts/ChartContainer.tsx",
+      "Verify ChartSkeleton exists at packages/web/components/skeletons/ChartSkeleton.tsx",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  },
+  {
+    "category": "ui",
+    "description": "StatCard and PrioritySection components support dashboard layout",
+    "steps": [
+      "Verify StatCard component exists at packages/web/components/StatCard.tsx",
+      "Verify StatCard renders icon, value, label, and optional linkTo",
+      "Verify PrioritySection component exists at packages/web/components/PrioritySection.tsx",
+      "Verify PrioritySection supports priority variants: in_progress, planned, completed",
+      "Verify PrioritySection supports defaultCollapsed prop for completed items",
+      "Verify DashboardPropertyList component exists at packages/web/components/DashboardPropertyList.tsx"
+    ],
+    "passes": true
+  }
+]

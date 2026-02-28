@@ -1,0 +1,17 @@
+[
+  {
+    "category": "functional",
+    "description": "Company analytics page shows revenue and occupancy data",
+    "steps": [
+      "Verify route 'company/analytics' is registered in routes.ts",
+      "Verify company.analytics.tsx renders date range selector (30d, 90d, 1y, all)",
+      "Verify company.analytics.tsx renders RevenueChart with monthly revenue",
+      "Verify company.analytics.tsx renders OccupancyChart with available/reserved/sold",
+      "Verify company.analytics.tsx renders RevenueByPropertyChart for flat vs house",
+      "Verify company.analytics.tsx renders property performance table",
+      "Verify RoleGuard uses allowedRole='company' prop",
+      "Build succeeds: npm run build"
+    ],
+    "passes": true
+  }
+]

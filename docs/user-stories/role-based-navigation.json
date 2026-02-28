@@ -1,0 +1,50 @@
+[
+  {
+    "description": "Browse Properties link only shows for unauthenticated users and regular users",
+    "steps": [
+      "Open Navbar.tsx and verify 'Browse Properties' link is wrapped in (!role || role === 'user') conditional",
+      "Open MobileMenu.tsx and verify same conditional wrapping for 'Browse Properties'",
+      "Verify company role does NOT see Browse Properties in navbar or mobile menu",
+      "Verify contractor role does NOT see Browse Properties in navbar or mobile menu"
+    ],
+    "passes": true
+  },
+  {
+    "description": "Company navbar shows Find Contractors link pointing to /company/contractors",
+    "steps": [
+      "Open Navbar.tsx and verify company role block includes Link to /company/contractors",
+      "Verify the link text uses t('nav.findContractors') i18n key",
+      "Open MobileMenu.tsx and verify company block includes Find Contractors NavLink to /company/contractors"
+    ],
+    "passes": true
+  },
+  {
+    "description": "CompanySidebar includes Find Contractors link with Users icon",
+    "steps": [
+      "Open CompanySidebar.tsx and verify links array includes /company/contractors entry",
+      "Verify the link label uses t('nav.findContractors')",
+      "Verify the icon is Users from lucide-react",
+      "Verify it is positioned between Buildings and Properties entries"
+    ],
+    "passes": true
+  },
+  {
+    "description": "Contractor navbar shows Browse Projects and My Projects links",
+    "steps": [
+      "Open Navbar.tsx and verify contractor role block includes Link to /contractor/browse with t('nav.browseProjects')",
+      "Verify contractor role block includes Link to /contractor/projects with t('nav.myProjects')",
+      "Open MobileMenu.tsx and verify contractor block includes Browse Projects NavLink to /contractor/browse",
+      "Verify contractor block includes My Projects NavLink to /contractor/projects"
+    ],
+    "passes": true
+  },
+  {
+    "description": "ContractorSidebar includes Browse Projects link with Search icon and My Projects renamed",
+    "steps": [
+      "Open ContractorSidebar.tsx and verify links array includes /contractor/browse entry with t('nav.browseProjects')",
+      "Verify Browse Projects uses Search icon from lucide-react",
+      "Verify the existing projects link now uses t('nav.myProjects') instead of t('nav.projects')"
+    ],
+    "passes": true
+  }
+]

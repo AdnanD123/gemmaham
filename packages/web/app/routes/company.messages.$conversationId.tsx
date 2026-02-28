@@ -1,0 +1,62 @@
+import { useState, useEffect } from "react";
+import { useParams, useOutletContext, Link } from "react-router";
+import { useTranslation } from "react-i18next";
+import { ArrowLeft } from "lucide-react";
+import Navbar from "../../components/Navbar";
+import CompanySidebar from "../../components/CompanySidebar";
+import RoleGuard from "../../components/RoleGuard";
+import MessageThread from "../../components/MessageThread";
+import MessageInput from "../../components/MessageInput";
+import { useMessages } from "../../lib/hooks/useMessages";
+import { getConversation } from "../../lib/firestore";
+import { MessageThreadSkeleton } from "../../components/skeletons/MessageSkeleton";
+import type { AuthContext, Conversation } from "@gemmaham/shared";
+
+export default function CompanyConversation() {
+    const { t } = useTranslation();
+    const { conversationId } = useParams();
+    const auth = useOutletContext<AuthContext>();
+    const { messages, loading, send } = useMessages(
+        conversationId || null,
+        auth.user?.uid || null,
+        auth.role,
+    );
+    const [conv, setConv] = useState<Conversation | null>(null);
+
+    useEffect(() => {
+        if (!conversationId) return;
+        getConversation(conversationId).then(setConv);
+    }, [conversationId]);
+
+    return (
+        <RoleGuard allowedRole="company">
+            <div className="home">
+                <Navbar />
+                <div className="flex">
+                    <CompanySidebar />
+                    <main className="flex-1 flex flex-col h-[calc(100vh-80px)]">
+                        <div className="p-4 border-b-2 border-foreground/5">
+                            <Link to="/company/messages" className="flex items-center gap-2 text-sm text-foreground/50 hover:text-foreground">
+                                <ArrowLeft size={16} /> {t("company.backToMessages")}
+                            </Link>
+                            {conv && (
+                                <div className="mt-2">
+                                    <h2 className="font-bold text-lg">{conv.userName}</h2>
+                                    <p className="text-xs text-foreground/50">Re: {conv.flatTitle}</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {loading ? (
+                            <div className="flex-1"><MessageThreadSkeleton /></div>
+                        ) : (
+                            <MessageThread messages={messages} currentUserId={auth.user?.uid || ""} partnerName={conv?.userName} />
+                        )}
+
+                        <MessageInput onSend={send} disabled={!auth.user} />
+                    </main>
+                </div>
+            </div>
+        </RoleGuard>
+    );
+}
