@@ -3,7 +3,6 @@ import { useParams, useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, MapPin, Calendar } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import ContractorSidebar from "../../components/ContractorSidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
@@ -45,7 +44,6 @@ export default function ContractorBuildingDetail() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <ContractorSidebar />
                     <main className="flex-1 p-6 max-w-5xl">
                         <Link to="/contractor/buildings" className="flex items-center gap-2 text-sm text-foreground/50 hover:text-foreground mb-4">
                             <ArrowLeft size={16} /> {t("contractor.backToBuildings")}

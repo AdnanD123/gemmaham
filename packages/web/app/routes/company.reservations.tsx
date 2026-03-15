@@ -3,7 +3,6 @@ import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import { User, Phone, Mail, Calendar, Banknote, CheckCircle2, XCircle, Lock, Trophy } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
@@ -178,7 +177,6 @@ export default function CompanyReservations() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <CompanySidebar />
                     <main className="flex-1 p-6 max-w-5xl">
                         <h1 className="text-2xl font-bold mb-6">{t("company.reservationsTitle")}</h1>
 

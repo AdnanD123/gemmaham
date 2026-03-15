@@ -7,6 +7,7 @@ import {
   onAuthStateChanged,
   updateProfile,
   sendPasswordResetEmail,
+  sendEmailVerification as firebaseSendEmailVerification,
   type User,
   type Unsubscribe,
 } from "firebase/auth";
@@ -43,6 +44,17 @@ export const onAuthChange = (callback: (user: User | null) => void): Unsubscribe
 export const resetPassword = async (email: string) => {
   await sendPasswordResetEmail(auth, email);
 };
+
+export const sendEmailVerification = async (): Promise<void> => {
+  if (!auth.currentUser) throw new Error("No user signed in");
+  await firebaseSendEmailVerification(auth.currentUser);
+};
+
+export const reloadUser = async (): Promise<void> => {
+  if (auth.currentUser) await auth.currentUser.reload();
+};
+
+export const getEmailVerified = (): boolean => auth.currentUser?.emailVerified ?? false;
 
 export const getIdToken = async (): Promise<string | null> => {
   const user = auth.currentUser;

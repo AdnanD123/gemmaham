@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
@@ -126,7 +125,6 @@ export default function CompanyEditFlat() {
                 <div className="home">
                     <Navbar />
                     <div className="flex">
-                        <CompanySidebar />
                         <main className="flex-1 p-6 max-w-3xl space-y-4">
                             <SkeletonLine className="w-48 h-8" />
                             <div className="grid grid-cols-2 gap-4">
@@ -149,7 +147,6 @@ export default function CompanyEditFlat() {
                 <div className="home">
                     <Navbar />
                     <div className="flex">
-                        <CompanySidebar />
                         <main className="flex-1 p-6 text-center">
                             <p className="text-foreground/50">{t("company.flatNotFound")}</p>
                         </main>
@@ -164,7 +161,6 @@ export default function CompanyEditFlat() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <CompanySidebar />
                     <main className="flex-1 p-6 max-w-3xl">
                         <h1 className="text-2xl font-bold mb-6">{t("company.editFlat")}</h1>
 

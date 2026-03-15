@@ -41,7 +41,6 @@ export default function ApplicationModal({ isOpen, onClose, building, contractor
                 contractorCategories: contractor.categories || [],
                 contractorLogoUrl: contractor.logoUrl,
                 message,
-                specialty: contractor.specialty,
                 proposedRate: proposedRate ? Number(proposedRate) : null,
                 currency,
             });

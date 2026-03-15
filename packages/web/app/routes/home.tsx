@@ -19,7 +19,8 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
     const { t } = useTranslation();
-    const { user, role } = useOutletContext<AuthContext>();
+    const auth = useOutletContext<AuthContext>();
+    const { user, role } = auth;
     const navigate = useNavigate();
     const { addToast } = useToast();
     const [flats, setFlats] = useState<Flat[]>([]);
@@ -42,7 +43,6 @@ export default function Home() {
     return (
         <div className="home">
             <Navbar />
-
             <section className="hero">
                 <div className="announce">
                     <div className="dot">

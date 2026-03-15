@@ -300,6 +300,10 @@ export default function BuildingDetail() {
                             }}>
                                 <MessageSquare size={16} className="mr-2" /> {t("buildings.contactAgency")}
                             </Button>
+                        ) : auth.loading ? (
+                            <Button disabled>
+                                <MessageSquare size={16} className="mr-2" /> {t("buildings.contactAgency")}
+                            </Button>
                         ) : (
                             <Link to="/auth/login">
                                 <Button>{t("buildings.contactAgency")}</Button>

@@ -77,7 +77,12 @@
     "resetPassword": "Passwort zurücksetzen",
     "resetSent": "E-Mail zum Zurücksetzen wurde gesendet! Prüfen Sie Ihren Posteingang.",
     "resetDesc": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Link zum Zurücksetzen.",
-    "resetFailed": "E-Mail konnte nicht gesendet werden. Überprüfen Sie die E-Mail-Adresse."
+    "resetFailed": "E-Mail konnte nicht gesendet werden. Überprüfen Sie die E-Mail-Adresse.",
+    "verifyEmail": "E-Mail bestätigen",
+    "verifyEmailDesc": "Wir haben einen Bestätigungslink an {{email}} gesendet. Klicken Sie auf den Link, um fortzufahren.",
+    "verifyEmailResend": "Bestätigungs-E-Mail erneut senden",
+    "verifyEmailResent": "E-Mail gesendet! Prüfen Sie Ihren Posteingang.",
+    "verifyEmailNote": "Bereits bestätigt? Diese Seite leitet Sie automatisch weiter."
   },
   "flats": {
     "browseTitle": "Wohnungen durchsuchen",
@@ -186,6 +191,7 @@
     "backToMessages": "Zurück zu Nachrichten"
   },
   "profile": {
+    "myProfile": "Mein Profil",
     "completeTitle": "Profil vervollständigen",
     "completeDesc": "Füllen Sie die erforderlichen Felder aus, um Gemmaham zu nutzen.",
     "profilePhoto": "Profilfoto",
@@ -249,7 +255,9 @@
     "requestRejected": "Anfrage abgelehnt.",
     "requestFailed": "Anfrage konnte nicht aktualisiert werden.",
     "requestCancelled": "Anfrage storniert.",
-    "requestSent": "Anpassungsanfrage gesendet!"
+    "requestSent": "Anpassungsanfrage gesendet!",
+    "savedWithoutLogo": "Profil gespeichert, aber Logo konnte nicht hochgeladen werden (Storage-Berechtigungen nicht konfiguriert).",
+    "profileDeleted": "Profil gelöscht."
   },
   "theme": {
     "light": "Hell",
@@ -478,7 +486,8 @@
     "noAssignments": "Sie wurden noch keinem Gebäude zugewiesen.",
     "messages": "Nachrichten",
     "viewMessages": "Nachrichten anzeigen",
-    "editProfile": "Profil bearbeiten",
+    "editProfile": "Mein Profil",
+    "noProfileData": "Noch keine Details hinzugefügt. Klicken Sie auf Bearbeiten, um Ihr Profil auszufüllen.",
     "businessName": "Firmenname",
     "businessNamePlaceholder": "Ihr Firmenname",
     "specialty": "Fachgebiet",
@@ -507,7 +516,9 @@
       "upcoming": "Bevorstehend",
       "in_progress": "In Bearbeitung",
       "completed": "Abgeschlossen"
-    }
+    },
+    "deleteProfileTitle": "Profil löschen",
+    "deleteProfileMsg": "Möchten Sie Ihr Auftragnehmer-Profil wirklich löschen? Dies kann nicht rückgängig gemacht werden."
   },
   "customizations": {
     "options": "Optionen",

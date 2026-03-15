@@ -3,7 +3,6 @@ import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
@@ -162,7 +161,6 @@ export default function CompanyRequests() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <CompanySidebar />
                     <main className="flex-1 p-6 max-w-4xl">
                         <div className="flex items-center justify-between mb-6">
                             <h1 className="text-2xl font-bold">{t("customizations.requestsTitle")}</h1>

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import HouseForm from "../../components/HouseForm";
 import Button from "../../components/ui/Button";
@@ -92,7 +91,6 @@ export default function CompanyEditHouse() {
             <RoleGuard allowedRole="company">
                 <Navbar />
                 <div className="flex mt-20">
-                    <CompanySidebar />
                     <main className="flex-1 p-6"><div className="animate-pulse h-96 bg-foreground/5 rounded-xl" /></main>
                 </div>
             </RoleGuard>
@@ -104,7 +102,6 @@ export default function CompanyEditHouse() {
             <RoleGuard allowedRole="company">
                 <Navbar />
                 <div className="flex mt-20">
-                    <CompanySidebar />
                     <main className="flex-1 p-6 text-center text-foreground/50">{t("houses.notFound")}</main>
                 </div>
             </RoleGuard>
@@ -115,7 +112,6 @@ export default function CompanyEditHouse() {
         <RoleGuard allowedRole="company">
             <Navbar />
             <div className="flex mt-20">
-                <CompanySidebar />
                 <main className="flex-1 p-6 max-w-3xl">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="font-serif text-2xl font-bold">{t("common.edit")}: {house.title}</h1>

@@ -3,7 +3,6 @@ import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Clock, Lock, Trophy, MessageSquare, Palette } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import UserSidebar from "../../components/UserSidebar";
 import AuthGuard from "../../components/AuthGuard";
 import StatCard from "../../components/StatCard";
 import DashboardPropertyList from "../../components/DashboardPropertyList";
@@ -80,7 +79,6 @@ export default function UserDashboard() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <UserSidebar />
                     <main className="flex-1 p-6 max-w-5xl">
                         <h1 className="text-2xl font-bold mb-2">
                             {auth.user?.displayName ? t("user.welcome", { name: auth.user.displayName }) : t("user.dashboard")}

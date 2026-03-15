@@ -3,7 +3,6 @@ import { useParams, useOutletContext, Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import ContractorSidebar from "../../components/ContractorSidebar";
 import RoleGuard from "../../components/RoleGuard";
 import MessageThread from "../../components/MessageThread";
 import MessageInput from "../../components/MessageInput";
@@ -37,7 +36,6 @@ export default function ContractorConversation() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <ContractorSidebar />
                     <main className="flex-1 flex flex-col h-[calc(100vh-80px)]">
                         <div className="p-4 border-b-2 border-foreground/5">
                             <Link to="/contractor/messages" className="flex items-center gap-2 text-sm text-foreground/50 hover:text-foreground">

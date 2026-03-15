@@ -245,6 +245,7 @@ export interface AuthContext {
         uid: string;
         email: string | null;
         displayName: string | null;
+        emailVerified: boolean;
     } | null;
     loading: boolean;
     role: UserRole | null;

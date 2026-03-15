@@ -77,7 +77,12 @@
     "resetPassword": "Reset Password",
     "resetSent": "Password reset email sent! Check your inbox.",
     "resetDesc": "Enter your email and we'll send you a link to reset your password.",
-    "resetFailed": "Failed to send reset email. Check your email address."
+    "resetFailed": "Failed to send reset email. Check your email address.",
+    "verifyEmail": "Verify your email",
+    "verifyEmailDesc": "We sent a verification link to {{email}}. Click the link to continue.",
+    "verifyEmailResend": "Resend verification email",
+    "verifyEmailResent": "Email sent! Check your inbox.",
+    "verifyEmailNote": "Already verified? This page will redirect you automatically."
   },
   "flats": {
     "browseTitle": "Browse Flats",
@@ -186,6 +191,7 @@
     "backToMessages": "Back to Messages"
   },
   "profile": {
+    "myProfile": "My Profile",
     "completeTitle": "Complete Your Profile",
     "completeDesc": "Fill in the required fields to start using Gemmaham.",
     "profilePhoto": "Profile photo",
@@ -249,7 +255,9 @@
     "requestRejected": "Request rejected.",
     "requestFailed": "Failed to update request.",
     "requestCancelled": "Request cancelled.",
-    "requestSent": "Customization request sent!"
+    "requestSent": "Customization request sent!",
+    "savedWithoutLogo": "Profile saved, but logo could not be uploaded (storage permissions not configured).",
+    "profileDeleted": "Profile deleted."
   },
   "theme": {
     "light": "Light",
@@ -481,7 +489,8 @@
     "noAssignments": "You haven't been assigned to any buildings yet.",
     "messages": "Messages",
     "viewMessages": "View Messages",
-    "editProfile": "Edit Profile",
+    "editProfile": "My Profile",
+    "noProfileData": "No details added yet. Click Edit to fill in your profile.",
     "businessName": "Business Name",
     "businessNamePlaceholder": "Your company name",
     "specialty": "Specialty",
@@ -510,7 +519,9 @@
       "upcoming": "Upcoming",
       "in_progress": "In Progress",
       "completed": "Completed"
-    }
+    },
+    "deleteProfileTitle": "Delete Profile",
+    "deleteProfileMsg": "Are you sure you want to delete your contractor profile? This cannot be undone."
   },
   "customizations": {
     "options": "options",

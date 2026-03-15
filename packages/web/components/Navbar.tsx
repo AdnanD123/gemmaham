@@ -31,6 +31,9 @@ const Navbar = () => {
                         <Link to="/" className="brand">
                             <Box className="logo" />
                             <span className="name">Gemmaham</span>
+                            {import.meta.env.VITE_EMAIL_VERIFICATION !== "true" && (
+                                <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-yellow-400 text-yellow-900 uppercase tracking-wide">test</span>
+                            )}
                         </Link>
 
                         <ul className="links">
@@ -68,9 +71,12 @@ const Navbar = () => {
                         {user ? (
                             <>
                                 <NotificationBell userId={user.uid} />
-                                <span className="greeting hidden md:inline">
+                                <Link
+                                    to={role === "contractor" ? "/contractor/profile" : role === "user" ? "/user/profile" : "/"}
+                                    className="greeting hidden md:inline hover:text-primary transition-colors"
+                                >
                                     {user.displayName ? t("nav.hi", { name: user.displayName }) : "Signed in"}
-                                </span>
+                                </Link>
 
                                 <Button size="sm" onClick={handleSignOut} className="btn hidden md:inline-flex">
                                     {t("nav.logOut")}

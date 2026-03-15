@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import ConversationList from "../../components/ConversationList";
 import { ConversationListSkeleton } from "../../components/skeletons/MessageSkeleton";
@@ -30,7 +29,6 @@ export default function CompanyMessages() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <CompanySidebar />
                     <main className="flex-1 p-6 max-w-4xl">
                         <h1 className="text-2xl font-bold mb-6">{t("company.messagesTitle")}</h1>
 

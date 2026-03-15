@@ -45,7 +45,13 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isAuthenticated() && request.auth.uid == contractorId;
       allow update: if isAuthenticated() && request.auth.uid == contractorId;
-      allow delete: if false;
+      allow delete: if isAuthenticated() && request.auth.uid == contractorId;
+    }
+
+    // Collection group rule — required for collectionGroup("contractors") queries
+    // (used by getContractorAssignments to find a contractor's building assignments)
+    match /{path=**}/contractors/{contractorId} {
+      allow read: if true;
     }
 
     // Companies

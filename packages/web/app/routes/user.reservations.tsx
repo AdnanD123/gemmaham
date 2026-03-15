@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
-import UserSidebar from "../../components/UserSidebar";
 import AuthGuard from "../../components/AuthGuard";
 import ReservationCard from "../../components/ReservationCard";
 import ReservationTimeline from "../../components/ReservationTimeline";
@@ -101,7 +100,6 @@ export default function UserReservations() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <UserSidebar />
                     <main className="flex-1 p-6 max-w-4xl">
                         <h1 className="text-2xl font-bold mb-6">{t("user.myReservations")}</h1>
 

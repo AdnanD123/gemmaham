@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Search, Users } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import ContractorProfileCard from "../../components/ContractorProfileCard";
 import Input from "../../components/ui/Input";
@@ -57,7 +56,6 @@ export default function CompanyContractors() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <CompanySidebar />
                     <main className="flex-1 p-6">
                         <div className="max-w-5xl">
                             <h1 className="text-2xl font-bold mb-1">{t("contractors.directoryTitle")}</h1>

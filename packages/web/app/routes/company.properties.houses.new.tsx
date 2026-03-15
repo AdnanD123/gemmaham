@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import HouseForm from "../../components/HouseForm";
 import { createHouse, updateHouse } from "../../lib/firestore";
@@ -76,7 +75,6 @@ export default function CompanyAddHouse() {
         <RoleGuard allowedRole="company">
             <Navbar />
             <div className="flex mt-20">
-                <CompanySidebar />
                 <main className="flex-1 p-6 max-w-3xl">
                     <h1 className="font-serif text-2xl font-bold mb-6">{t("houses.create")}</h1>
                     <HouseForm onSubmit={handleSubmit} submitting={submitting} />

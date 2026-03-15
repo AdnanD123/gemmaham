@@ -81,7 +81,7 @@ export function useAuth(): AuthContext {
 
   return {
     user: user
-      ? { uid: user.uid, email: user.email, displayName: user.displayName }
+      ? { uid: user.uid, email: user.email, displayName: user.displayName, emailVerified: user.emailVerified }
       : null,
     loading,
     role,

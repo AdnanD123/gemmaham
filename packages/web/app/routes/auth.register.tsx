@@ -4,7 +4,9 @@ import { useTranslation } from "react-i18next";
 import { Box, Building2, User, Wrench } from "lucide-react";
 import Button from "../../components/ui/Button";
 import { updateUserProfile, createCompany, createContractorProfile } from "../../lib/firestore";
-import { setUserClaims } from "../../lib/auth";
+import { setUserClaims, sendEmailVerification } from "../../lib/auth";
+
+const EMAIL_VERIFICATION_REQUIRED = import.meta.env.VITE_EMAIL_VERIFICATION === "true";
 import type { AuthContext, UserRole } from "@gemmaham/shared";
 
 export default function Register() {
@@ -77,7 +79,12 @@ export default function Register() {
             await setupUserRole(result.uid, email, displayName);
             await refreshProfile();
 
-            navigate("/profile/setup");
+            if (EMAIL_VERIFICATION_REQUIRED && !result.emailVerified) {
+                await sendEmailVerification();
+                navigate("/auth/verify-email");
+            } else {
+                navigate("/profile/setup");
+            }
         } catch (err: any) {
             console.error("Registration error:", err);
             setError(err.message || "Registration failed");

@@ -77,7 +77,12 @@
     "resetPassword": "Resetuj lozinku",
     "resetSent": "Email za resetovanje lozinke je poslan! Provjerite inbox.",
     "resetDesc": "Unesite email i poslaćemo vam link za resetovanje lozinke.",
-    "resetFailed": "Slanje emaila za reset nije uspjelo. Provjerite email adresu."
+    "resetFailed": "Slanje emaila za reset nije uspjelo. Provjerite email adresu.",
+    "verifyEmail": "Potvrdite email",
+    "verifyEmailDesc": "Poslali smo link za verifikaciju na {{email}}. Kliknite link da nastavite.",
+    "verifyEmailResend": "Ponovo pošalji email za verifikaciju",
+    "verifyEmailResent": "Email poslan! Provjerite inbox.",
+    "verifyEmailNote": "Već ste verifikovali? Ova stranica će vas automatski preusmjeriti."
   },
   "flats": {
     "browseTitle": "Pregledaj stanove",
@@ -186,6 +191,7 @@
     "backToMessages": "Nazad na poruke"
   },
   "profile": {
+    "myProfile": "Moj profil",
     "completeTitle": "Dovršite vaš profil",
     "completeDesc": "Popunite obavezna polja da biste počeli koristiti Gemmaham.",
     "profilePhoto": "Profilna fotografija",
@@ -249,7 +255,9 @@
     "requestRejected": "Zahtjev odbijen.",
     "requestFailed": "Ažuriranje zahtjeva nije uspjelo.",
     "requestCancelled": "Zahtjev otkazan.",
-    "requestSent": "Zahtjev za prilagodbu poslan!"
+    "requestSent": "Zahtjev za prilagodbu poslan!",
+    "savedWithoutLogo": "Profil sačuvan, ali logo nije mogao biti uploadovan (dozvole za storage nisu konfigurisane).",
+    "profileDeleted": "Profil obrisan."
   },
   "theme": {
     "light": "Svijetlo",
@@ -478,7 +486,8 @@
     "noAssignments": "Još niste dodijeljeni nijednoj zgradi.",
     "messages": "Poruke",
     "viewMessages": "Pogledaj poruke",
-    "editProfile": "Uredi profil",
+    "editProfile": "Moj profil",
+    "noProfileData": "Nema dodatih detalja. Kliknite Uredi da popunite profil.",
     "businessName": "Naziv firme",
     "businessNamePlaceholder": "Naziv vaše firme",
     "specialty": "Specijalnost",
@@ -507,7 +516,9 @@
       "upcoming": "Predstoji",
       "in_progress": "U toku",
       "completed": "Završeno"
-    }
+    },
+    "deleteProfileTitle": "Obriši profil",
+    "deleteProfileMsg": "Jeste li sigurni da želite obrisati vaš profil izvođača? Ova radnja se ne može poništiti."
   },
   "customizations": {
     "options": "opcija",

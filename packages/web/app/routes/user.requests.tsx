@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
-import UserSidebar from "../../components/UserSidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
@@ -99,7 +98,6 @@ export default function UserRequests() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <UserSidebar />
                     <main className="flex-1 p-6 max-w-4xl">
                         <h1 className="text-2xl font-bold mb-6">{t("customizations.myRequests")}</h1>
 

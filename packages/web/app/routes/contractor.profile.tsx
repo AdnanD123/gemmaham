@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router";
+import { useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Camera } from "lucide-react";
+import { Camera, Pencil, Trash2, Globe, Phone, Building2, UserCircle } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import ContractorSidebar from "../../components/ContractorSidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
+import Badge from "../../components/ui/Badge";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
-import { getContractorProfile, updateContractorProfile } from "../../lib/firestore";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import { getContractorProfile, updateContractorProfile, deleteContractorProfile } from "../../lib/firestore";
 import { uploadContractorProfileLogo } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import CategorySubcategoryPicker, { deriveCategoryKeys, deriveSubcategoryKeys } from "../../components/CategorySubcategoryPicker";
@@ -19,9 +20,13 @@ export default function ContractorProfilePage() {
     const { t } = useTranslation();
     const auth = useOutletContext<AuthContext>();
     const { addToast } = useToast();
+    const navigate = useNavigate();
     const [profile, setProfile] = useState<ContractorProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     // Form state
     const [displayName, setDisplayName] = useState("");
@@ -42,7 +47,6 @@ export default function ContractorProfilePage() {
                     setProfile(p);
                     setDisplayName(p.displayName);
                     setCompanyName(p.companyName);
-                    // Initialize categories from profile or migrate from legacy specialty
                     if (p.categories && p.categories.length > 0) {
                         setCategories(p.categories);
                     }
@@ -50,6 +54,8 @@ export default function ContractorProfilePage() {
                     setDescription(p.description || "");
                     setWebsite(p.website || "");
                     if (p.logoUrl) setLogoPreview(p.logoUrl);
+                } else {
+                    setEditing(true);
                 }
             } catch (e) {
                 console.error("Failed to load contractor profile:", e);
@@ -76,10 +82,15 @@ export default function ContractorProfilePage() {
         }
 
         setSaving(true);
+        let savedWithoutLogo = false;
         try {
             let logoUrl = profile?.logoUrl || null;
             if (logoFile) {
-                logoUrl = await uploadContractorProfileLogo(auth.user.uid, logoFile);
+                try {
+                    logoUrl = await uploadContractorProfileLogo(auth.user.uid, logoFile);
+                } catch {
+                    savedWithoutLogo = true;
+                }
             }
 
             await updateContractorProfile(auth.user.uid, {
@@ -95,7 +106,13 @@ export default function ContractorProfilePage() {
                 logoUrl,
             });
 
-            addToast("success", t("toast.changesSaved"));
+            // Refetch so view mode always shows accurate saved data
+            const fresh = await getContractorProfile(auth.user.uid);
+            if (fresh) setProfile(fresh);
+
+            setLogoFile(null);
+            setEditing(false);
+            addToast("success", savedWithoutLogo ? t("toast.savedWithoutLogo") : t("toast.changesSaved"));
         } catch (err) {
             console.error("Failed to save contractor profile:", err);
             addToast("error", t("toast.saveFailed"));
@@ -104,14 +121,31 @@ export default function ContractorProfilePage() {
         }
     };
 
+    const handleDelete = async () => {
+        if (!auth.user) return;
+        setDeleting(true);
+        try {
+            await deleteContractorProfile(auth.user.uid);
+            addToast("success", t("toast.profileDeleted"));
+            navigate("/contractor/dashboard");
+        } catch (err) {
+            console.error("Failed to delete contractor profile:", err);
+            addToast("error", t("toast.deleteFailed"));
+        } finally {
+            setDeleting(false);
+            setShowDeleteConfirm(false);
+        }
+    };
+
     return (
         <RoleGuard allowedRole="contractor">
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <ContractorSidebar />
                     <main className="flex-1 p-6 max-w-2xl">
-                        <h1 className="text-2xl font-bold mb-6">{t("contractor.editProfile")}</h1>
+                        <div className="mb-6">
+                            <h1 className="text-2xl font-bold">{t("contractor.editProfile")}</h1>
+                        </div>
 
                         {loading ? (
                             <div className="space-y-4">
@@ -120,7 +154,7 @@ export default function ContractorProfilePage() {
                                 <SkeletonLine className="h-10 w-full" />
                                 <SkeletonBlock className="h-24 w-full" />
                             </div>
-                        ) : (
+                        ) : editing ? (
                             <form onSubmit={handleSave} className="space-y-5 bg-surface rounded-xl border-2 border-foreground/10 p-6">
                                 {/* Logo */}
                                 <div>
@@ -185,14 +219,114 @@ export default function ContractorProfilePage() {
                                     onChange={(e) => setWebsite(e.target.value)}
                                 />
 
-                                <Button fullWidth disabled={saving}>
-                                    {saving ? t("profile.saving") : t("common.save")}
-                                </Button>
+                                <div className="flex gap-3">
+                                    <Button fullWidth disabled={saving}>
+                                        {saving ? t("profile.saving") : t("common.save")}
+                                    </Button>
+                                    {profile && (
+                                        <Button type="button" variant="ghost" onClick={() => setEditing(false)}>
+                                            {t("common.cancel")}
+                                        </Button>
+                                    )}
+                                </div>
                             </form>
+                        ) : (
+                            /* ── View mode ── */
+                            <div className="relative bg-surface rounded-xl border-2 border-foreground/10 p-6 space-y-6">
+                                {/* Header: logo + name */}
+                                <div className="flex items-center gap-4">
+                                    <div className="w-20 h-20 rounded-xl bg-foreground/10 overflow-hidden flex items-center justify-center shrink-0">
+                                        {logoPreview ? (
+                                            <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <Camera size={28} className="text-foreground/30" />
+                                        )}
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-bold">{profile?.displayName || "—"}</h2>
+                                        <p className="text-foreground/60 flex items-center gap-1 mt-0.5">
+                                            <Building2 size={14} />
+                                            {profile?.companyName || "—"}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-foreground/10" />
+
+                                {/* Details */}
+                                <div className="space-y-4">
+                                    {profile?.phone && (
+                                        <div className="flex items-center gap-3 text-sm">
+                                            <Phone size={16} className="text-foreground/40 shrink-0" />
+                                            <span>{profile.phone}</span>
+                                        </div>
+                                    )}
+
+                                    {profile?.website && (
+                                        <div className="flex items-center gap-3 text-sm">
+                                            <Globe size={16} className="text-foreground/40 shrink-0" />
+                                            <a href={profile.website} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+                                                {profile.website}
+                                            </a>
+                                        </div>
+                                    )}
+
+                                    {profile?.description && (
+                                        <div className="flex gap-3 text-sm">
+                                            <UserCircle size={16} className="text-foreground/40 shrink-0 mt-0.5" />
+                                            <p className="text-foreground/80">{profile.description}</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Categories */}
+                                {profile?.categories && profile.categories.length > 0 && (
+                                    <>
+                                        <div className="border-t border-foreground/10" />
+                                        <div>
+                                            <p className="text-xs font-medium text-foreground/50 uppercase tracking-wide mb-2">
+                                                {t("contractorCategories.label")}
+                                            </p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {profile.categories.map((cat) => (
+                                                    <Badge key={cat.category} variant="default">
+                                                        {t(`contractorCategories.categories.${cat.category}`)}
+                                                    </Badge>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {!profile?.phone && !profile?.website && !profile?.description && !profile?.categories?.length && (
+                                    <p className="text-sm text-foreground/40 text-center py-4">
+                                        {t("contractor.noProfileData")}
+                                    </p>
+                                )}
+
+                                {/* Bottom-right action buttons */}
+                                <div className="flex justify-end gap-1 pt-2">
+                                    <Button variant="ghost" size="sm" onClick={() => setEditing(true)}>
+                                        <Pencil size={15} />
+                                    </Button>
+                                    <Button variant="ghost" size="sm" onClick={() => setShowDeleteConfirm(true)}>
+                                        <Trash2 size={15} />
+                                    </Button>
+                                </div>
+                            </div>
                         )}
                     </main>
                 </div>
             </div>
+            <ConfirmDialog
+                isOpen={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                onConfirm={handleDelete}
+                title={t("contractor.deleteProfileTitle")}
+                message={t("contractor.deleteProfileMsg")}
+                confirmLabel={t("common.delete")}
+                loading={deleting}
+            />
         </RoleGuard>
     );
 }

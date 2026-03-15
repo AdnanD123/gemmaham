@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import RevenueChart from "../../components/charts/RevenueChart";
 import OccupancyChart from "../../components/charts/OccupancyChart";
@@ -69,7 +68,6 @@ export default function CompanyAnalytics() {
         <RoleGuard allowedRole="company">
             <Navbar />
             <div className="flex mt-20">
-                <CompanySidebar />
                 <main className="flex-1 p-6 max-w-5xl">
                     <h1 className="font-serif text-2xl font-bold mb-6">{t("analytics.title")}</h1>
 

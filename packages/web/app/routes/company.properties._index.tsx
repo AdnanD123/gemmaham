@@ -3,7 +3,6 @@ import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, Edit, Building2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
@@ -61,7 +60,6 @@ export default function CompanyProperties() {
         <RoleGuard allowedRole="company">
             <Navbar />
             <div className="flex mt-20">
-                <CompanySidebar />
                 <main className="flex-1 p-6 max-w-5xl">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="font-serif text-2xl font-bold">{t("nav.properties")}</h1>

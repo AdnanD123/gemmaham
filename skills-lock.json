@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "ralph-loop": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "6adfafbe4540528e6e8c12e5bc590d8103cea1bc3b0049f4b612384ced6509dd"
+    }
+  }
+}

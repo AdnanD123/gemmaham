@@ -1084,6 +1084,10 @@ export const updateContractorProfile = async (
   });
 };
 
+export const deleteContractorProfile = async (contractorId: string): Promise<void> => {
+  await deleteDoc(doc(db, "contractors", contractorId));
+};
+
 export const searchContractors = async (filters: {
   email?: string;
   specialty?: string;

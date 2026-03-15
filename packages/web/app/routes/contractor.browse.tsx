@@ -3,7 +3,6 @@ import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Building2 } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import ContractorSidebar from "../../components/ContractorSidebar";
 import RoleGuard from "../../components/RoleGuard";
 import ProjectCard from "../../components/ProjectCard";
 import ApplicationModal from "../../components/ApplicationModal";
@@ -75,7 +74,6 @@ export default function ContractorBrowse() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <ContractorSidebar />
                     <main className="flex-1 p-6">
                         <div className="max-w-5xl">
                             <h1 className="text-2xl font-bold mb-1">{t("applications.browseProjectsTitle")}</h1>

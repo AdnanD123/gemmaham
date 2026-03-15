@@ -5,10 +5,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from "react-router";
 import { useTranslation } from "react-i18next";
 
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { Route } from "./+types/root";
 import "./app.css";
 import "../lib/i18n";
@@ -16,6 +17,10 @@ import { detectAndApplyLanguage } from "../lib/i18n";
 import { useAuth } from "../lib/hooks/useAuth";
 import { ToastProvider } from "../lib/contexts/ToastContext";
 import ToastContainer from "../components/ui/Toast";
+import HomeSidebar from "../components/HomeSidebar";
+
+// These routes don't need a sidebar
+const NO_SIDEBAR_PREFIXES = ["/auth/", "/profile/", "/visualizer/"];
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -53,6 +58,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const auth = useAuth();
+  const location = useLocation();
+  const showSidebar = !NO_SIDEBAR_PREFIXES.some((p) => location.pathname.startsWith(p));
+
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("home-sidebar-collapsed") === "true";
+  });
+
+  const handleToggle = useCallback(() => {
+    setCollapsed((c) => {
+      const next = !c;
+      localStorage.setItem("home-sidebar-collapsed", String(next));
+      return next;
+    });
+  }, []);
 
   // After hydration, switch to user's saved language (avoids SSR mismatch)
   useEffect(() => {
@@ -62,7 +82,16 @@ export default function App() {
   return (
     <ToastProvider>
       <main className="min-h-screen bg-background text-foreground relative z-10">
-        <Outlet context={auth} />
+        {showSidebar && (
+          <HomeSidebar auth={auth} collapsed={collapsed} onToggle={handleToggle} />
+        )}
+        <div
+          className={`transition-all duration-300 ${
+            showSidebar ? (collapsed ? "pl-14" : "pl-56") : ""
+          }`}
+        >
+          <Outlet context={auth} />
+        </div>
       </main>
       <ToastContainer />
     </ToastProvider>

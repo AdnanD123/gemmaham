@@ -2,7 +2,6 @@ import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Wrench, CheckCircle, DollarSign, FolderKanban } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import ContractorSidebar from "../../components/ContractorSidebar";
 import RoleGuard from "../../components/RoleGuard";
 import StatCard from "../../components/StatCard";
 import Badge from "../../components/ui/Badge";
@@ -57,7 +56,6 @@ export default function ContractorDashboard() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <ContractorSidebar />
                     <main className="flex-1 p-6 max-w-5xl">
                         <h1 className="text-2xl font-bold mb-2">
                             {profile ? t("contractor.welcomeBack", { name: profile.displayName }) : t("contractor.dashboard")}

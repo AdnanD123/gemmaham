@@ -2,7 +2,6 @@ import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Wrench, MapPin } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import ContractorSidebar from "../../components/ContractorSidebar";
 import RoleGuard from "../../components/RoleGuard";
 import { SkeletonLine } from "../../components/ui/Skeleton";
 import Badge from "../../components/ui/Badge";
@@ -19,7 +18,6 @@ export default function ContractorBuildings() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <ContractorSidebar />
                     <main className="flex-1 p-6 max-w-5xl">
                         <h1 className="text-2xl font-bold mb-6">{t("contractor.assignedBuildings")}</h1>
 

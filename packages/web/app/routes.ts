@@ -2,10 +2,12 @@ import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
   index("routes/home.tsx"),
+  route("new-design", "routes/new-design.tsx"),
 
   // Auth
   route("auth/login", "routes/auth.login.tsx"),
   route("auth/register", "routes/auth.register.tsx"),
+  route("auth/verify-email", "routes/auth.verify-email.tsx"),
 
   // Profile
   route("profile/setup", "routes/profile.setup.tsx"),
@@ -37,10 +39,10 @@ export default [
   route("company/requests", "routes/company.requests.tsx"),
   route("company/messages", "routes/company.messages.tsx"),
   route("company/messages/:conversationId", "routes/company.messages.$conversationId.tsx"),
-  route("company/analytics", "routes/company.analytics.tsx"),
   route("company/contractors", "routes/company.contractors.tsx"),
 
   // User routes
+  route("user/profile", "routes/user.profile.tsx"),
   route("user/dashboard", "routes/user.dashboard.tsx"),
   route("user/reservations", "routes/user.reservations.tsx"),
   route("user/requests", "routes/user.requests.tsx"),

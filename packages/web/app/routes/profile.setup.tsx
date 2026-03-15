@@ -58,7 +58,8 @@ export default function ProfileSetup() {
                 return;
             }
         } else {
-            if (!displayName.trim() || !phone.trim() || !address.trim() || !photoFile) {
+            const TEST_MODE = import.meta.env.VITE_EMAIL_VERIFICATION !== "true";
+            if (!displayName.trim() || !phone.trim() || !address.trim() || (!TEST_MODE && !photoFile)) {
                 addToast("warning", t("toast.fillRequired"));
                 return;
             }
@@ -66,16 +67,17 @@ export default function ProfileSetup() {
 
         setSubmitting(true);
         try {
+            const TEST_MODE = import.meta.env.VITE_EMAIL_VERIFICATION !== "true";
             if (isContractor) {
-                // Upload logo if provided
+                // Upload logo if provided (skipped in test mode)
                 let logoUrl: string | null = null;
-                if (logoFile) {
+                if (logoFile && !TEST_MODE) {
                     logoUrl = await uploadContractorProfileLogo(auth.user.uid, logoFile);
                 }
 
-                // Upload profile photo if provided
+                // Upload profile photo if provided (skipped in test mode)
                 let photoURL: string | null = null;
-                if (photoFile) {
+                if (photoFile && !TEST_MODE) {
                     photoURL = await uploadProfilePhoto(auth.user.uid, photoFile);
                 }
 
@@ -103,10 +105,13 @@ export default function ProfileSetup() {
                     profileCompleted: true,
                 });
 
+                await auth.refreshProfile();
                 addToast("success", t("toast.profileComplete"));
                 navigate("/contractor/dashboard");
             } else {
-                const photoURL = await uploadProfilePhoto(auth.user.uid, photoFile!);
+                const photoURL = (photoFile && !TEST_MODE)
+                    ? await uploadProfilePhoto(auth.user.uid, photoFile)
+                    : null;
 
                 await updateUserProfile(auth.user.uid, {
                     displayName: displayName.trim(),
@@ -116,12 +121,13 @@ export default function ProfileSetup() {
                     profileCompleted: true,
                 });
 
+                await auth.refreshProfile();
                 addToast("success", t("toast.profileComplete"));
 
                 if (auth.role === "company") {
                     navigate("/company/dashboard");
                 } else {
-                    navigate("/flats");
+                    navigate("/user/dashboard");
                 }
             }
         } catch (err) {

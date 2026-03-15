@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
-import ContractorSidebar from "../../components/ContractorSidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import { getContractorAssignments } from "../../lib/firestore";
@@ -67,7 +66,6 @@ export default function ContractorProjects() {
         <RoleGuard allowedRole="contractor">
             <Navbar />
             <div className="flex mt-20">
-                <ContractorSidebar />
                 <main className="flex-1 p-6 max-w-4xl">
                     <h1 className="font-serif text-2xl font-bold mb-6">{t("nav.projects")}</h1>
 

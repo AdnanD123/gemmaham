@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import Navbar from "../../components/Navbar";
-import CompanySidebar from "../../components/CompanySidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
@@ -14,12 +13,12 @@ import ContractorList from "../../components/ContractorList";
 import CustomizationManager from "../../components/CustomizationManager";
 import ApplicationList from "../../components/ApplicationList";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
-import { getBuilding, updateBuilding, listBuildingFlats } from "../../lib/firestore";
-import { uploadBuildingCover } from "../../lib/storage";
+import { getBuilding, updateBuilding, listBuildingFlats, createFlat, updateFlat, initFlatCustomizationConfig } from "../../lib/firestore";
+import { uploadBuildingCover, uploadFloorPlan } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
-import type { AuthContext, Building, Flat, BuildingStatus, ConstructionPhase } from "@gemmaham/shared";
+import type { AuthContext, Building, Flat, BuildingStatus, ConstructionPhase, FlatStatus, AreaUnit } from "@gemmaham/shared";
 import { Link } from "react-router";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 type Tab = "details" | "units" | "updates" | "contractors" | "customizations" | "applications";
 
@@ -34,6 +33,59 @@ export default function CompanyBuildingDetail() {
     const [submitting, setSubmitting] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>("details");
     const { addToast } = useToast();
+
+    const [showAddUnit, setShowAddUnit] = useState(false);
+    const [addingUnit, setAddingUnit] = useState(false);
+    const [floorPlanFile, setFloorPlanFile] = useState<File | null>(null);
+    const [floorPlanPreview, setFloorPlanPreview] = useState<string | null>(null);
+    const [unitForm, setUnitForm] = useState({
+        title: "", description: "", address: "", price: "", currency: "EUR",
+        bedrooms: "", bathrooms: "", area: "", areaUnit: "sqm" as AreaUnit,
+        status: "available" as FlatStatus, featured: false, unitNumber: "",
+    });
+    const updateUnitField = (field: string, value: string | boolean) =>
+        setUnitForm((prev) => ({ ...prev, [field]: value }));
+
+    const handleAddUnit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!auth.companyId || !id || !floorPlanFile) return;
+        setAddingUnit(true);
+        try {
+            const flatId = await createFlat({
+                companyId: auth.companyId,
+                buildingId: id,
+                unitNumber: unitForm.unitNumber || null,
+                title: unitForm.title,
+                description: unitForm.description,
+                address: unitForm.address || building?.address || "",
+                price: Number(unitForm.price),
+                currency: unitForm.currency,
+                bedrooms: Number(unitForm.bedrooms),
+                bathrooms: Number(unitForm.bathrooms),
+                area: Number(unitForm.area),
+                areaUnit: unitForm.areaUnit,
+                floorPlanUrl: "",
+                renderedImageUrl: null,
+                status: unitForm.status,
+                featured: unitForm.featured,
+            });
+            const floorPlanUrl = await uploadFloorPlan(auth.companyId, flatId, floorPlanFile);
+            await updateFlat(flatId, { floorPlanUrl });
+            try { await initFlatCustomizationConfig(flatId, id); } catch {}
+            const updated = await listBuildingFlats(id);
+            setFlats(updated);
+            setShowAddUnit(false);
+            setUnitForm({ title: "", description: "", address: "", price: "", currency: "EUR", bedrooms: "", bathrooms: "", area: "", areaUnit: "sqm", status: "available", featured: false, unitNumber: "" });
+            setFloorPlanFile(null);
+            setFloorPlanPreview(null);
+            addToast("success", t("toast.flatCreated"));
+        } catch (e) {
+            console.error("Failed to create unit:", e);
+            addToast("error", t("toast.flatCreatedFailed"));
+        } finally {
+            setAddingUnit(false);
+        }
+    };
 
     const [form, setForm] = useState({
         title: "",
@@ -160,7 +212,6 @@ export default function CompanyBuildingDetail() {
                 <div className="home">
                     <Navbar />
                     <div className="flex">
-                        <CompanySidebar />
                         <main className="flex-1 p-6 max-w-4xl space-y-4">
                             <SkeletonLine className="w-48 h-8" />
                             <SkeletonBlock className="h-48 rounded-lg" />
@@ -179,7 +230,6 @@ export default function CompanyBuildingDetail() {
                 <div className="home">
                     <Navbar />
                     <div className="flex">
-                        <CompanySidebar />
                         <main className="flex-1 p-6 text-center">
                             <p className="text-foreground/50">{t("buildings.notFound")}</p>
                         </main>
@@ -194,7 +244,6 @@ export default function CompanyBuildingDetail() {
             <div className="home">
                 <Navbar />
                 <div className="flex">
-                    <CompanySidebar />
                     <main className="flex-1 p-6 max-w-4xl">
                         <h1 className="text-2xl font-bold mb-6">{t("buildings.editBuilding")}</h1>
 
@@ -351,16 +400,72 @@ export default function CompanyBuildingDetail() {
                                     <p className="text-sm text-foreground/50">
                                         {flats.length} {t("buildings.unitsInBuilding")}
                                     </p>
-                                    <Link to={`/company/flats/new?buildingId=${id}`}>
-                                        <Button size="sm"><Plus size={16} className="mr-1" /> {t("buildings.addUnit")}</Button>
-                                    </Link>
+                                    {!showAddUnit && (
+                                        <Button size="sm" onClick={() => setShowAddUnit(true)}>
+                                            <Plus size={16} className="mr-1" /> {t("buildings.addUnit")}
+                                        </Button>
+                                    )}
                                 </div>
-                                {flats.length === 0 ? (
+
+                                {/* Inline Add Unit Form */}
+                                {showAddUnit && (
+                                    <div className="mb-6 bg-surface border-2 border-foreground/10 rounded-xl p-5">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="font-semibold text-base">{t("buildings.addUnit")}</h3>
+                                            <button onClick={() => { setShowAddUnit(false); setFloorPlanFile(null); setFloorPlanPreview(null); }} className="text-foreground/40 hover:text-foreground transition-colors">
+                                                <X size={18} />
+                                            </button>
+                                        </div>
+                                        <form onSubmit={handleAddUnit} className="space-y-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <Input label={t("company.title")} value={unitForm.title} onChange={(e) => updateUnitField("title", e.target.value)} required />
+                                                <Input label={t("buildings.unitNumber")} placeholder="A-301" value={unitForm.unitNumber} onChange={(e) => updateUnitField("unitNumber", e.target.value)} />
+                                            </div>
+                                            <Textarea label={t("company.descLabel")} value={unitForm.description} onChange={(e) => updateUnitField("description", e.target.value)} />
+                                            <Input label={t("company.address")} value={unitForm.address} placeholder={building?.address} onChange={(e) => updateUnitField("address", e.target.value)} />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <Input label={t("company.price")} type="number" placeholder="250000" value={unitForm.price} onChange={(e) => updateUnitField("price", e.target.value)} required />
+                                                <Select label={t("company.currency")} value={unitForm.currency} onChange={(e) => updateUnitField("currency", e.target.value)} options={[{ value: "USD", label: "USD" }, { value: "EUR", label: "EUR" }, { value: "GBP", label: "GBP" }, { value: "BAM", label: "BAM" }]} />
+                                            </div>
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <Input label={t("company.bedrooms")} type="number" placeholder="2" value={unitForm.bedrooms} onChange={(e) => updateUnitField("bedrooms", e.target.value)} required min="0" />
+                                                <Input label={t("company.bathrooms")} type="number" placeholder="1" value={unitForm.bathrooms} onChange={(e) => updateUnitField("bathrooms", e.target.value)} required min="0" />
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <Input label={t("company.area")} type="number" placeholder="75" value={unitForm.area} onChange={(e) => updateUnitField("area", e.target.value)} required min="0" />
+                                                    <Select label={t("company.unit")} value={unitForm.areaUnit} onChange={(e) => updateUnitField("areaUnit", e.target.value)} options={[{ value: "sqm", label: "sqm" }, { value: "sqft", label: "sqft" }]} />
+                                                </div>
+                                            </div>
+                                            <Select label={t("company.statusLabel")} value={unitForm.status} onChange={(e) => updateUnitField("status", e.target.value)} options={[{ value: "available", label: t("filters.available") }, { value: "reserved", label: t("filters.reserved") }, { value: "sold", label: t("filters.sold") }]} />
+                                            <div>
+                                                <label className="block text-sm font-medium mb-1">{t("company.floorPlanImage")} *</label>
+                                                <div className="border-2 border-dashed border-foreground/20 rounded-xl p-4 text-center relative">
+                                                    {floorPlanPreview ? (
+                                                        <div className="space-y-2">
+                                                            <img src={floorPlanPreview} alt="Preview" className="max-h-36 mx-auto rounded-lg" />
+                                                            <p className="text-xs text-foreground/50">{floorPlanFile?.name}</p>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-foreground/40 text-sm">{t("company.clickOrDrag")}</p>
+                                                    )}
+                                                    <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; setFloorPlanFile(f); setFloorPlanPreview(URL.createObjectURL(f)); }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required />
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-3 pt-2">
+                                                <Button type="submit" disabled={addingUnit || !floorPlanFile}>
+                                                    {addingUnit ? t("company.creating") : t("company.createFlat")}
+                                                </Button>
+                                                <Button type="button" variant="ghost" onClick={() => { setShowAddUnit(false); setFloorPlanFile(null); setFloorPlanPreview(null); }}>
+                                                    {t("common.cancel")}
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                )}
+
+                                {flats.length === 0 && !showAddUnit ? (
                                     <div className="text-center py-8">
                                         <p className="text-foreground/40 mb-3">{t("buildings.noUnits")}</p>
-                                        <Link to={`/company/flats/new?buildingId=${id}`}>
-                                            <Button size="sm">{t("buildings.addFirstUnit")}</Button>
-                                        </Link>
+                                        <Button size="sm" onClick={() => setShowAddUnit(true)}>{t("buildings.addFirstUnit")}</Button>
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -374,18 +479,40 @@ export default function CompanyBuildingDetail() {
                                                     to={`/company/flats/${flat.id}`}
                                                     className="block bg-surface rounded-xl border-2 border-foreground/10 overflow-hidden hover:border-primary/30 transition-colors"
                                                 >
-                                                    {/* Status indicator bar */}
-                                                    <div className={`h-1 ${statusColor}`} />
-                                                    <div className="p-4">
-                                                        <div className="flex items-center justify-between mb-2">
-                                                            <div className="flex items-center gap-2 min-w-0">
+                                                    {/* Image */}
+                                                    {flat.renderedImageUrl || flat.floorPlanUrl ? (
+                                                        <div className="relative">
+                                                            <img
+                                                                src={flat.renderedImageUrl || flat.floorPlanUrl}
+                                                                alt={flat.title}
+                                                                className="w-full h-40 object-cover"
+                                                            />
+                                                            <div className="absolute top-2 left-2 flex gap-1">
                                                                 {flat.unitNumber && (
-                                                                    <span className="text-xs font-mono bg-foreground/10 px-2 py-0.5 rounded shrink-0">{flat.unitNumber}</span>
+                                                                    <span className="text-xs font-mono bg-black/60 text-white px-2 py-0.5 rounded">{flat.unitNumber}</span>
                                                                 )}
-                                                                <h3 className="font-bold truncate">{flat.title}</h3>
+                                                                {flat.renderedImageUrl && (
+                                                                    <span className="text-xs bg-green-500/90 text-white px-2 py-0.5 rounded font-medium">3D</span>
+                                                                )}
                                                             </div>
-                                                            <Badge variant={flat.status}>{t(`filters.${flat.status}`)}</Badge>
+                                                            <div className="absolute top-2 right-2">
+                                                                <Badge variant={flat.status}>{t(`filters.${flat.status}`)}</Badge>
+                                                            </div>
                                                         </div>
+                                                    ) : (
+                                                        <div className="w-full h-40 bg-foreground/5 flex items-center justify-center relative">
+                                                            <span className="text-4xl">🏠</span>
+                                                            <div className="absolute top-2 right-2">
+                                                                <Badge variant={flat.status}>{t(`filters.${flat.status}`)}</Badge>
+                                                            </div>
+                                                            {flat.unitNumber && (
+                                                                <span className="absolute top-2 left-2 text-xs font-mono bg-foreground/10 px-2 py-0.5 rounded">{flat.unitNumber}</span>
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    <div className="p-4">
+                                                        <h3 className="font-bold truncate mb-2">{flat.title}</h3>
 
                                                         <div className="flex items-center gap-4 text-sm text-foreground/50 mb-3">
                                                             <span>{flat.bedrooms} {t("flats.beds")}</span>
@@ -395,14 +522,9 @@ export default function CompanyBuildingDetail() {
                                                             <span>{flat.area} {flat.areaUnit}</span>
                                                         </div>
 
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="text-primary font-bold text-lg">
-                                                                {flat.currency} {flat.price.toLocaleString()}
-                                                            </span>
-                                                            {flat.renderedImageUrl && (
-                                                                <span className="text-xs text-green-600 font-medium">3D Ready</span>
-                                                            )}
-                                                        </div>
+                                                        <span className="text-primary font-bold text-lg">
+                                                            {flat.currency} {flat.price.toLocaleString()}
+                                                        </span>
                                                     </div>
                                                 </Link>
                                             );

@@ -3,7 +3,6 @@ import { useParams, useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft } from "lucide-react";
 import Navbar from "../../components/Navbar";
-import ContractorSidebar from "../../components/ContractorSidebar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import { getBuilding, getContractorAssignments, getConstructionUpdates } from "../../lib/firestore";
@@ -45,7 +44,6 @@ export default function ContractorProjectDetail() {
         <RoleGuard allowedRole="contractor">
             <Navbar />
             <div className="flex mt-20">
-                <ContractorSidebar />
                 <main className="flex-1 p-6 max-w-4xl">
                     <Link to="/contractor/projects" className="flex items-center gap-1 text-sm text-foreground/50 hover:text-foreground mb-4">
                         <ArrowLeft size={16} /> {t("contractor.backToBuildings")}

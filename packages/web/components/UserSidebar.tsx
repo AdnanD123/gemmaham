@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, CalendarCheck, ClipboardList, MessageSquare, Search } from "lucide-react";
+import { LayoutDashboard, CalendarCheck, ClipboardList, MessageSquare, Search, UserCircle } from "lucide-react";
 import { Sidebar, type SidebarLink } from "./Sidebar";
 
 const UserSidebar = () => {
@@ -11,6 +11,7 @@ const UserSidebar = () => {
         { to: "/user/reservations", label: t("nav.reservations"), icon: CalendarCheck },
         { to: "/user/requests", label: t("nav.myRequests"), icon: ClipboardList },
         { to: "/user/messages", label: t("nav.messages"), icon: MessageSquare },
+        { to: "/user/profile", label: t("profile.myProfile"), icon: UserCircle },
     ];
 
     return <Sidebar links={links} />;
