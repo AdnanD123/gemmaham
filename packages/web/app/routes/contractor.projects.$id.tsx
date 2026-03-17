@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download, FileText, Shield, ClipboardList, Ruler, File } from "lucide-react";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import { ContentLoader } from "../../components/ui/ContentLoader";
-import { getBuilding, getContractorAssignments, getConstructionUpdates } from "../../lib/firestore";
-import type { AuthContext, Building, Contractor, ConstructionUpdate } from "@gemmaham/shared";
+import { getBuilding, getContractorAssignments, getConstructionUpdates, getBuildingDocuments } from "../../lib/firestore";
+import { formatTimestamp } from "@gemmaham/shared";
+import type { AuthContext, Building, Contractor, ConstructionUpdate, BuildingDocument, BuildingDocumentType } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { ProgressReporter } from "../../components/ProgressReporter";
 
@@ -20,19 +21,22 @@ export default function ContractorProjectDetail() {
     const [building, setBuilding] = useState<Building | null>(null);
     const [assignment, setAssignment] = useState<Assignment | null>(null);
     const [updates, setUpdates] = useState<ConstructionUpdate[]>([]);
+    const [sharedDocs, setSharedDocs] = useState<BuildingDocument[]>([]);
     const [loading, setLoading] = useState(true);
 
     const loadData = async () => {
         if (!id || !auth.user) return;
         try {
-            const [b, assignments, u] = await Promise.all([
+            const [b, assignments, u, docs] = await Promise.all([
                 getBuilding(id),
                 getContractorAssignments(auth.user!.uid),
                 getConstructionUpdates(id),
+                getBuildingDocuments(id),
             ]);
             setBuilding(b);
             setAssignment(assignments.find((a) => a.buildingId === id) || null);
             setUpdates(u);
+            setSharedDocs(docs.filter((d) => d.sharedWithContractors));
         } catch (err) {
             console.error("Failed to load project:", err);
         } finally {
@@ -94,6 +98,48 @@ export default function ContractorProjectDetail() {
                                             onUpdate={loadData}
                                         />
                                     )}
+                                </div>
+                            )}
+
+                            {/* Project Documents */}
+                            {sharedDocs.length > 0 && (
+                                <div className="mb-6">
+                                    <h2 className="font-semibold mb-3">{t("documents.title")}</h2>
+                                    <div className="space-y-3">
+                                        {sharedDocs.map((d) => {
+                                            const iconMap: Record<BuildingDocumentType, typeof FileText> = {
+                                                plan: Ruler,
+                                                permit: Shield,
+                                                contract: ClipboardList,
+                                                specification: FileText,
+                                                other: File,
+                                            };
+                                            const Icon = iconMap[d.type] || File;
+                                            return (
+                                                <div key={d.id} className="rounded-2xl border border-foreground/6 shadow-card bg-surface p-4 flex items-center gap-4">
+                                                    <div className="p-2 bg-foreground/5 rounded-xl shrink-0">
+                                                        <Icon size={20} className="text-foreground/60" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2">
+                                                            <h4 className="font-medium truncate">{d.name}</h4>
+                                                            <Badge variant={d.type as string}>{t(`documents.${d.type}`)}</Badge>
+                                                        </div>
+                                                        <p className="text-xs text-foreground/40">{formatTimestamp(d.createdAt)}</p>
+                                                    </div>
+                                                    <a
+                                                        href={d.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="p-2 hover:bg-foreground/5 rounded-lg transition-colors shrink-0"
+                                                        title={t("documents.download")}
+                                                    >
+                                                        <Download size={16} />
+                                                    </a>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             )}
 

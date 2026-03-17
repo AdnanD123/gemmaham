@@ -11,8 +11,10 @@ import ConstructionTimeline from "../../components/ConstructionTimeline";
 import ContractorList from "../../components/ContractorList";
 import CustomizationManager from "../../components/CustomizationManager";
 import ApplicationList from "../../components/ApplicationList";
+import DocumentManager from "../../components/DocumentManager";
+import MilestoneTimeline from "../../components/MilestoneTimeline";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
-import { getBuilding, updateBuilding, listBuildingFlats, createFlat, updateFlat, initFlatCustomizationConfig } from "../../lib/firestore";
+import { getBuilding, updateBuilding, listBuildingFlats, createFlat, updateFlat, initFlatCustomizationConfig, getBuildingDocuments } from "../../lib/firestore";
 import { uploadBuildingCover, uploadFloorPlan } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, Building, Flat, BuildingStatus, ConstructionPhase, FlatStatus, AreaUnit } from "@gemmaham/shared";
@@ -20,7 +22,7 @@ import { Link } from "react-router";
 import { Plus, X } from "lucide-react";
 import { PageTransition } from "../../components/ui/PageTransition";
 
-type Tab = "details" | "units" | "updates" | "contractors" | "customizations" | "applications";
+type Tab = "details" | "units" | "updates" | "contractors" | "customizations" | "applications" | "documents";
 
 export default function CompanyBuildingDetail() {
     const { t } = useTranslation();
@@ -33,6 +35,7 @@ export default function CompanyBuildingDetail() {
     const [submitting, setSubmitting] = useState(false);
     const [activeTab, setActiveTab] = useState<Tab>("details");
     const { addToast } = useToast();
+    const [docCount, setDocCount] = useState(0);
 
     const [showAddUnit, setShowAddUnit] = useState(false);
     const [addingUnit, setAddingUnit] = useState(false);
@@ -128,6 +131,8 @@ export default function CompanyBuildingDetail() {
                 }
                 const f = await listBuildingFlats(id);
                 setFlats(f);
+                const docs = await getBuildingDocuments(id);
+                setDocCount(docs.length);
             } catch (e) {
                 console.error("Failed to load building:", e);
             } finally {
@@ -188,6 +193,7 @@ export default function CompanyBuildingDetail() {
         { key: "contractors", label: t("buildings.tabContractors") },
         { key: "applications", label: t("buildings.tabApplications") },
         { key: "customizations", label: t("buildings.tabCustomizations") },
+        { key: "documents", label: `${t("documents.title")}${docCount > 0 ? ` (${docCount})` : ""}` },
     ];
 
     const statusOptions = [
@@ -535,7 +541,12 @@ export default function CompanyBuildingDetail() {
 
                         {/* Tab: Updates */}
                         {activeTab === "updates" && id && (
-                            <ConstructionTimeline buildingId={id} companyId={auth.companyId || ""} />
+                            <div className="space-y-8">
+                                <MilestoneTimeline buildingId={id} currentPhase={building.currentPhase} />
+                                <div className="border-t border-foreground/6 pt-6">
+                                    <ConstructionTimeline buildingId={id} companyId={auth.companyId || ""} />
+                                </div>
+                            </div>
                         )}
 
                         {/* Tab: Contractors */}
@@ -551,6 +562,11 @@ export default function CompanyBuildingDetail() {
                         {/* Tab: Customizations */}
                         {activeTab === "customizations" && id && (
                             <CustomizationManager buildingId={id} flats={flats} />
+                        )}
+
+                        {/* Tab: Documents */}
+                        {activeTab === "documents" && id && (
+                            <DocumentManager buildingId={id} companyId={auth.companyId || ""} />
                         )}
                     </main>
                 </div>

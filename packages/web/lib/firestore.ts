@@ -31,6 +31,7 @@ import {
   type UserProfile, type UserNotification,
   type Building, type BuildingInput, type BuildingFilters,
   type ConstructionUpdate, type ConstructionUpdateInput,
+  type BuildingMilestone,
   type Contractor, type ContractorInput, type ContractorProfile,
   type ContractorApplication, type ContractorApplicationInput, type ApplicationStatus,
   type ContractorCategory, type ContractorSubcategory,
@@ -38,6 +39,7 @@ import {
   type CustomizationOption, type CustomizationOptionInput,
   type CustomizationRequest, type CustomizationRequestInput,
   type RequestStatus,
+  type BuildingDocument,
 } from "@gemmaham/shared";
 
 // ─── Helper ──────────────────────────────────────────────
@@ -876,6 +878,40 @@ export const deleteConstructionUpdate = async (buildingId: string, updateId: str
   await deleteDoc(doc(db, "buildings", buildingId, "updates", updateId));
 };
 
+// ─── Building Milestones ────────────────────────────────
+export const addBuildingMilestone = async (
+  buildingId: string,
+  milestone: Omit<BuildingMilestone, "id" | "buildingId" | "createdAt">,
+): Promise<string> => {
+  const ref = await addDoc(collection(db, "buildings", buildingId, "milestones"), {
+    ...milestone,
+    buildingId,
+    createdAt: serverTimestamp(),
+  });
+  return ref.id;
+};
+
+export const getBuildingMilestones = async (buildingId: string): Promise<BuildingMilestone[]> => {
+  const q = query(
+    collection(db, "buildings", buildingId, "milestones"),
+    orderBy("date", "asc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => docToData<BuildingMilestone>(d));
+};
+
+export const updateBuildingMilestone = async (
+  buildingId: string,
+  milestoneId: string,
+  data: Partial<Omit<BuildingMilestone, "id" | "buildingId" | "createdAt">>,
+): Promise<void> => {
+  await updateDoc(doc(db, "buildings", buildingId, "milestones", milestoneId), data);
+};
+
+export const deleteBuildingMilestone = async (buildingId: string, milestoneId: string): Promise<void> => {
+  await deleteDoc(doc(db, "buildings", buildingId, "milestones", milestoneId));
+};
+
 // ─── Contractors ────────────────────────────────────────
 export const addContractor = async (
   buildingId: string,
@@ -1430,6 +1466,40 @@ export const subscribeToFavorites = (
   return onSnapshot(q, (snap) => {
     callback(snap.docs.map((d) => docToData<FavoriteDoc>(d)));
   });
+};
+
+// ─── Building Documents ─────────────────────────────────
+export const addBuildingDocument = async (
+  buildingId: string,
+  data: Omit<BuildingDocument, "id" | "createdAt">,
+): Promise<string> => {
+  const ref = await addDoc(collection(db, "buildings", buildingId, "documents"), {
+    ...data,
+    buildingId,
+    createdAt: serverTimestamp(),
+  });
+  return ref.id;
+};
+
+export const getBuildingDocuments = async (buildingId: string): Promise<BuildingDocument[]> => {
+  const q = query(
+    collection(db, "buildings", buildingId, "documents"),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => docToData<BuildingDocument>(d));
+};
+
+export const updateBuildingDocument = async (
+  buildingId: string,
+  docId: string,
+  data: Partial<Pick<BuildingDocument, "sharedWithContractors" | "sharedWithBuyers" | "name" | "type">>,
+): Promise<void> => {
+  await updateDoc(doc(db, "buildings", buildingId, "documents", docId), data);
+};
+
+export const deleteBuildingDocument = async (buildingId: string, docId: string): Promise<void> => {
+  await deleteDoc(doc(db, "buildings", buildingId, "documents", docId));
 };
 
 export const listBrowsableProjects = async (): Promise<Building[]> => {

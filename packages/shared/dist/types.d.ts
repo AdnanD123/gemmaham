@@ -19,6 +19,16 @@ export type ApplicationStatus = "pending" | "accepted" | "rejected" | "withdrawn
 export type AreaUnit = "sqm" | "sqft";
 export type BuildingStatus = "planning" | "under_construction" | "near_completion" | "completed";
 export type ConstructionPhase = "foundation" | "structure" | "facade" | "interior" | "finishing" | "handover";
+export interface BuildingMilestone {
+    id: string;
+    buildingId: string;
+    title: string;
+    date: string;
+    phase: ConstructionPhase;
+    description?: string;
+    completed: boolean;
+    createdAt: TimestampLike;
+}
 export type CustomizationCategory = "flooring" | "kitchen" | "bathroom" | "walls" | "electrical" | "other";
 export type RequestStatus = "pending" | "approved" | "rejected" | "in_progress" | "completed" | "cancelled";
 export type ContractorStatus = "upcoming" | "in_progress" | "completed";
@@ -185,6 +195,8 @@ export interface PropertyFilters {
     companyId?: string;
     houseType?: HouseType;
 }
+export type FinancingMethod = "cash" | "mortgage" | "other";
+export type UrgencyLevel = "browsing" | "3months" | "urgent";
 export interface Reservation {
     id: string;
     propertyType: PropertyType;
@@ -207,6 +219,11 @@ export interface Reservation {
     queuePosition: number | null;
     expiresAt: TimestampLike | null;
     userSnapshot: UserSnapshot;
+    preferredMoveIn?: string;
+    financingMethod?: FinancingMethod;
+    occupants?: number;
+    urgency?: UrgencyLevel;
+    specialRequirements?: string;
     statusHistory: StatusHistoryEntry[];
     createdAt: TimestampLike;
     updatedAt: TimestampLike;
@@ -417,6 +434,18 @@ export interface ContractorApplication {
     updatedAt: TimestampLike;
 }
 export type ContractorApplicationInput = Omit<ContractorApplication, "id" | "createdAt" | "updatedAt">;
+export type BuildingDocumentType = "plan" | "permit" | "contract" | "specification" | "other";
+export interface BuildingDocument {
+    id: string;
+    buildingId: string;
+    name: string;
+    type: BuildingDocumentType;
+    url: string;
+    uploadedBy: string;
+    sharedWithContractors: boolean;
+    sharedWithBuyers: boolean;
+    createdAt: TimestampLike;
+}
 export interface Generate3DRequest {
     flatId: string;
     imageUrl: string;

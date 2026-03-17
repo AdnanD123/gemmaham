@@ -1,14 +1,16 @@
 import { memo } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { AlertTriangle } from "lucide-react";
 import Badge from "./ui/Badge";
 import type { Building } from "@gemmaham/shared";
 
 interface Props {
     building: Building;
+    overdueMilestones?: number;
 }
 
-const BuildingCard = memo(function BuildingCard({ building }: Props) {
+const BuildingCard = memo(function BuildingCard({ building, overdueMilestones }: Props) {
     const { t } = useTranslation();
 
     return (
@@ -53,6 +55,15 @@ const BuildingCard = memo(function BuildingCard({ building }: Props) {
                     <span>{building.floors} {t("buildings.floorsLabel")}</span>
                     <span>·</span>
                     <span>{t("buildings.est")}: {building.estimatedCompletion}</span>
+                    {overdueMilestones != null && overdueMilestones > 0 && (
+                        <>
+                            <span>·</span>
+                            <span className="inline-flex items-center gap-1 text-accent font-medium">
+                                <AlertTriangle size={12} />
+                                {overdueMilestones} {t("milestones.overdue")}
+                            </span>
+                        </>
+                    )}
                 </div>
             </div>
         </Link>

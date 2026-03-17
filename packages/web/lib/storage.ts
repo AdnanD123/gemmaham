@@ -150,6 +150,35 @@ export const uploadPropertyPhoto = async (
   return getDownloadURL(storageRef);
 };
 
+const BUILDING_DOCUMENT_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ...IMAGE_TYPES,
+];
+
+export const uploadBuildingDocument = async (
+  buildingId: string,
+  file: File,
+): Promise<string> => {
+  validateFile(file, 20, BUILDING_DOCUMENT_TYPES);
+  const name = `${Date.now()}-${file.name.replace(/[^a-z0-9._-]/gi, "_")}`;
+  const storageRef = ref(storage, `buildings/${buildingId}/documents/${name}`);
+  await uploadBytes(storageRef, file, { contentType: file.type });
+  return getDownloadURL(storageRef);
+};
+
+export const deleteBuildingDocumentFile = async (
+  buildingId: string,
+  fileName: string,
+): Promise<void> => {
+  const storageRef = ref(storage, `buildings/${buildingId}/documents/${fileName}`);
+  const { deleteObject } = await import("firebase/storage");
+  await deleteObject(storageRef);
+};
+
 function getExtension(file: File): string {
   const parts = file.name.split(".");
   return parts.length > 1 ? parts.pop()!.toLowerCase() : "png";

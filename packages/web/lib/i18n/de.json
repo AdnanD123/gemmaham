@@ -306,7 +306,12 @@
     "startConversationWith": "Starten Sie ein Gespräch mit {{name}}",
     "startConversationHint": "Senden Sie eine Nachricht, um das Gespräch zu beginnen.",
     "viewProperty": "Immobilie ansehen",
-    "addMessagePlaceholder": "Nachricht hinzufügen..."
+    "addMessagePlaceholder": "Nachricht hinzufügen...",
+    "buyers": "Käufer",
+    "contractors": "Auftragnehmer",
+    "regarding": "Betr.:",
+    "with": "Mit:",
+    "unread": "{{count}} ungelesen"
   },
   "reservationCard": {
     "flat": "Wohnung"
@@ -352,7 +357,27 @@
     "userInfo": "Käuferinformationen",
     "timeline": "Status-Zeitleiste",
     "expiresIn": "Läuft in {{days}} Tagen ab",
-    "expired": "Anfrage abgelaufen"
+    "expired": "Anfrage abgelaufen",
+    "additionalInfo": "Zusätzliche Informationen",
+    "preferredMoveIn": "Gewünschtes Einzugsdatum",
+    "financingMethod": "Finanzierungsmethode",
+    "cash": "Barzahlung",
+    "mortgage": "Hypothek",
+    "other": "Sonstiges",
+    "occupants": "Anzahl der Bewohner",
+    "urgency": "Dringlichkeit",
+    "browsing": "Nur stöbern",
+    "within3Months": "Innerhalb von 3 Monaten",
+    "urgent": "Dringend",
+    "specialRequirements": "Besondere Anforderungen",
+    "specialRequirementsPlaceholder": "Besondere Anforderungen oder Barrierefreiheitsbedürfnisse..."
+  },
+  "reservations": {
+    "boardView": "Board-Ansicht",
+    "listView": "Listenansicht",
+    "daysInStatus": "{{count}} Tag im Status",
+    "daysInStatus_other": "{{count}} Tage im Status",
+    "expiringSoon": "Läuft bald ab"
   },
   "visualizer": {
     "exitEditor": "Editor beenden",
@@ -547,7 +572,16 @@
       "noApplicationsFiltered": "Keine {{status}} Bewerbungen.",
       "browseProjects": "Verfügbare Projekte durchsuchen",
       "unknownBuilding": "Unbekanntes Gebäude"
-    }
+    },
+    "publicProfile": "Auftragnehmer-Profil",
+    "contactInfo": "Kontaktinformationen",
+    "specialtiesSection": "Kategorien & Fachgebiete",
+    "projectHistory": "Projekthistorie",
+    "completedProjects": "Abgeschlossene Projekte",
+    "inProgress": "In Bearbeitung",
+    "noProjects": "Noch keine abgeschlossenen Projekte.",
+    "contactContractor": "Auftragnehmer kontaktieren",
+    "memberSince": "Mitglied seit {{date}}"
   },
   "customizations": {
     "options": "Optionen",
@@ -1399,5 +1433,53 @@
     "bathroomsMax": "Maximal 10 Badezimmer",
     "storiesMin": "Muss mindestens 1 Stockwerk haben",
     "storiesMax": "Maximal 10 Stockwerke"
+  },
+  "wizard": {
+    "step": "Schritt {{current}} von {{total}}",
+    "next": "Weiter",
+    "back": "Zurück",
+    "review": "Überprüfen",
+    "publish": "Veröffentlichen",
+    "basicInfo": "Grundinformationen",
+    "specifications": "Spezifikationen",
+    "photos": "Fotos",
+    "reviewPublish": "Überprüfen & Veröffentlichen"
+  },
+  "milestones": {
+    "title": "Bau-Meilensteine",
+    "titleLabel": "Meilenstein-Titel",
+    "add": "Meilenstein hinzufügen",
+    "added": "Meilenstein erfolgreich hinzugefügt",
+    "addFailed": "Meilenstein konnte nicht hinzugefügt werden",
+    "deleted": "Meilenstein gelöscht",
+    "date": "Zieldatum",
+    "phase": "Phase",
+    "description": "Beschreibung",
+    "completed": "Abgeschlossen",
+    "overdue": "Überfällig",
+    "approaching": "Frist nähert sich",
+    "empty": "Noch keine Meilensteine. Fügen Sie Meilensteine hinzu, um den Baufortschritt zu verfolgen.",
+    "daysRemaining": "{{count}} Tag verbleibend",
+    "daysRemaining_other": "{{count}} Tage verbleibend",
+    "today": "Heute",
+    "deleteTitle": "Meilenstein löschen",
+    "deleteMsg": "Sind Sie sicher, dass Sie diesen Meilenstein löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+  },
+  "documents": {
+    "title": "Dokumente",
+    "upload": "Hochladen",
+    "name": "Dokumentname",
+    "type": "Dokumenttyp",
+    "plan": "Plan",
+    "permit": "Genehmigung",
+    "contract": "Vertrag",
+    "specification": "Spezifikation",
+    "other": "Sonstiges",
+    "sharedWithContractors": "Mit Auftragnehmern teilen",
+    "sharedWithBuyers": "Mit Käufern teilen",
+    "download": "Herunterladen",
+    "delete": "Dokument löschen",
+    "empty": "Noch keine Dokumente hochgeladen.",
+    "uploadDocument": "Dokument hochladen"
   }
 }

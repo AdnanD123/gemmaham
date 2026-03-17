@@ -7,9 +7,11 @@ import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
 import Textarea from "../../components/ui/Textarea";
+import Input from "../../components/ui/Input";
+import Select from "../../components/ui/Select";
 import { getHouse, getCompany, createReservation, getUserReservationForProperty, getOrCreateHouseConversation } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
-import type { AuthContext, House, Company } from "@gemmaham/shared";
+import type { AuthContext, House, Company, FinancingMethod, UrgencyLevel } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { PhotoGallery } from "../../components/PhotoGallery";
 
@@ -26,6 +28,11 @@ export default function HouseDetail() {
     const [existingReservation, setExistingReservation] = useState<any>(null);
     const [showReserve, setShowReserve] = useState(false);
     const [notes, setNotes] = useState("");
+    const [preferredMoveIn, setPreferredMoveIn] = useState("");
+    const [financingMethod, setFinancingMethod] = useState<FinancingMethod | "">("");
+    const [occupants, setOccupants] = useState("");
+    const [urgency, setUrgency] = useState<UrgencyLevel | "">("");
+    const [specialRequirements, setSpecialRequirements] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
@@ -54,6 +61,12 @@ export default function HouseDetail() {
         if (!auth.user || !house) return;
         setSubmitting(true);
         try {
+            const userSnapshot = {
+                displayName: auth.user.displayName || "",
+                email: auth.user.email || "",
+                phone: null,
+                photoURL: null,
+            };
             await createReservation(
                 {
                     propertyType: "house",
@@ -64,22 +77,23 @@ export default function HouseDetail() {
                     requestDate: new Date().toISOString(),
                     notes,
                     companyNotes: null,
-                    userSnapshot: {
-                        displayName: auth.user.displayName || "",
-                        email: auth.user.email || "",
-                        phone: null,
-                        photoURL: null,
-                    },
+                    userSnapshot,
+                    ...(preferredMoveIn && { preferredMoveIn }),
+                    ...(financingMethod && { financingMethod }),
+                    ...(occupants && { occupants: parseInt(occupants, 10) }),
+                    ...(urgency && { urgency }),
+                    ...(specialRequirements && { specialRequirements }),
                 },
-                {
-                    displayName: auth.user.displayName || "",
-                    email: auth.user.email || "",
-                    phone: null,
-                    photoURL: null,
-                },
+                userSnapshot,
             );
             addToast("success", t("toast.reservationSent"));
             setShowReserve(false);
+            setNotes("");
+            setPreferredMoveIn("");
+            setFinancingMethod("");
+            setOccupants("");
+            setUrgency("");
+            setSpecialRequirements("");
             const existing = await getUserReservationForProperty(auth.user.uid, "house", house.id);
             setExistingReservation(existing);
         } catch (err) {
@@ -284,6 +298,55 @@ export default function HouseDetail() {
                         onChange={(e) => setNotes(e.target.value)}
                         placeholder={t("flats.notesPlaceholder")}
                     />
+
+                    {/* Additional Information */}
+                    <div className="border-t border-foreground/6 pt-4 mt-4">
+                        <p className="text-sm font-medium mb-3">{t("reservation.additionalInfo")}</p>
+                        <div className="space-y-3">
+                            <Input
+                                label={t("reservation.preferredMoveIn")}
+                                type="date"
+                                value={preferredMoveIn}
+                                onChange={(e) => setPreferredMoveIn(e.target.value)}
+                            />
+                            <Select
+                                label={t("reservation.financingMethod")}
+                                value={financingMethod}
+                                onChange={(e) => setFinancingMethod(e.target.value as FinancingMethod | "")}
+                                options={[
+                                    { value: "", label: "—" },
+                                    { value: "cash", label: t("reservation.cash") },
+                                    { value: "mortgage", label: t("reservation.mortgage") },
+                                    { value: "other", label: t("reservation.other") },
+                                ]}
+                            />
+                            <Input
+                                label={t("reservation.occupants")}
+                                type="number"
+                                min={1}
+                                value={occupants}
+                                onChange={(e) => setOccupants(e.target.value)}
+                            />
+                            <Select
+                                label={t("reservation.urgency")}
+                                value={urgency}
+                                onChange={(e) => setUrgency(e.target.value as UrgencyLevel | "")}
+                                options={[
+                                    { value: "", label: "—" },
+                                    { value: "browsing", label: t("reservation.browsing") },
+                                    { value: "3months", label: t("reservation.within3Months") },
+                                    { value: "urgent", label: t("reservation.urgent") },
+                                ]}
+                            />
+                            <Textarea
+                                label={t("reservation.specialRequirements")}
+                                placeholder={t("reservation.specialRequirementsPlaceholder")}
+                                value={specialRequirements}
+                                onChange={(e) => setSpecialRequirements(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
                     <div className="flex gap-2 mt-4">
                         <Button onClick={handleReserve} disabled={submitting}>
                             {submitting ? t("flats.sending") : t("flats.confirmReservation")}
