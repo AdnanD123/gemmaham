@@ -1,5 +1,8 @@
+import { useEffect } from "react";
 import { useOutletContext, Navigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import { Loader2 } from "lucide-react";
+import { useToast } from "../lib/contexts/ToastContext";
 import type { AuthContext, UserRole } from "@gemmaham/shared";
 
 const EMAIL_VERIFICATION_REQUIRED = import.meta.env.VITE_EMAIL_VERIFICATION === "true";
@@ -12,6 +15,18 @@ interface RoleGuardProps {
 
 export default function RoleGuard({ children, allowedRole, redirectTo = "/" }: RoleGuardProps) {
     const { user, role, loading, profileCompleted } = useOutletContext<AuthContext>();
+    const { addToast } = useToast();
+    const { t } = useTranslation();
+
+    const allowed = !loading && user && role
+        ? (Array.isArray(allowedRole) ? allowedRole.includes(role) : role === allowedRole)
+        : true;
+
+    useEffect(() => {
+        if (!loading && user && profileCompleted && !allowed) {
+            addToast("error", t("errors.noPermission"));
+        }
+    }, [loading, user, profileCompleted, allowed]);
 
     if (loading) {
         return (
@@ -33,7 +48,6 @@ export default function RoleGuard({ children, allowedRole, redirectTo = "/" }: R
         return <Navigate to="/profile/setup" replace />;
     }
 
-    const allowed = Array.isArray(allowedRole) ? allowedRole.includes(role!) : role === allowedRole;
     if (!allowed) {
         return <Navigate to={redirectTo} replace />;
     }

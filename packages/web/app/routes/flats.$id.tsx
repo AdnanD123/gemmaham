@@ -20,6 +20,7 @@ import {
 import { useToast } from "../../lib/contexts/ToastContext";
 import { SkeletonBlock, SkeletonLine } from "../../components/ui/Skeleton";
 import type { AuthContext, Flat, Company, Building, CustomizationOption, Contractor, CustomizationRequest, Reservation, FinancingMethod, UrgencyLevel } from "@gemmaham/shared";
+import { toMillis } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { PhotoGallery } from "../../components/PhotoGallery";
 
@@ -553,6 +554,11 @@ export default function FlatDetail() {
                                                 {isInteractive && isNonDefault && auth.user && auth.role === "user" && (
                                                     <div className="mt-3 pt-3 border-t border-foreground/6">
                                                         {userReservation && ["approved", "reserved"].includes(userReservation.status) ? (
+                                                            userReservation.expiresAt && toMillis(userReservation.expiresAt) < Date.now() ? (
+                                                                <p className="text-xs text-accent font-medium">
+                                                                    {t("flats.reservationExpired")}
+                                                                </p>
+                                                            ) : (
                                                             <Button
                                                                 variant="ghost"
                                                                 className="text-sm"
@@ -561,6 +567,7 @@ export default function FlatDetail() {
                                                                 <Palette size={14} className="mr-1.5" />
                                                                 {t("flatCustomization.requestChange")}
                                                             </Button>
+                                                            )
                                                         ) : (
                                                             <p className="text-xs text-foreground/40">
                                                                 {t("flats.reserveToCustomize")}
@@ -681,7 +688,7 @@ export default function FlatDetail() {
                                     {userReservation ? (
                                         <>
                                             <div className="p-3 bg-foreground/5 rounded-lg text-center">
-                                                <Badge variant={userReservation.status as any}>
+                                                <Badge variant={userReservation.status}>
                                                     {t(`reservation.status.${userReservation.status}`)}
                                                 </Badge>
                                                 <p className="text-xs text-foreground/50 mt-1">
@@ -703,6 +710,20 @@ export default function FlatDetail() {
                                         </Button>
                                     )}
                                     <Button className="w-full" variant="ghost" onClick={handleMessage}>{t("flats.messageCompany")}</Button>
+                                </div>
+                            )}
+
+                            {flat.status === "reserved" && (
+                                <div className="mt-6 p-3 bg-foreground/5 rounded-lg text-center space-y-1">
+                                    <Badge variant="reserved">{t("filters.reserved")}</Badge>
+                                    <p className="text-sm text-foreground/50">{t("flats.statusReserved")}</p>
+                                </div>
+                            )}
+
+                            {flat.status === "sold" && (
+                                <div className="mt-6 p-3 bg-foreground/5 rounded-lg text-center space-y-1">
+                                    <Badge variant="sold">{t("filters.sold")}</Badge>
+                                    <p className="text-sm text-foreground/50">{t("flats.statusSold")}</p>
                                 </div>
                             )}
 

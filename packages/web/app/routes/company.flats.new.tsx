@@ -28,6 +28,7 @@ export default function CompanyAddFlat() {
     const [floorPlanFile, setFloorPlanFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [photos, setPhotos] = useState<string[]>([]);
+    const [photoUploading, setPhotoUploading] = useState(false);
     const [buildings, setBuildings] = useState<Building[]>([]);
     const [currentStep, setCurrentStep] = useState(0);
     const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
@@ -63,6 +64,12 @@ export default function CompanyAddFlat() {
             }
         })();
     }, [auth.companyId]);
+
+    useEffect(() => {
+        const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+        if (hasDraft) window.addEventListener("beforeunload", handler);
+        return () => window.removeEventListener("beforeunload", handler);
+    }, [hasDraft]);
 
     const updateField = (field: string, value: string | boolean) => {
         setDraftField(field, value);
@@ -358,6 +365,7 @@ export default function CompanyAddFlat() {
                             photos={photos}
                             onChange={setPhotos}
                             storagePath={`properties/flats/photos`}
+                            onUploadingChange={setPhotoUploading}
                         />
                     </div>
                 );
@@ -427,7 +435,7 @@ export default function CompanyAddFlat() {
                             <Button
                                 type="button"
                                 onClick={handleSubmit}
-                                disabled={submitting || !floorPlanFile}
+                                disabled={submitting || !floorPlanFile || photoUploading}
                             >
                                 {submitting ? t("company.creating") : t("wizard.publish")}
                             </Button>
@@ -459,6 +467,7 @@ export default function CompanyAddFlat() {
                                 onNext={handleNext}
                                 onBack={handleBack}
                                 isLastStep={currentStep === 3}
+                                nextDisabled={currentStep === 2 && photoUploading}
                             >
                                 {renderStep()}
                             </FormWizard>

@@ -1,4 +1,4 @@
-import { onRequest } from "firebase-functions/v2/https";
+import { onRequest, HttpsError } from "firebase-functions/v2/https";
 import { getStorage } from "firebase-admin/storage";
 import { getFirestore } from "firebase-admin/firestore";
 import { VertexAI } from "@google-cloud/vertexai";
@@ -73,19 +73,27 @@ export const generate3DView = onRequest(
       return;
     }
 
-    // Rate limiting: max renders per user per day
+    // Rate limiting: max renders per user per day (transactional to prevent race conditions)
     const db = getFirestore();
     const today = new Date().toISOString().split("T")[0];
     const rateLimitRef = db.collection("rateLimits").doc(`render_${uid}_${today}`);
-    const rateLimitSnap = await rateLimitRef.get();
-    const currentCount = rateLimitSnap.exists ? (rateLimitSnap.data()?.count ?? 0) : 0;
 
-    if (currentCount >= MAX_RENDERS_PER_DAY) {
-      res.status(429).json({ error: `Daily render limit (${MAX_RENDERS_PER_DAY}) reached. Try again tomorrow.` });
-      return;
+    try {
+      await db.runTransaction(async (txn) => {
+        const snap = await txn.get(rateLimitRef);
+        const count = snap.data()?.count ?? 0;
+        if (count >= MAX_RENDERS_PER_DAY) {
+          throw new HttpsError("resource-exhausted", `Daily render limit (${MAX_RENDERS_PER_DAY}) reached. Try again tomorrow.`);
+        }
+        txn.set(rateLimitRef, { count: count + 1, uid, date: today }, { merge: true });
+      });
+    } catch (error: any) {
+      if (error instanceof HttpsError || error?.code === "resource-exhausted" || error?.message?.includes("Daily render limit")) {
+        res.status(429).json({ error: `Daily render limit (${MAX_RENDERS_PER_DAY}) reached. Try again tomorrow.` });
+        return;
+      }
+      throw error;
     }
-
-    await rateLimitRef.set({ count: currentCount + 1, uid, date: today }, { merge: true });
 
     try {
       // Download the floor plan image
@@ -193,6 +201,16 @@ export const generate3DView = onRequest(
       // Check for rate limiting
       if (error?.status === 429 || error?.code === 429) {
         res.status(429).json({ error: "AI rate limit reached. Please wait a moment and try again." });
+        return;
+      }
+      // Check for timeout
+      if (error?.code === "DEADLINE_EXCEEDED" || error?.message?.includes("timeout") || error?.message?.includes("DEADLINE_EXCEEDED")) {
+        res.status(504).json({ error: "AI generation timed out. Try a simpler floor plan or try again later." });
+        return;
+      }
+      // Check for blocked content
+      if (error?.message?.includes("SAFETY") || error?.message?.includes("blocked")) {
+        res.status(422).json({ error: "Content was blocked by safety filters. Try a different floor plan." });
         return;
       }
       res.status(500).json({ error: "Generation failed. Please try again." });

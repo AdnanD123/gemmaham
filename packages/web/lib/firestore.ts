@@ -626,7 +626,7 @@ export const getOrCreateBuildingConversation = async (
   }
 
   const ref = await addDoc(collection(db, "conversations"), {
-    propertyType: null,
+    propertyType: "building",
     flatId: null,
     buildingId,
     houseId: null,
@@ -940,6 +940,16 @@ export const updateContractor = async (
   data: Partial<ContractorInput>,
 ): Promise<void> => {
   await updateDoc(doc(db, "buildings", buildingId, "contractors", contractorId), data);
+};
+
+export const updateContractorPaymentStatus = async (
+  buildingId: string,
+  contractorId: string,
+  received: boolean,
+): Promise<void> => {
+  await updateDoc(doc(db, "buildings", buildingId, "contractors", contractorId), {
+    paymentReceived: received,
+  });
 };
 
 export const updateContractorProgress = async (

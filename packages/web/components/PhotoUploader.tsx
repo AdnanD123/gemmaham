@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Upload, X, ImageIcon } from "lucide-react";
 import { uploadPropertyPhoto } from "../lib/storage";
@@ -7,13 +7,18 @@ interface PhotoUploaderProps {
   photos: string[];
   onChange: (photos: string[]) => void;
   storagePath: string;
+  onUploadingChange?: (uploading: boolean) => void;
 }
 
-export const PhotoUploader = ({ photos, onChange, storagePath }: PhotoUploaderProps) => {
+export const PhotoUploader = ({ photos, onChange, storagePath, onUploadingChange }: PhotoUploaderProps) => {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    onUploadingChange?.(uploading);
+  }, [uploading, onUploadingChange]);
 
   const maxPhotos = 5;
   const remaining = maxPhotos - photos.length;

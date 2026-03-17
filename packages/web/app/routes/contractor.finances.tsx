@@ -9,6 +9,8 @@ import DashboardSkeleton from "../../components/skeletons/DashboardSkeleton";
 import { ContentLoader } from "../../components/ui/ContentLoader";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { useContractor } from "../../lib/hooks/useContractor";
+import { updateContractorPaymentStatus } from "../../lib/firestore";
+import { useToast } from "../../lib/contexts/ToastContext";
 import { format } from "date-fns";
 import type { AuthContext, Contractor } from "@gemmaham/shared";
 import { toMillis } from "@gemmaham/shared";
@@ -24,27 +26,44 @@ interface EarningsRow {
     currency: string;
     status: string;
     endDate: Contractor["endDate"];
+    paymentReceived?: boolean;
 }
 
 export default function ContractorFinances() {
     const { t } = useTranslation();
     const auth = useOutletContext<AuthContext>();
     const { assignments, loading } = useContractor(auth.user?.uid);
+    const { addToast } = useToast();
 
-    // Track payment status client-side (keyed by assignment id)
+    // Track payment status client-side (keyed by assignment id), initialized from Firestore data
     const [paymentStatuses, setPaymentStatuses] = useState<Record<string, PaymentStatus>>({});
 
     const getPaymentStatus = useCallback(
-        (id: string): PaymentStatus => paymentStatuses[id] ?? "pending",
+        (id: string, serverValue?: boolean): PaymentStatus => {
+            if (id in paymentStatuses) return paymentStatuses[id];
+            return serverValue ? "received" : "pending";
+        },
         [paymentStatuses],
     );
 
-    const togglePaymentStatus = useCallback((id: string) => {
+    const togglePaymentStatus = useCallback(async (row: EarningsRow) => {
+        const current = getPaymentStatus(row.id, row.paymentReceived);
+        const newStatus: PaymentStatus = current === "received" ? "pending" : "received";
         setPaymentStatuses((prev) => ({
             ...prev,
-            [id]: prev[id] === "received" ? "pending" : "received",
+            [row.id]: newStatus,
         }));
-    }, []);
+        try {
+            await updateContractorPaymentStatus(row.buildingId, row.id, newStatus === "received");
+        } catch {
+            // Revert on failure
+            setPaymentStatuses((prev) => ({
+                ...prev,
+                [row.id]: current,
+            }));
+            addToast("error", t("errors.loadFailed"));
+        }
+    }, [getPaymentStatus, addToast, t]);
 
     const completed = assignments.filter((a) => a.status === "completed");
     const inProgress = assignments.filter((a) => a.status === "in_progress");
@@ -70,6 +89,7 @@ export default function ContractorFinances() {
             currency: a.currency,
             status: a.status,
             endDate: a.endDate,
+            paymentReceived: (a as Record<string, unknown>).paymentReceived as boolean | undefined,
         }));
 
     const formatDate = (ts: Contractor["endDate"]): string => {
@@ -152,14 +172,14 @@ export default function ContractorFinances() {
                                                             <td className="p-3">
                                                                 {row.status === "completed" ? (
                                                                     <button
-                                                                        onClick={() => togglePaymentStatus(row.id)}
+                                                                        onClick={() => togglePaymentStatus(row)}
                                                                         className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
-                                                                            getPaymentStatus(row.id) === "received"
+                                                                            getPaymentStatus(row.id, row.paymentReceived) === "received"
                                                                                 ? "bg-green-100 text-green-700"
                                                                                 : "bg-amber-100 text-amber-700 hover:bg-amber-200"
                                                                         }`}
                                                                     >
-                                                                        {getPaymentStatus(row.id) === "received"
+                                                                        {getPaymentStatus(row.id, row.paymentReceived) === "received"
                                                                             ? t("finances.received")
                                                                             : t("finances.markReceived")}
                                                                     </button>

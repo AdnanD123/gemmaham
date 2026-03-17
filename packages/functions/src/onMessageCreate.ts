@@ -13,10 +13,13 @@ export const onMessageCreate = onDocumentCreated(
 
     const conversationRef = db.collection("conversations").doc(conversationId);
     const conversation = await conversationRef.get();
-    if (!conversation.exists) return;
+    if (!conversation.exists) {
+      console.error(`Conversation ${conversationId} not found for message ${event.params.messageId}`);
+      return;
+    }
 
     const convData = conversation.data()!;
-    const senderRole = message.senderRole as "company" | "user";
+    const senderRole = message.senderRole as "company" | "user" | "contractor";
 
     // Update conversation metadata
     const lastMessage = message.type === "card" && message.cardData?.title
@@ -36,5 +39,42 @@ export const onMessageCreate = onDocumentCreated(
     }
 
     await conversationRef.update(updateData);
+
+    // Create notification for the recipient
+    try {
+      let recipientId: string | null = null;
+      if (senderRole === "user") {
+        // Notify company owner
+        const companySnap = await db.collection("companies").doc(convData.companyId).get();
+        if (companySnap.exists) {
+          recipientId = companySnap.data()!.ownerId;
+        }
+      } else {
+        // Sender is company or contractor — notify the user
+        recipientId = convData.userId;
+      }
+
+      if (recipientId) {
+        const messagePreview = lastMessage.length > 80
+          ? lastMessage.substring(0, 80) + "..."
+          : lastMessage;
+
+        await db
+          .collection("users")
+          .doc(recipientId)
+          .collection("notifications")
+          .add({
+            userId: recipientId,
+            type: "new_message",
+            title: "New message",
+            message: messagePreview,
+            linkTo: `/conversations/${conversationId}`,
+            read: false,
+            createdAt: FieldValue.serverTimestamp(),
+          });
+      }
+    } catch (error) {
+      console.error("Failed to create message notification:", error);
+    }
   }
 );

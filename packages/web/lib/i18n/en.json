@@ -114,7 +114,10 @@
     "queuePosition": "You are #{{position}} of {{total}} interested buyers",
     "reserveToCustomize": "Reserve this flat to request customizations",
     "requestPending": "Request Pending",
-    "requestApproved": "Request Approved"
+    "requestApproved": "Request Approved",
+    "reservationExpired": "Your reservation has expired",
+    "statusReserved": "This property is currently reserved",
+    "statusSold": "This property has been sold"
   },
   "filters": {
     "status": "Status",
@@ -787,7 +790,11 @@
     "reserveConfirm": "You're expressing interest in <strong>{{title}}</strong> listed at <strong>{{currency}} {{price}}</strong>.",
     "alreadyRequested": "You have already submitted a reservation request.",
     "notAvailable": "This house is currently not available for reservation.",
-    "messageFailed": "Failed to start conversation"
+    "messageFailed": "Failed to start conversation",
+    "sending": "Sending...",
+    "confirmReservation": "Submit Request",
+    "statusReserved": "This property is currently reserved",
+    "statusSold": "This property has been sold"
   },
   "charts": {
     "revenue": "Revenue",
@@ -900,7 +907,8 @@
     "unexpectedError": "An unexpected error occurred.",
     "loadFailed": "Failed to load data. Please try again.",
     "fileTooLarge": "File is too large. Maximum size is {{max}} MB.",
-    "invalidFileType": "Invalid file type. Allowed: {{types}}."
+    "invalidFileType": "Invalid file type. Allowed: {{types}}.",
+    "noPermission": "You don't have permission to access this page"
   },
   "contractorCategories": {
     "label": "Service Categories",
@@ -1557,5 +1565,13 @@
     "minutesAgo": "{{count}} min ago",
     "hoursAgo": "{{count}}h ago",
     "daysAgo": "{{count}}d ago"
+  },
+  "onboarding": {
+    "step1Title": "Create your first building",
+    "step1Desc": "Add a building to start managing your properties",
+    "step2Title": "Add flats or houses",
+    "step2Desc": "List properties for buyers to browse and reserve",
+    "step3Title": "Configure customization options",
+    "step3Desc": "Let buyers personalize their units with custom finishes"
   }
 }

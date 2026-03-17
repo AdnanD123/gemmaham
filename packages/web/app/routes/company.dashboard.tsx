@@ -338,7 +338,7 @@ export default function CompanyDashboard() {
                                                         <tr key={p.id} className="border-b border-foreground/5 hover:bg-foreground/2 transition-colors">
                                                             <td className="p-3 font-medium">{p.title}</td>
                                                             <td className="p-3 capitalize">{p.type}</td>
-                                                            <td className="p-3"><Badge variant={p.status as any}>{p.status}</Badge></td>
+                                                            <td className="p-3"><Badge variant={p.status}>{p.status}</Badge></td>
                                                             <td className="p-3 text-right font-medium">{p.currency} {p.price.toLocaleString()}</td>
                                                         </tr>
                                                     ))}
@@ -348,13 +348,35 @@ export default function CompanyDashboard() {
                                     </div>
                                 )}
 
-                                {/* Empty state */}
+                                {/* Empty state — onboarding checklist */}
                                 {stats.buildings === 0 && stats.flats === 0 && stats.houses === 0 && (
-                                    <div className="text-center py-8 bg-surface rounded-2xl border border-foreground/6">
-                                        <p className="text-foreground/50 mb-4">{t("company.getStartedDesc")}</p>
-                                        <Link to="/company/buildings/new">
-                                            <Button>{t("buildings.addFirstBuilding")}</Button>
-                                        </Link>
+                                    <div className="py-8 bg-surface rounded-2xl border border-foreground/6">
+                                        <p className="text-center text-foreground/50 mb-6">{t("company.getStartedDesc")}</p>
+                                        <div className="max-w-md mx-auto space-y-4 px-6">
+                                            <Link to="/company/buildings/new" className="flex items-center gap-4 p-4 rounded-xl border border-foreground/6 hover:border-primary/30 transition-colors group">
+                                                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">1</div>
+                                                <div className="min-w-0">
+                                                    <p className="font-semibold text-sm group-hover:text-primary transition-colors">{t("onboarding.step1Title")}</p>
+                                                    <p className="text-xs text-foreground/50">{t("onboarding.step1Desc")}</p>
+                                                </div>
+                                                <ChevronRight className="w-4 h-4 text-foreground/30 group-hover:text-primary transition-colors shrink-0" />
+                                            </Link>
+                                            <Link to="/company/properties" className="flex items-center gap-4 p-4 rounded-xl border border-foreground/6 hover:border-primary/30 transition-colors group">
+                                                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">2</div>
+                                                <div className="min-w-0">
+                                                    <p className="font-semibold text-sm group-hover:text-primary transition-colors">{t("onboarding.step2Title")}</p>
+                                                    <p className="text-xs text-foreground/50">{t("onboarding.step2Desc")}</p>
+                                                </div>
+                                                <ChevronRight className="w-4 h-4 text-foreground/30 group-hover:text-primary transition-colors shrink-0" />
+                                            </Link>
+                                            <div className="flex items-center gap-4 p-4 rounded-xl border border-foreground/6 opacity-60">
+                                                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-foreground/5 text-foreground/40 font-bold text-sm shrink-0">3</div>
+                                                <div className="min-w-0">
+                                                    <p className="font-semibold text-sm">{t("onboarding.step3Title")}</p>
+                                                    <p className="text-xs text-foreground/50">{t("onboarding.step3Desc")}</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                         </ContentLoader>

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Info, SlidersHorizontal, Camera, ClipboardCheck } from "lucide-react";
@@ -51,6 +51,7 @@ export default function CompanyAddHouse() {
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
     const [floorPlanPreview, setFloorPlanPreview] = useState<string | null>(null);
     const [photos, setPhotos] = useState<string[]>([]);
+    const [photoUploading, setPhotoUploading] = useState(false);
     const { errors: fieldErrors, validate, clearError } = useFormValidation(houseSchema);
 
     const { values: form, setValue: setDraftField, hasDraft, draftSavedAt, clearDraft, discardDraft, setAllValues: setForm } = useFormDraft("draft-house-new", {
@@ -74,6 +75,12 @@ export default function CompanyAddHouse() {
         yearBuilt: "",
         featured: false,
     });
+
+    useEffect(() => {
+        const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+        if (hasDraft) window.addEventListener("beforeunload", handler);
+        return () => window.removeEventListener("beforeunload", handler);
+    }, [hasDraft]);
 
     const updateField = (field: string, value: string | boolean) => {
         setDraftField(field, value);
@@ -408,6 +415,7 @@ export default function CompanyAddHouse() {
                             photos={photos}
                             onChange={setPhotos}
                             storagePath={`properties/houses/new/photos`}
+                            onUploadingChange={setPhotoUploading}
                         />
                     </div>
                 );
@@ -482,7 +490,7 @@ export default function CompanyAddHouse() {
                             <Button
                                 type="button"
                                 onClick={handleSubmit}
-                                disabled={submitting}
+                                disabled={submitting || photoUploading}
                             >
                                 {submitting ? t("common.saving") : t("wizard.publish")}
                             </Button>
@@ -513,6 +521,7 @@ export default function CompanyAddHouse() {
                             onNext={handleNext}
                             onBack={handleBack}
                             isLastStep={currentStep === 3}
+                            nextDisabled={currentStep === 2 && photoUploading}
                         >
                             {renderStep()}
                         </FormWizard>

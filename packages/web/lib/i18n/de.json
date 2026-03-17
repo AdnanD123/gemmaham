@@ -113,7 +113,10 @@
     "queuePosition": "Sie sind #{{position}} von {{total}} interessierten Käufern",
     "reserveToCustomize": "Reservieren Sie diese Wohnung, um Anpassungen anzufragen",
     "requestPending": "Anfrage ausstehend",
-    "requestApproved": "Anfrage genehmigt"
+    "requestApproved": "Anfrage genehmigt",
+    "reservationExpired": "Ihre Reservierung ist abgelaufen",
+    "statusReserved": "Diese Immobilie ist derzeit reserviert",
+    "statusSold": "Diese Immobilie wurde verkauft"
   },
   "filters": {
     "status": "Status",
@@ -773,7 +776,11 @@
     "reserveConfirm": "Sie bekunden Interesse an <strong>{{title}}</strong> zum Preis von <strong>{{currency}} {{price}}</strong>.",
     "alreadyRequested": "Sie haben bereits eine Reservierungsanfrage gestellt.",
     "notAvailable": "Dieses Haus ist derzeit nicht zur Reservierung verfügbar.",
-    "messageFailed": "Gespräch konnte nicht gestartet werden"
+    "messageFailed": "Gespräch konnte nicht gestartet werden",
+    "sending": "Wird gesendet...",
+    "confirmReservation": "Anfrage senden",
+    "statusReserved": "Diese Immobilie ist derzeit reserviert",
+    "statusSold": "Diese Immobilie wurde verkauft"
   },
   "charts": {
     "revenue": "Umsatz",
@@ -886,7 +893,8 @@
     "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten.",
     "loadFailed": "Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
     "fileTooLarge": "Datei ist zu groß. Maximale Größe: {{max}} MB.",
-    "invalidFileType": "Ungültiger Dateityp. Erlaubt: {{types}}."
+    "invalidFileType": "Ungültiger Dateityp. Erlaubt: {{types}}.",
+    "noPermission": "Sie haben keine Berechtigung, auf diese Seite zuzugreifen"
   },
   "contractorCategories": {
     "label": "Leistungskategorien",
@@ -1519,5 +1527,13 @@
     "minutesAgo": "vor {{count}} Min",
     "hoursAgo": "vor {{count}} Std",
     "daysAgo": "vor {{count}} T"
+  },
+  "onboarding": {
+    "step1Title": "Erstellen Sie Ihr erstes Gebäude",
+    "step1Desc": "Fügen Sie ein Gebäude hinzu, um Ihre Immobilien zu verwalten",
+    "step2Title": "Wohnungen oder Häuser hinzufügen",
+    "step2Desc": "Listen Sie Immobilien auf, die Käufer durchsuchen und reservieren können",
+    "step3Title": "Anpassungsoptionen konfigurieren",
+    "step3Desc": "Lassen Sie Käufer ihre Einheiten mit individuellen Ausstattungen personalisieren"
   }
 }

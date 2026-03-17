@@ -63,19 +63,23 @@ export const onReservationUpdate = onDocumentUpdated(
 
       // Send rejection notifications outside the transaction (idempotent)
       for (const target of rejectedUsers) {
-        await db
-          .collection("users")
-          .doc(target.userId)
-          .collection("notifications")
-          .add({
-            userId: target.userId,
-            type: "reservation_status",
-            title: "Reservation request rejected",
-            message: `Your request for ${flatTitle} was not selected. Another buyer was chosen.`,
-            linkTo: "/user/reservations",
-            read: false,
-            createdAt: FieldValue.serverTimestamp(),
-          });
+        try {
+          await db
+            .collection("users")
+            .doc(target.userId)
+            .collection("notifications")
+            .add({
+              userId: target.userId,
+              type: "reservation_status",
+              title: "Reservation request rejected",
+              message: `Your request for ${flatTitle} was not selected. Another buyer was chosen.`,
+              linkTo: "/user/reservations",
+              read: false,
+              createdAt: FieldValue.serverTimestamp(),
+            });
+        } catch (error) {
+          console.error(`Failed to send rejection notification to user ${target.userId}:`, error);
+        }
       }
     }
 
@@ -109,19 +113,23 @@ export const onReservationUpdate = onDocumentUpdated(
     };
 
     if (statusMessages[newStatus]) {
-      await db
-        .collection("users")
-        .doc(after.userId)
-        .collection("notifications")
-        .add({
-          userId: after.userId,
-          type: "reservation_status",
-          title: `Reservation ${newStatus}`,
-          message: statusMessages[newStatus],
-          linkTo: "/user/reservations",
-          read: false,
-          createdAt: FieldValue.serverTimestamp(),
-        });
+      try {
+        await db
+          .collection("users")
+          .doc(after.userId)
+          .collection("notifications")
+          .add({
+            userId: after.userId,
+            type: "reservation_status",
+            title: `Reservation ${newStatus}`,
+            message: statusMessages[newStatus],
+            linkTo: "/user/reservations",
+            read: false,
+            createdAt: FieldValue.serverTimestamp(),
+          });
+      } catch (error) {
+        console.error(`Failed to send status notification to user ${after.userId} for status ${newStatus}:`, error);
+      }
     }
   },
 );

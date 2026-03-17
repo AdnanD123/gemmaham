@@ -2,7 +2,7 @@ import { onSchedule } from "firebase-functions/v2/scheduler";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 
 export const expireReservations = onSchedule(
-  { schedule: "every 24 hours", timeZone: "UTC" },
+  { schedule: "0 2 * * *", timeZone: "UTC" },
   async () => {
     const db = getFirestore();
     const now = new Date().toISOString();

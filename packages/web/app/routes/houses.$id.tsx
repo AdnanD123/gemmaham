@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useOutletContext, useNavigate, Link } from "react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import { ArrowLeft, Bed, Bath, Maximize, LandPlot, Layers, Car, TreePine, Waves } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import Badge from "../../components/ui/Badge";
@@ -114,7 +114,7 @@ export default function HouseDetail() {
             );
             navigate(`/user/messages/${convId}`);
         } catch (err) {
-            addToast("error", "Failed to start conversation");
+            addToast("error", t("houses.messageFailed"));
         }
     };
 
@@ -170,7 +170,7 @@ export default function HouseDetail() {
                 <div className="flex items-center gap-3 mb-2">
                     <h1 className="font-serif text-3xl font-bold">{house.title}</h1>
                     <Badge variant={house.status}>{house.status}</Badge>
-                    <Badge variant={house.houseType as any}>{house.houseType.replace("_", " ")}</Badge>
+                    <Badge variant={house.houseType}>{house.houseType.replace("_", " ")}</Badge>
                 </div>
 
                 <p className="text-foreground/50 mb-4">{house.address}</p>
@@ -268,11 +268,21 @@ export default function HouseDetail() {
                 <div className="flex gap-3">
                     {auth.user && auth.role === "user" ? (
                         existingReservation ? (
-                            <Badge variant={existingReservation.status as any} className="text-sm px-4 py-2">
+                            <Badge variant={existingReservation.status} className="text-sm px-4 py-2">
                                 {t(`reservation.status.${existingReservation.status}`)}
                             </Badge>
                         ) : house.status === "available" ? (
                             <Button onClick={() => setShowReserve(true)}>{t("houses.reserveHouse")}</Button>
+                        ) : house.status === "reserved" ? (
+                            <div className="flex items-center gap-2">
+                                <Badge variant="reserved">{t("filters.reserved")}</Badge>
+                                <span className="text-sm text-foreground/50">{t("houses.statusReserved")}</span>
+                            </div>
+                        ) : house.status === "sold" ? (
+                            <div className="flex items-center gap-2">
+                                <Badge variant="sold">{t("filters.sold")}</Badge>
+                                <span className="text-sm text-foreground/50">{t("houses.statusSold")}</span>
+                            </div>
                         ) : null
                     ) : !auth.user ? (
                         <Link to="/auth/login">
@@ -290,7 +300,11 @@ export default function HouseDetail() {
             {showReserve && (
                 <Modal onClose={() => setShowReserve(false)} title={t("houses.reserveHouse")}>
                     <p className="text-sm text-foreground/60 mb-4">
-                        You're expressing interest in <strong>{house.title}</strong> listed at <strong>{house.currency} {house.price.toLocaleString()}</strong>.
+                        <Trans
+                            i18nKey="houses.reserveConfirm"
+                            values={{ title: house.title, currency: house.currency, price: house.price.toLocaleString() }}
+                            components={{ strong: <strong /> }}
+                        />
                     </p>
                     <Textarea
                         label={t("flats.notesOptional")}
@@ -349,7 +363,7 @@ export default function HouseDetail() {
 
                     <div className="flex gap-2 mt-4">
                         <Button onClick={handleReserve} disabled={submitting}>
-                            {submitting ? t("flats.sending") : t("flats.confirmReservation")}
+                            {submitting ? t("houses.sending") : t("houses.confirmReservation")}
                         </Button>
                         <Button variant="ghost" onClick={() => setShowReserve(false)}>{t("common.cancel")}</Button>
                     </div>

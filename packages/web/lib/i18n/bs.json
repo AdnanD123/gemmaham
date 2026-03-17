@@ -113,7 +113,10 @@
     "queuePosition": "Vi ste #{{position}} od {{total}} zainteresovanih kupaca",
     "reserveToCustomize": "Rezervišite ovaj stan da biste zatražili prilagodbe",
     "requestPending": "Zahtjev na čekanju",
-    "requestApproved": "Zahtjev odobren"
+    "requestApproved": "Zahtjev odobren",
+    "reservationExpired": "Vaša rezervacija je istekla",
+    "statusReserved": "Ova nekretnina je trenutno rezervisana",
+    "statusSold": "Ova nekretnina je prodana"
   },
   "filters": {
     "status": "Status",
@@ -773,7 +776,11 @@
     "reserveConfirm": "Izražavate interes za <strong>{{title}}</strong> po cijeni <strong>{{currency}} {{price}}</strong>.",
     "alreadyRequested": "Već ste poslali zahtjev za rezervaciju.",
     "notAvailable": "Ova kuća trenutno nije dostupna za rezervaciju.",
-    "messageFailed": "Neuspješno pokretanje razgovora"
+    "messageFailed": "Neuspješno pokretanje razgovora",
+    "sending": "Slanje...",
+    "confirmReservation": "Pošalji zahtjev",
+    "statusReserved": "Ova nekretnina je trenutno rezervisana",
+    "statusSold": "Ova nekretnina je prodana"
   },
   "charts": {
     "revenue": "Prihod",
@@ -886,7 +893,8 @@
     "unexpectedError": "Došlo je do neočekivane greške.",
     "loadFailed": "Učitavanje podataka nije uspjelo. Pokušajte ponovo.",
     "fileTooLarge": "Datoteka je prevelika. Maksimalna veličina je {{max}} MB.",
-    "invalidFileType": "Nevažeći tip datoteke. Dozvoljeno: {{types}}."
+    "invalidFileType": "Nevažeći tip datoteke. Dozvoljeno: {{types}}.",
+    "noPermission": "Nemate dozvolu za pristup ovoj stranici"
   },
   "contractorCategories": {
     "label": "Kategorije usluga",
@@ -1519,5 +1527,13 @@
     "minutesAgo": "prije {{count}} min",
     "hoursAgo": "prije {{count}}h",
     "daysAgo": "prije {{count}}d"
+  },
+  "onboarding": {
+    "step1Title": "Kreirajte svoju prvu zgradu",
+    "step1Desc": "Dodajte zgradu da počnete upravljati nekretninama",
+    "step2Title": "Dodajte stanove ili kuće",
+    "step2Desc": "Objavite nekretnine koje kupci mogu pregledati i rezervisati",
+    "step3Title": "Konfigurirajte opcije prilagodbe",
+    "step3Desc": "Omogućite kupcima da personaliziraju svoje jedinice"
   }
 }

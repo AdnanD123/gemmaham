@@ -30,26 +30,30 @@ export const onReservationCreate = onDocumentCreated(
     });
 
     // Create notification for the company owner (outside transaction — non-critical)
-    const companySnap = await db.collection("companies").doc(data.companyId).get();
-    if (companySnap.exists) {
-      const companyData = companySnap.data()!;
+    try {
+      const companySnap = await db.collection("companies").doc(data.companyId).get();
+      if (companySnap.exists) {
+        const companyData = companySnap.data()!;
 
-      const flatSnap = await db.collection("flats").doc(data.flatId).get();
-      const flatTitle = flatSnap.exists ? flatSnap.data()!.title : data.flatId;
+        const flatSnap = await db.collection("flats").doc(data.flatId).get();
+        const flatTitle = flatSnap.exists ? flatSnap.data()!.title : data.flatId;
 
-      await db
-        .collection("users")
-        .doc(companyData.ownerId)
-        .collection("notifications")
-        .add({
-          userId: companyData.ownerId,
-          type: "new_request",
-          title: "New reservation request",
-          message: `${data.userSnapshot?.displayName || "A user"} requested ${flatTitle}`,
-          linkTo: "/company/reservations",
-          read: false,
-          createdAt: FieldValue.serverTimestamp(),
-        });
+        await db
+          .collection("users")
+          .doc(companyData.ownerId)
+          .collection("notifications")
+          .add({
+            userId: companyData.ownerId,
+            type: "new_request",
+            title: "New reservation request",
+            message: `${data.userSnapshot?.displayName || "A user"} requested ${flatTitle}`,
+            linkTo: "/company/reservations",
+            read: false,
+            createdAt: FieldValue.serverTimestamp(),
+          });
+      }
+    } catch (error) {
+      console.error("Failed to create notification:", error);
     }
   },
 );
