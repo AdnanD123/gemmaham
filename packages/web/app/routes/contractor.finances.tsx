@@ -90,7 +90,7 @@ export default function ContractorFinances() {
 
                             <ContentLoader loading={loading} skeleton={<DashboardSkeleton />}>
                                 {/* Summary cards */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                                     <StatCard
                                         icon={DollarSign}
                                         value={totalEarnings > 0 ? `${totalEarnings.toLocaleString()}` : "—"}
@@ -119,7 +119,7 @@ export default function ContractorFinances() {
                                         <h3 className="font-semibold">{t("finances.earningsTable")}</h3>
                                     </div>
                                     <div className="overflow-x-auto">
-                                        <table className="w-full text-sm">
+                                        <table className="w-full text-sm min-w-[600px]">
                                             <thead>
                                                 <tr className="border-b border-foreground/6 text-foreground/50">
                                                     <th className="text-left p-3">{t("finances.buildingName")}</th>

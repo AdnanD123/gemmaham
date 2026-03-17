@@ -163,7 +163,7 @@ export default function CompanyFinances() {
 
                         <ContentLoader loading={loading} skeleton={<DashboardSkeleton />}>
                             {/* Summary cards */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                                 <StatCard
                                     icon={DollarSign}
                                     value={revenue.total > 0 ? `${revenue.total.toLocaleString()}` : "—"}
@@ -192,7 +192,7 @@ export default function CompanyFinances() {
                                     <h3 className="font-semibold">{t("finances.revenueByBuilding")}</h3>
                                 </div>
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-sm">
+                                    <table className="w-full text-sm min-w-[600px]">
                                         <thead>
                                             <tr className="border-b border-foreground/6 text-foreground/50">
                                                 <th className="text-left p-3">{t("finances.buildingName")}</th>
@@ -233,7 +233,7 @@ export default function CompanyFinances() {
                                     <h3 className="font-semibold">{t("finances.contractorCosts")}</h3>
                                 </div>
                                 <div className="overflow-x-auto">
-                                    <table className="w-full text-sm">
+                                    <table className="w-full text-sm min-w-[600px]">
                                         <thead>
                                             <tr className="border-b border-foreground/6 text-foreground/50">
                                                 <th className="text-left p-3">{t("finances.contractorName")}</th>

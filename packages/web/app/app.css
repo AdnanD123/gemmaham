@@ -203,7 +203,7 @@
             }
         }
 
-        &.btn--sm { @apply px-3 py-1.5 text-xs font-semibold; }
+        &.btn--sm { @apply px-3 py-1.5 text-xs font-semibold min-h-11; }
         &.btn--md { @apply px-5 py-2.5 text-sm; }
         &.btn--lg { @apply px-8 py-3 text-sm font-semibold; }
         &.btn--full { @apply w-full; }
@@ -252,7 +252,7 @@
 
             .actions {
                 @apply flex items-center gap-2.5;
-                .greeting { @apply text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground/35; }
+                .greeting { @apply text-[11px] font-semibold uppercase tracking-[0.15em] text-foreground/50; }
                 .btn { border-radius: 10px; }
                 .login { @apply text-[11px] font-bold uppercase tracking-[0.12em] text-foreground/60 hover:text-primary transition-colors; }
                 .cta {
@@ -289,7 +289,7 @@
             .actions {
                 @apply flex flex-col gap-3;
                 .confirm { @apply bg-primary hover:bg-primary-hover text-white; border-radius: 12px; }
-                .cancel { @apply text-xs text-foreground/35 hover:text-foreground mt-1 transition-colors; }
+                .cancel { @apply text-xs text-foreground/50 hover:text-foreground mt-1 transition-colors; }
             }
         }
     }
@@ -351,7 +351,7 @@
                     background: color-mix(in srgb, var(--color-foreground) 6%, transparent);
                     .bar { @apply h-full bg-primary rounded-full transition-all duration-300 ease-out; }
                 }
-                .status-text { @apply text-foreground/35 text-[10px] font-mono uppercase tracking-wider mt-2; }
+                .status-text { @apply text-foreground/50 text-[10px] font-mono uppercase tracking-wider mt-2; }
             }
         }
     }
@@ -534,7 +534,7 @@
                     }
                 }
 
-                .loading { @apply flex items-center justify-center text-sm text-foreground/35; }
+                .loading { @apply flex items-center justify-center text-sm text-foreground/50; }
 
                 .projects-grid {
                     @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
@@ -586,7 +586,7 @@
                     }
 
                     .empty {
-                        @apply col-span-full rounded-2xl border border-dashed p-10 text-center text-sm text-foreground/35;
+                        @apply col-span-full rounded-2xl border border-dashed p-10 text-center text-sm text-foreground/50;
                         border-color: color-mix(in srgb, var(--color-foreground) 10%, transparent);
                         background: color-mix(in srgb, var(--color-foreground) 2%, transparent);
                     }
@@ -612,6 +612,6 @@
 
     .visualizer-route {
         @apply min-h-screen flex items-center justify-center;
-        &.loading { @apply text-sm text-foreground/35; }
+        &.loading { @apply text-sm text-foreground/50; }
     }
 }

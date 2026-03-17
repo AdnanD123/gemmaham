@@ -281,7 +281,8 @@
   "theme": {
     "light": "Hell",
     "dark": "Dunkel",
-    "system": "System"
+    "system": "System",
+    "toggle": "Thema wechseln"
   },
   "common": {
     "loading": "Laden...",
@@ -297,7 +298,8 @@
     "searching": "Suche läuft",
     "back": "Zurück",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "close": "Schließen"
   },
   "messages": {
     "noConversations": "Noch keine Unterhaltungen",
@@ -581,7 +583,28 @@
     "inProgress": "In Bearbeitung",
     "noProjects": "Noch keine abgeschlossenen Projekte.",
     "contactContractor": "Auftragnehmer kontaktieren",
-    "memberSince": "Mitglied seit {{date}}"
+    "memberSince": "Mitglied seit {{date}}",
+    "documents": "Dokumente",
+    "uploadDocument": "Dokument hochladen",
+    "certificate": "Zertifikat",
+    "insurance": "Versicherung",
+    "license": "Lizenz",
+    "portfolio": "Portfolio",
+    "uploadPortfolio": "Foto hochladen",
+    "caption": "Beschreibung",
+    "projectName": "Projektname",
+    "noDocuments": "Noch keine Dokumente hochgeladen.",
+    "noPortfolio": "Noch keine Portfolio-Fotos.",
+    "documentType": "Dokumenttyp",
+    "other": "Sonstiges",
+    "availability": "Verfügbarkeit",
+    "available": "Verfügbar",
+    "busy": "Beschäftigt",
+    "busyUntil": "Beschäftigt bis {{date}}",
+    "unavailable": "Nicht verfügbar",
+    "availableFrom": "Verfügbar ab",
+    "notSpecified": "Nicht angegeben",
+    "showAvailableOnly": "Nur verfügbare anzeigen"
   },
   "customizations": {
     "options": "Optionen",
@@ -606,6 +629,10 @@
     "copy": "Kopieren",
     "copiedToUnit": "Optionen zur Einheit kopiert.",
     "copyFailed": "Kopieren der Optionen fehlgeschlagen.",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "editOption": "Option bearbeiten",
     "deleteTitle": "Option löschen",
     "deleteMsg": "Sind Sie sicher, dass Sie diese Anpassungsoption löschen möchten?",
     "requestsTitle": "Anpassungsanfragen",
@@ -1407,7 +1434,8 @@
     "previous": "Vorheriges Foto",
     "next": "Nächstes Foto",
     "close": "Galerie schließen",
-    "photoOf": "{{current}} von {{total}}"
+    "photoOf": "{{current}} von {{total}}",
+    "openLightbox": "In Lightbox öffnen"
   },
   "favorites": {
     "title": "Meine Favoriten",
@@ -1481,5 +1509,15 @@
     "delete": "Dokument löschen",
     "empty": "Noch keine Dokumente hochgeladen.",
     "uploadDocument": "Dokument hochladen"
+  },
+  "draft": {
+    "restored": "Entwurf wiederhergestellt",
+    "restoredAt": "Entwurf wiederhergestellt von {{time}}",
+    "discard": "Verwerfen",
+    "autoSaved": "Entwurf automatisch gespeichert",
+    "justNow": "gerade eben",
+    "minutesAgo": "vor {{count}} Min",
+    "hoursAgo": "vor {{count}} Std",
+    "daysAgo": "vor {{count}} T"
   }
 }

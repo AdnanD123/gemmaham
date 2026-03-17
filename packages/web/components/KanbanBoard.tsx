@@ -84,6 +84,8 @@ export function KanbanBoard({
                 {columnData.map((column) => (
                     <div
                         key={column.status}
+                        role="region"
+                        aria-label={t(`reservation.status.${column.status}`) + ` (${column.reservations.length})`}
                         className="flex-1 min-w-[220px] bg-foreground/2 rounded-2xl p-3"
                     >
                         {/* Column header */}
@@ -99,7 +101,7 @@ export function KanbanBoard({
                         {/* Cards */}
                         <div className="space-y-2.5">
                             {column.reservations.length === 0 ? (
-                                <p className="text-xs text-foreground/30 text-center py-6">
+                                <p className="text-xs text-foreground/45 text-center py-6">
                                     {t("reservation.noRequests")}
                                 </p>
                             ) : (
@@ -126,7 +128,7 @@ export function KanbanBoard({
                                             <button
                                                 type="button"
                                                 onClick={() => setExpandedId(isExpanded ? null : r.id)}
-                                                className="w-full text-left p-3"
+                                                className="w-full text-left p-3 focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 rounded-t-xl"
                                             >
                                                 <div className="flex items-center gap-1.5 mb-1">
                                                     {r.propertyType === "house" ? (
@@ -156,7 +158,7 @@ export function KanbanBoard({
                                                 )}
 
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[11px] text-foreground/40">
+                                                    <span className="text-[11px] text-foreground/45">
                                                         {t("reservations.daysInStatus", { count: daysInStatus })}
                                                     </span>
                                                     {isExpanded ? (
@@ -180,7 +182,7 @@ export function KanbanBoard({
                                                     {/* User info */}
                                                     {r.userSnapshot && (
                                                         <div className="bg-foreground/5 rounded-lg p-2 mt-2 mb-2">
-                                                            <p className="text-[10px] font-medium text-foreground/40 mb-1">
+                                                            <p className="text-[10px] font-medium text-foreground/45 mb-1">
                                                                 {t("reservation.userInfo")}
                                                             </p>
                                                             <div className="space-y-0.5">
@@ -215,7 +217,7 @@ export function KanbanBoard({
                                                                 {r.meetingCompleted && " \u2713"}
                                                             </span>
                                                         ) : r.status === "approved" ? (
-                                                            <span className="text-foreground/30">{t("reservation.meetingNotScheduled")}</span>
+                                                            <span className="text-foreground/45">{t("reservation.meetingNotScheduled")}</span>
                                                         ) : null}
                                                         {r.depositPaid && (
                                                             <span className="flex items-center gap-1 text-green-600">

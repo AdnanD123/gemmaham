@@ -14,14 +14,20 @@ import {
     Calendar,
     ChevronDown,
     MessageSquare,
+    FileText,
+    Image,
+    Award,
+    Shield,
+    ScrollText,
 } from "lucide-react";
 import Badge from "../../components/ui/Badge";
+import AvailabilityBadge from "../../components/AvailabilityBadge";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
 import { ContentLoader } from "../../components/ui/ContentLoader";
 import { useContractor } from "../../lib/hooks/useContractor";
 import { formatTimestamp } from "@gemmaham/shared";
-import type { AuthContext } from "@gemmaham/shared";
+import type { AuthContext, ContractorDocumentType } from "@gemmaham/shared";
 
 /* ─── Staggered card wrapper ─────────────────────────── */
 function FadeInSection({ children, delay = 0, className = "" }: {
@@ -69,6 +75,14 @@ function StatPill({ icon, label, value }: { icon: React.ReactNode; label: string
         </div>
     );
 }
+
+/* ─── Document type icons ───────────────────────────── */
+const DOC_TYPE_ICONS: Record<ContractorDocumentType, React.ReactNode> = {
+    certificate: <Award size={14} className="text-primary" />,
+    insurance: <Shield size={14} className="text-secondary" />,
+    license: <ScrollText size={14} className="text-amber-600" />,
+    other: <FileText size={14} className="text-foreground/50" />,
+};
 
 /* ─── Main component ─────────────────────────────────── */
 export default function PublicContractorProfile() {
@@ -151,9 +165,12 @@ export default function PublicContractorProfile() {
                                         )}
 
                                         <div className="flex-1 min-w-0">
-                                            <h1 className="text-3xl sm:text-4xl font-bold font-serif tracking-tight">
-                                                {profile.displayName}
-                                            </h1>
+                                            <div className="flex items-center gap-3 flex-wrap">
+                                                <h1 className="text-3xl sm:text-4xl font-bold font-serif tracking-tight">
+                                                    {profile.displayName}
+                                                </h1>
+                                                <AvailabilityBadge availability={profile.availability} availableFrom={profile.availableFrom} />
+                                            </div>
                                             <p className="text-foreground/60 text-lg mt-1">
                                                 {profile.companyName}
                                             </p>
@@ -319,6 +336,83 @@ export default function PublicContractorProfile() {
                                             )}
                                         </div>
                                     </FadeInSection>
+
+                                    {/* Portfolio Section */}
+                                    {profile.portfolio && profile.portfolio.length > 0 && (
+                                        <FadeInSection delay={0.32}>
+                                            <div className="bg-surface rounded-2xl border border-foreground/6 shadow-card p-6">
+                                                <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                                    <Image size={20} />
+                                                    {t("contractor.portfolio")}
+                                                </h2>
+                                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                                    {profile.portfolio.map((item, idx) => (
+                                                        <div key={idx} className="relative group rounded-xl overflow-hidden border border-foreground/6">
+                                                            <img
+                                                                loading="lazy"
+                                                                src={item.url}
+                                                                alt={item.caption || `Portfolio ${idx + 1}`}
+                                                                className="w-full aspect-square object-cover"
+                                                            />
+                                                            {(item.projectName || item.caption) && (
+                                                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
+                                                                    {item.projectName && (
+                                                                        <p className="text-white text-xs font-bold truncate">{item.projectName}</p>
+                                                                    )}
+                                                                    {item.caption && (
+                                                                        <p className="text-white/80 text-xs truncate">{item.caption}</p>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </FadeInSection>
+                                    )}
+
+                                    {/* Documents Section (visible to agencies) */}
+                                    {isCompanyUser && profile.documents && profile.documents.length > 0 && (
+                                        <FadeInSection delay={0.4}>
+                                            <div className="bg-surface rounded-2xl border border-foreground/6 shadow-card p-6">
+                                                <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                                    <FileText size={20} />
+                                                    {t("contractor.documents")}
+                                                </h2>
+                                                <div className="space-y-2">
+                                                    {profile.documents.map((doc, idx) => (
+                                                        <a
+                                                            key={idx}
+                                                            href={doc.url}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="flex items-center gap-3 p-3 bg-background rounded-xl border border-foreground/6 hover:border-primary/30 transition-colors group"
+                                                        >
+                                                            <div className="p-2 rounded-lg bg-foreground/4 group-hover:bg-primary/8 transition-colors">
+                                                                {DOC_TYPE_ICONS[doc.type]}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+                                                                    {doc.name}
+                                                                </p>
+                                                                <div className="flex items-center gap-2 mt-0.5">
+                                                                    <Badge variant="default">
+                                                                        {doc.type === "certificate" ? t("contractor.certificate")
+                                                                            : doc.type === "insurance" ? t("contractor.insurance")
+                                                                            : doc.type === "license" ? t("contractor.license")
+                                                                            : t("contractor.other")}
+                                                                    </Badge>
+                                                                    <span className="text-xs text-foreground/40">
+                                                                        {new Date(doc.uploadedAt).toLocaleDateString()}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </FadeInSection>
+                                    )}
                                 </div>
 
                                 {/* ── Sidebar (right) ────────────────── */}

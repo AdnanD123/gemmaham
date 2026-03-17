@@ -65,7 +65,7 @@ const NotificationBell = ({ userId }: NotificationBellProps) => {
                 aria-label={unreadCount > 0 ? `${t("notifications.title")} (${unreadCount})` : t("notifications.title")}
                 aria-expanded={open}
                 aria-haspopup="true"
-                className="relative p-2 rounded-lg text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
+                className="relative p-2 rounded-lg text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
             >
                 <Bell size={18} />
                 {unreadCount > 0 && (
@@ -95,7 +95,7 @@ const NotificationBell = ({ userId }: NotificationBellProps) => {
                     {/* Notification list */}
                     <div className="max-h-80 overflow-y-auto">
                         {notifications.length === 0 ? (
-                            <div className="px-4 py-8 text-center text-foreground/40 text-sm">
+                            <div className="px-4 py-8 text-center text-foreground/50 text-sm">
                                 {t("notifications.empty")}
                             </div>
                         ) : (
@@ -151,7 +151,7 @@ function NotificationContent({ notification }: { notification: UserNotification 
                 </p>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
-                <span className="text-[10px] text-foreground/40">
+                <span className="text-[10px] text-foreground/50">
                     {timeAgo(notification.createdAt as string)}
                 </span>
                 {!notification.read && (

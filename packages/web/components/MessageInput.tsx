@@ -40,7 +40,7 @@ const MessageInput = ({ onSend, disabled, attachedCard, onRemoveCard }: Props) =
     };
 
     return (
-        <form onSubmit={handleSubmit} className="border-t border-foreground/6">
+        <form onSubmit={handleSubmit} className="border-t border-foreground/6 bg-background sticky bottom-0 z-10">
             {/* Attached card preview */}
             {attachedCard && (
                 <div className="px-4 pt-3">

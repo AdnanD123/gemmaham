@@ -88,7 +88,7 @@ export default function UserDashboard() {
 
                         <ContentLoader loading={loading} skeleton={<DashboardSkeleton />}>
                                 {/* Stat cards */}
-                                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                                     <StatCard icon={Lock} value={stats.active} label={t("dashboard.active")} linkTo="/user/reservations" />
                                     <StatCard icon={Clock} value={stats.planned} label={t("dashboard.planned")} linkTo="/user/reservations" />
                                     <StatCard icon={Trophy} value={stats.completed} label={t("dashboard.completed")} linkTo="/user/reservations" />

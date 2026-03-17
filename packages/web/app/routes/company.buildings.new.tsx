@@ -9,6 +9,8 @@ import Button from "../../components/ui/Button";
 import { createBuilding, updateBuilding } from "../../lib/firestore";
 import { uploadBuildingCover } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
+import { useFormDraft } from "../../lib/hooks/useFormDraft";
+import { DraftIndicator } from "../../components/ui/DraftIndicator";
 import type { AuthContext, BuildingStatus, ConstructionPhase } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
 
@@ -21,7 +23,7 @@ export default function CompanyAddBuilding() {
     const [preview, setPreview] = useState<string | null>(null);
     const { addToast } = useToast();
 
-    const [form, setForm] = useState({
+    const { values: form, setValue: setDraftField, hasDraft, draftSavedAt, clearDraft, discardDraft } = useFormDraft("draft-building-new", {
         title: "",
         description: "",
         address: "",
@@ -35,7 +37,7 @@ export default function CompanyAddBuilding() {
     });
 
     const updateField = (field: string, value: string | boolean) => {
-        setForm((prev) => ({ ...prev, [field]: value }));
+        setDraftField(field, value);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +74,7 @@ export default function CompanyAddBuilding() {
                 await updateBuilding(buildingId, { coverImageUrl: coverUrl });
             }
 
+            clearDraft();
             navigate(`/company/buildings/${buildingId}`);
         } catch (e) {
             console.error("Failed to create building:", e);
@@ -104,6 +107,8 @@ export default function CompanyAddBuilding() {
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-3xl">
                         <h1 className="text-2xl font-bold mb-6">{t("buildings.addNewBuilding")}</h1>
+
+                        <DraftIndicator show={hasDraft} savedAt={draftSavedAt} onDiscard={discardDraft} />
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <Input

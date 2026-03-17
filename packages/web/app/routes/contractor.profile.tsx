@@ -1,21 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Camera, Pencil, Trash2, Globe, Phone, Building2, UserCircle } from "lucide-react";
+import { Camera, Pencil, Trash2, Globe, Phone, Building2, UserCircle, FileText, Image, Upload, X, Shield, Award, ScrollText } from "lucide-react";
 import RoleGuard from "../../components/RoleGuard";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
+import Select from "../../components/ui/Select";
 import Badge from "../../components/ui/Badge";
+import AvailabilityBadge from "../../components/AvailabilityBadge";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
 import { ContentLoader } from "../../components/ui/ContentLoader";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { getContractorProfile, updateContractorProfile, deleteContractorProfile } from "../../lib/firestore";
-import { uploadContractorProfileLogo } from "../../lib/storage";
+import { uploadContractorProfileLogo, uploadContractorDocument, uploadContractorPortfolio } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import CategorySubcategoryPicker, { deriveCategoryKeys, deriveSubcategoryKeys } from "../../components/CategorySubcategoryPicker";
-import type { AuthContext, ContractorProfile, ContractorCategorySelection } from "@gemmaham/shared";
+import type { AuthContext, ContractorProfile, ContractorCategorySelection, ContractorAvailability, ContractorDocument, ContractorDocumentType, ContractorPortfolioItem } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
+
+const DOC_TYPE_ICONS: Record<ContractorDocumentType, React.ReactNode> = {
+    certificate: <Award size={16} className="text-primary" />,
+    insurance: <Shield size={16} className="text-secondary" />,
+    license: <ScrollText size={16} className="text-amber-600" />,
+    other: <FileText size={16} className="text-foreground/50" />,
+};
 
 export default function ContractorProfilePage() {
     const { t } = useTranslation();
@@ -36,8 +45,24 @@ export default function ContractorProfilePage() {
     const [phone, setPhone] = useState("");
     const [description, setDescription] = useState("");
     const [website, setWebsite] = useState("");
+    const [availability, setAvailability] = useState<ContractorAvailability | "">("");
+    const [availableFrom, setAvailableFrom] = useState("");
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
+    // Documents state
+    const [documents, setDocuments] = useState<ContractorDocument[]>([]);
+    const [uploadingDoc, setUploadingDoc] = useState(false);
+    const [docType, setDocType] = useState<ContractorDocumentType>("certificate");
+    const docInputRef = useRef<HTMLInputElement>(null);
+
+    // Portfolio state
+    const [portfolio, setPortfolio] = useState<ContractorPortfolioItem[]>([]);
+    const [uploadingPhoto, setUploadingPhoto] = useState(false);
+    const [editingPortfolioIdx, setEditingPortfolioIdx] = useState<number | null>(null);
+    const [portfolioCaption, setPortfolioCaption] = useState("");
+    const [portfolioProjectName, setPortfolioProjectName] = useState("");
+    const portfolioInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (!auth.user) return;
@@ -54,7 +79,11 @@ export default function ContractorProfilePage() {
                     setPhone(p.phone || "");
                     setDescription(p.description || "");
                     setWebsite(p.website || "");
+                    setAvailability(p.availability || "");
+                    setAvailableFrom(p.availableFrom || "");
                     if (p.logoUrl) setLogoPreview(p.logoUrl);
+                    setDocuments(p.documents || []);
+                    setPortfolio(p.portfolio || []);
                 } else {
                     setEditing(true);
                 }
@@ -104,12 +133,18 @@ export default function ContractorProfilePage() {
                 phone: phone.trim() || null,
                 description: description.trim() || null,
                 website: website.trim() || null,
+                availability: availability || undefined,
+                availableFrom: availability === "busy" && availableFrom ? availableFrom : undefined,
                 logoUrl,
             });
 
             // Refetch so view mode always shows accurate saved data
             const fresh = await getContractorProfile(auth.user.uid);
-            if (fresh) setProfile(fresh);
+            if (fresh) {
+                setProfile(fresh);
+                setDocuments(fresh.documents || []);
+                setPortfolio(fresh.portfolio || []);
+            }
 
             setLogoFile(null);
             setEditing(false);
@@ -136,6 +171,111 @@ export default function ContractorProfilePage() {
             setDeleting(false);
             setShowDeleteConfirm(false);
         }
+    };
+
+    /* ── Document handlers ── */
+    const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !auth.user) return;
+        setUploadingDoc(true);
+        try {
+            const url = await uploadContractorDocument(auth.user.uid, file);
+            const newDoc: ContractorDocument = {
+                name: file.name,
+                url,
+                type: docType,
+                uploadedAt: new Date().toISOString(),
+            };
+            const updated = [...documents, newDoc];
+            await updateContractorProfile(auth.user.uid, { documents: updated });
+            setDocuments(updated);
+            addToast("success", t("toast.changesSaved"));
+        } catch (err) {
+            console.error("Failed to upload document:", err);
+            addToast("error", t("toast.saveFailed"));
+        } finally {
+            setUploadingDoc(false);
+            if (docInputRef.current) docInputRef.current.value = "";
+        }
+    };
+
+    const handleDocDelete = async (idx: number) => {
+        if (!auth.user) return;
+        const updated = documents.filter((_, i) => i !== idx);
+        try {
+            await updateContractorProfile(auth.user.uid, { documents: updated });
+            setDocuments(updated);
+            addToast("success", t("toast.changesSaved"));
+        } catch (err) {
+            console.error("Failed to delete document:", err);
+            addToast("error", t("toast.saveFailed"));
+        }
+    };
+
+    /* ── Portfolio handlers ── */
+    const handlePortfolioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !auth.user) return;
+        if (portfolio.length >= 8) {
+            addToast("warning", "Maximum 8 portfolio photos.");
+            return;
+        }
+        setUploadingPhoto(true);
+        try {
+            const url = await uploadContractorPortfolio(auth.user.uid, file);
+            const newItem: ContractorPortfolioItem = { url };
+            const updated = [...portfolio, newItem];
+            await updateContractorProfile(auth.user.uid, { portfolio: updated });
+            setPortfolio(updated);
+            addToast("success", t("toast.changesSaved"));
+        } catch (err) {
+            console.error("Failed to upload portfolio photo:", err);
+            addToast("error", t("toast.saveFailed"));
+        } finally {
+            setUploadingPhoto(false);
+            if (portfolioInputRef.current) portfolioInputRef.current.value = "";
+        }
+    };
+
+    const handlePortfolioDelete = async (idx: number) => {
+        if (!auth.user) return;
+        const updated = portfolio.filter((_, i) => i !== idx);
+        try {
+            await updateContractorProfile(auth.user.uid, { portfolio: updated });
+            setPortfolio(updated);
+            addToast("success", t("toast.changesSaved"));
+        } catch (err) {
+            console.error("Failed to delete portfolio photo:", err);
+            addToast("error", t("toast.saveFailed"));
+        }
+    };
+
+    const handlePortfolioMeta = async (idx: number) => {
+        if (!auth.user) return;
+        const updated = portfolio.map((item, i) =>
+            i === idx
+                ? { ...item, caption: portfolioCaption.trim() || undefined, projectName: portfolioProjectName.trim() || undefined }
+                : item,
+        );
+        try {
+            await updateContractorProfile(auth.user.uid, { portfolio: updated });
+            setPortfolio(updated);
+            setEditingPortfolioIdx(null);
+            addToast("success", t("toast.changesSaved"));
+        } catch (err) {
+            console.error("Failed to update portfolio item:", err);
+            addToast("error", t("toast.saveFailed"));
+        }
+    };
+
+    const docTypeLabel = (type: ContractorDocumentType) => {
+        const labels: Record<ContractorDocumentType, string> = {
+            certificate: t("contractor.certificate"),
+            insurance: t("contractor.insurance"),
+            license: t("contractor.license"),
+            other: t("contractor.other"),
+        };
+        return labels[type];
     };
 
     return (
@@ -221,6 +361,27 @@ export default function ContractorProfilePage() {
                                     onChange={(e) => setWebsite(e.target.value)}
                                 />
 
+                                {/* Availability */}
+                                <Select
+                                    label={t("contractor.availability")}
+                                    value={availability}
+                                    onChange={(e) => setAvailability(e.target.value as ContractorAvailability | "")}
+                                    options={[
+                                        { value: "", label: t("contractor.notSpecified") },
+                                        { value: "available", label: t("contractor.available") },
+                                        { value: "busy", label: t("contractor.busy") },
+                                        { value: "unavailable", label: t("contractor.unavailable") },
+                                    ]}
+                                />
+                                {availability === "busy" && (
+                                    <Input
+                                        label={t("contractor.availableFrom")}
+                                        type="date"
+                                        value={availableFrom}
+                                        onChange={(e) => setAvailableFrom(e.target.value)}
+                                    />
+                                )}
+
                                 <div className="flex gap-3">
                                     <Button fullWidth disabled={saving}>
                                         {saving ? t("profile.saving") : t("common.save")}
@@ -245,11 +406,14 @@ export default function ContractorProfilePage() {
                                         )}
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-bold">{profile?.displayName || "—"}</h2>
+                                        <h2 className="text-xl font-bold">{profile?.displayName || "\u2014"}</h2>
                                         <p className="text-foreground/60 flex items-center gap-1 mt-0.5">
                                             <Building2 size={14} />
-                                            {profile?.companyName || "—"}
+                                            {profile?.companyName || "\u2014"}
                                         </p>
+                                        <div className="mt-1">
+                                            <AvailabilityBadge availability={profile?.availability} availableFrom={profile?.availableFrom} />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -317,6 +481,181 @@ export default function ContractorProfilePage() {
                                 </div>
                             </div>
                         )}
+
+                        {/* ── Documents Section ── */}
+                        {profile && (
+                            <div className="mt-6 bg-surface rounded-2xl border border-foreground/6 p-6 space-y-4">
+                                <h2 className="text-lg font-bold flex items-center gap-2">
+                                    <FileText size={20} />
+                                    {t("contractor.documents")}
+                                </h2>
+
+                                {documents.length === 0 ? (
+                                    <p className="text-sm text-foreground/40 text-center py-4">
+                                        {t("contractor.noDocuments")}
+                                    </p>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {documents.map((doc, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="flex items-center gap-3 p-3 bg-background rounded-xl border border-foreground/6"
+                                            >
+                                                <div className="p-2 rounded-lg bg-foreground/4">
+                                                    {DOC_TYPE_ICONS[doc.type]}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <a
+                                                        href={doc.url}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="font-medium text-sm truncate block hover:text-primary transition-colors"
+                                                    >
+                                                        {doc.name}
+                                                    </a>
+                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                        <Badge variant="default">{docTypeLabel(doc.type)}</Badge>
+                                                        <span className="text-xs text-foreground/40">
+                                                            {new Date(doc.uploadedAt).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleDocDelete(idx)}
+                                                    className="p-1.5 rounded-lg hover:bg-foreground/6 transition-colors text-foreground/40 hover:text-red-500"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Upload document */}
+                                <div className="flex items-center gap-3 pt-2">
+                                    <select
+                                        value={docType}
+                                        onChange={(e) => setDocType(e.target.value as ContractorDocumentType)}
+                                        className="text-sm border border-foreground/6 rounded-lg px-3 py-2 bg-background"
+                                    >
+                                        <option value="certificate">{t("contractor.certificate")}</option>
+                                        <option value="insurance">{t("contractor.insurance")}</option>
+                                        <option value="license">{t("contractor.license")}</option>
+                                        <option value="other">{t("contractor.other")}</option>
+                                    </select>
+                                    <label className="inline-flex items-center gap-2 px-4 py-2 border border-foreground/6 rounded-lg cursor-pointer hover:border-foreground/20 transition-colors text-sm">
+                                        <Upload size={14} />
+                                        {uploadingDoc ? "..." : t("contractor.uploadDocument")}
+                                        <input
+                                            ref={docInputRef}
+                                            type="file"
+                                            accept=".pdf,.doc,.docx,image/*"
+                                            onChange={handleDocUpload}
+                                            disabled={uploadingDoc}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ── Portfolio Section ── */}
+                        {profile && (
+                            <div className="mt-6 bg-surface rounded-2xl border border-foreground/6 p-6 space-y-4">
+                                <h2 className="text-lg font-bold flex items-center gap-2">
+                                    <Image size={20} />
+                                    {t("contractor.portfolio")}
+                                </h2>
+
+                                {portfolio.length === 0 ? (
+                                    <p className="text-sm text-foreground/40 text-center py-4">
+                                        {t("contractor.noPortfolio")}
+                                    </p>
+                                ) : (
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                        {portfolio.map((item, idx) => (
+                                            <div key={idx} className="relative group rounded-xl overflow-hidden border border-foreground/6">
+                                                <img
+                                                    loading="lazy"
+                                                    src={item.url}
+                                                    alt={item.caption || `Portfolio ${idx + 1}`}
+                                                    className="w-full aspect-square object-cover"
+                                                />
+                                                {/* Hover overlay with caption/project name */}
+                                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
+                                                    {item.projectName && (
+                                                        <p className="text-white text-xs font-bold truncate">{item.projectName}</p>
+                                                    )}
+                                                    {item.caption && (
+                                                        <p className="text-white/80 text-xs truncate">{item.caption}</p>
+                                                    )}
+                                                    <div className="flex gap-1 mt-1">
+                                                        <button
+                                                            onClick={() => {
+                                                                setEditingPortfolioIdx(idx);
+                                                                setPortfolioCaption(item.caption || "");
+                                                                setPortfolioProjectName(item.projectName || "");
+                                                            }}
+                                                            className="p-1 rounded bg-white/20 hover:bg-white/30 transition-colors"
+                                                        >
+                                                            <Pencil size={12} className="text-white" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handlePortfolioDelete(idx)}
+                                                            className="p-1 rounded bg-white/20 hover:bg-red-500/80 transition-colors"
+                                                        >
+                                                            <Trash2 size={12} className="text-white" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Edit portfolio item meta */}
+                                {editingPortfolioIdx !== null && (
+                                    <div className="p-4 bg-background rounded-xl border border-foreground/6 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-sm font-medium">{t("contractor.portfolio")} #{editingPortfolioIdx + 1}</p>
+                                            <button onClick={() => setEditingPortfolioIdx(null)} className="p-1 hover:bg-foreground/6 rounded">
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                        <Input
+                                            label={t("contractor.projectName")}
+                                            value={portfolioProjectName}
+                                            onChange={(e) => setPortfolioProjectName(e.target.value)}
+                                        />
+                                        <Input
+                                            label={t("contractor.caption")}
+                                            value={portfolioCaption}
+                                            onChange={(e) => setPortfolioCaption(e.target.value)}
+                                        />
+                                        <Button size="sm" onClick={() => handlePortfolioMeta(editingPortfolioIdx)}>
+                                            {t("common.save")}
+                                        </Button>
+                                    </div>
+                                )}
+
+                                {/* Upload portfolio photo */}
+                                {portfolio.length < 8 && (
+                                    <label className="inline-flex items-center gap-2 px-4 py-2 border border-foreground/6 rounded-lg cursor-pointer hover:border-foreground/20 transition-colors text-sm">
+                                        <Upload size={14} />
+                                        {uploadingPhoto ? "..." : t("contractor.uploadPortfolio")}
+                                        <input
+                                            ref={portfolioInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handlePortfolioUpload}
+                                            disabled={uploadingPhoto}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                )}
+                            </div>
+                        )}
+
                         </ContentLoader>
                     </main>
                 </div>

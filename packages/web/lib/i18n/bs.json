@@ -281,7 +281,8 @@
   "theme": {
     "light": "Svijetlo",
     "dark": "Tamno",
-    "system": "Sistem"
+    "system": "Sistem",
+    "toggle": "Promijeni temu"
   },
   "common": {
     "loading": "Učitavanje...",
@@ -297,7 +298,8 @@
     "searching": "Pretraživanje",
     "back": "Nazad",
     "yes": "Da",
-    "no": "Ne"
+    "no": "Ne",
+    "close": "Zatvori"
   },
   "messages": {
     "noConversations": "Još nema razgovora",
@@ -581,7 +583,28 @@
     "inProgress": "U toku",
     "noProjects": "Još nema završenih projekata.",
     "contactContractor": "Kontaktiraj izvođača",
-    "memberSince": "Član od {{date}}"
+    "memberSince": "Član od {{date}}",
+    "documents": "Dokumenti",
+    "uploadDocument": "Učitaj dokument",
+    "certificate": "Certifikat",
+    "insurance": "Osiguranje",
+    "license": "Licenca",
+    "portfolio": "Portfolio",
+    "uploadPortfolio": "Učitaj fotografiju",
+    "caption": "Opis",
+    "projectName": "Naziv projekta",
+    "noDocuments": "Nema učitanih dokumenata.",
+    "noPortfolio": "Nema fotografija u portfoliju.",
+    "documentType": "Tip dokumenta",
+    "other": "Ostalo",
+    "availability": "Dostupnost",
+    "available": "Dostupan",
+    "busy": "Zauzet",
+    "busyUntil": "Zauzet do {{date}}",
+    "unavailable": "Nedostupan",
+    "availableFrom": "Dostupan od",
+    "notSpecified": "Nije navedeno",
+    "showAvailableOnly": "Prikaži samo dostupne"
   },
   "customizations": {
     "options": "opcija",
@@ -606,6 +629,10 @@
     "copy": "Kopiraj",
     "copiedToUnit": "Opcije kopirane u stan.",
     "copyFailed": "Kopiranje opcija nije uspjelo.",
+    "edit": "Uredi",
+    "save": "Spremi",
+    "cancel": "Otkaži",
+    "editOption": "Uredi opciju",
     "deleteTitle": "Obriši opciju",
     "deleteMsg": "Jeste li sigurni da želite obrisati ovu opciju prilagodbe?",
     "requestsTitle": "Zahtjevi za prilagodbe",
@@ -1407,7 +1434,8 @@
     "previous": "Prethodna fotografija",
     "next": "Sljedeća fotografija",
     "close": "Zatvori galeriju",
-    "photoOf": "{{current}} od {{total}}"
+    "photoOf": "{{current}} od {{total}}",
+    "openLightbox": "Otvori u galeriji"
   },
   "favorites": {
     "title": "Moji favoriti",
@@ -1481,5 +1509,15 @@
     "delete": "Obriši dokument",
     "empty": "Još nema učitanih dokumenata.",
     "uploadDocument": "Učitaj dokument"
+  },
+  "draft": {
+    "restored": "Nacrt vraćen",
+    "restoredAt": "Nacrt vraćen od {{time}}",
+    "discard": "Odbaci",
+    "autoSaved": "Nacrt automatski sačuvan",
+    "justNow": "upravo sada",
+    "minutesAgo": "prije {{count}} min",
+    "hoursAgo": "prije {{count}}h",
+    "daysAgo": "prije {{count}}d"
   }
 }

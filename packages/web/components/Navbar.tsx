@@ -55,7 +55,7 @@ const Navbar = ({ auth }: { auth: AuthContext }) => {
 
                                 <button
                                     onClick={handleSignOut}
-                                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
+                                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
                                     title={t("nav.logOut")}
                                 >
                                     <LogOut size={14} />
@@ -78,7 +78,7 @@ const Navbar = ({ auth }: { auth: AuthContext }) => {
                         <button
                             onClick={() => setMobileOpen(true)}
                             aria-label={t("common.menu")}
-                            className="md:hidden p-2 rounded-lg text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
+                            className="lg:hidden p-2 rounded-lg text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
                         >
                             <Menu size={20} />
                         </button>

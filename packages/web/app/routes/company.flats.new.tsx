@@ -13,6 +13,8 @@ import { uploadFloorPlan } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import { flatSchema } from "../../lib/validation";
 import { useFormValidation } from "../../lib/hooks/useFormValidation";
+import { useFormDraft } from "../../lib/hooks/useFormDraft";
+import { DraftIndicator } from "../../components/ui/DraftIndicator";
 import type { AuthContext, FlatStatus, AreaUnit, Building } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { PhotoUploader } from "../../components/PhotoUploader";
@@ -34,7 +36,7 @@ export default function CompanyAddFlat() {
 
     const preselectedBuildingId = searchParams.get("buildingId") || "";
 
-    const [form, setForm] = useState({
+    const { values: form, setValue: setDraftField, hasDraft, draftSavedAt, clearDraft, discardDraft, setAllValues: setForm } = useFormDraft("draft-flat-new", {
         title: "",
         description: "",
         address: "",
@@ -63,7 +65,7 @@ export default function CompanyAddFlat() {
     }, [auth.companyId]);
 
     const updateField = (field: string, value: string | boolean) => {
-        setForm((prev) => ({ ...prev, [field]: value }));
+        setDraftField(field, value);
         clearError(field);
         setStepErrors((prev) => {
             const next = { ...prev };
@@ -168,6 +170,7 @@ export default function CompanyAddFlat() {
                 }
             }
 
+            clearDraft();
             navigate(form.buildingId ? `/company/buildings/${form.buildingId}` : "/company/buildings");
         } catch (e) {
             console.error("Failed to create flat:", e);
@@ -447,6 +450,8 @@ export default function CompanyAddFlat() {
                     <div className="flex">
                         <main className="flex-1 p-6 max-w-3xl">
                             <h1 className="text-2xl font-bold mb-6">{t("company.addNewFlat")}</h1>
+
+                            <DraftIndicator show={hasDraft} savedAt={draftSavedAt} onDiscard={discardDraft} />
 
                             <FormWizard
                                 steps={wizardSteps}
