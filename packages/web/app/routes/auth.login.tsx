@@ -3,8 +3,11 @@ import { Link, useNavigate, useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Box, Building2, User, Wrench } from "lucide-react";
 import Button from "../../components/ui/Button";
+import { PageTransition } from "../../components/ui/PageTransition";
 import { resetPassword, getEmailVerified, setUserClaims } from "../../lib/auth";
 import { updateUserProfile, createCompany, createContractorProfile } from "../../lib/firestore";
+import { loginSchema } from "../../lib/validation";
+import { useFormValidation } from "../../lib/hooks/useFormValidation";
 import type { AuthContext, UserRole } from "@gemmaham/shared";
 
 const EMAIL_VERIFICATION_REQUIRED = import.meta.env.VITE_EMAIL_VERIFICATION === "true";
@@ -21,6 +24,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const [resetSent, setResetSent] = useState(false);
     const [resetting, setResetting] = useState(false);
+    const { errors: fieldErrors, validate, clearError } = useFormValidation(loginSchema);
 
     const setupUserRole = async (uid: string, userEmail: string, name: string, role: UserRole) => {
         await updateUserProfile(uid, {
@@ -71,6 +75,9 @@ export default function Login() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+
+        if (!validate({ email, password })) return;
+
         setLoading(true);
 
         try {
@@ -131,17 +138,17 @@ export default function Login() {
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
+            <PageTransition className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <Link to="/" className="inline-flex items-center gap-2 mb-4">
                         <Box className="w-8 h-8 text-primary" />
                         <span className="text-2xl font-bold">Gemmaham</span>
                     </Link>
-                    <h1 className="text-3xl font-bold mb-2">{t("auth.welcomeBack")}</h1>
+                    <h1 className="text-3xl font-serif font-bold mb-2">{t("auth.welcomeBack")}</h1>
                     <p className="text-foreground/60">{t("auth.signInToAccount")}</p>
                 </div>
 
-                <div className="card p-8 bg-surface border-2 border-foreground/10 rounded-xl">
+                <div className="card p-8 bg-surface border border-foreground/6 rounded-2xl shadow-elevated">
                     {/* Test mode banner */}
                     {TEST_MODE && (
                         <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg text-yellow-800 dark:text-yellow-200 text-sm">
@@ -174,10 +181,10 @@ export default function Login() {
                                             key={r}
                                             type="button"
                                             onClick={() => setTestRole(r)}
-                                            className={`flex flex-col items-center gap-1 p-3 border-2 rounded-lg text-xs font-medium transition-all ${
+                                            className={`flex flex-col items-center gap-1 p-3 border rounded-xl text-xs font-medium transition-all ${
                                                 testRole === r
                                                     ? "border-primary bg-primary/5"
-                                                    : "border-foreground/10 hover:border-foreground/20"
+                                                    : "border-foreground/6 hover:border-foreground/20"
                                             }`}
                                         >
                                             <Icon size={16} />
@@ -195,11 +202,12 @@ export default function Login() {
                             <input
                                 type="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 border-2 border-foreground/10 rounded-lg bg-background focus:border-primary focus:outline-none transition-colors"
+                                onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
+                                className={`w-full px-4 py-3 border border-foreground/6 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors ${fieldErrors.email ? "border-red-400" : ""}`}
                                 placeholder={t("auth.emailPlaceholder")}
                                 required
                             />
+                            {fieldErrors.email && <p className="text-sm text-red-500 mt-1">{t(fieldErrors.email)}</p>}
                         </div>
 
                         <div>
@@ -219,12 +227,13 @@ export default function Login() {
                             <input
                                 type="password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 border-2 border-foreground/10 rounded-lg bg-background focus:border-primary focus:outline-none transition-colors"
+                                onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
+                                className={`w-full px-4 py-3 border border-foreground/6 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors ${fieldErrors.password ? "border-red-400" : ""}`}
                                 placeholder={t("auth.passwordPlaceholder")}
                                 minLength={6}
                                 required
                             />
+                            {fieldErrors.password && <p className="text-sm text-red-500 mt-1">{t(fieldErrors.password)}</p>}
                         </div>
 
                         <Button fullWidth disabled={loading}>
@@ -235,9 +244,9 @@ export default function Login() {
                     {!TEST_MODE && (
                         <>
                             <div className="my-6 flex items-center gap-3">
-                                <div className="flex-1 h-px bg-foreground/10" />
+                                <div className="flex-1 h-px bg-foreground/6" />
                                 <span className="text-sm text-foreground/40">{t("auth.or")}</span>
-                                <div className="flex-1 h-px bg-foreground/10" />
+                                <div className="flex-1 h-px bg-foreground/6" />
                             </div>
 
                             <Button variant="outline" fullWidth onClick={handleGoogle}>
@@ -253,7 +262,7 @@ export default function Login() {
                         </Link>
                     </p>
                 </div>
-            </div>
+            </PageTransition>
         </div>
     );
 }

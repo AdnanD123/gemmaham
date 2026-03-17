@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Phone, Mail, Globe, Wrench } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import Badge from "../../components/ui/Badge";
+import { PageTransition } from "../../components/ui/PageTransition";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import { getContractorProfile, getContractorAssignments } from "../../lib/firestore";
 import type { ContractorProfile, Contractor } from "@gemmaham/shared";
 
@@ -35,13 +36,12 @@ export default function PublicContractorProfile() {
 
     return (
         <div className="home">
-            <Navbar />
-            <main className="max-w-3xl mx-auto p-6">
+            <PageTransition className="max-w-3xl mx-auto p-6">
                 <Link to="/buildings" className="flex items-center gap-2 text-sm text-foreground/50 hover:text-foreground mb-6">
                     <ArrowLeft size={16} /> {t("common.back")}
                 </Link>
 
-                {loading ? (
+                <ContentLoader loading={loading} skeleton={
                     <div className="space-y-4">
                         <div className="flex items-center gap-4">
                             <SkeletonBlock className="w-20 h-20 rounded-lg" />
@@ -52,16 +52,17 @@ export default function PublicContractorProfile() {
                         </div>
                         <SkeletonBlock className="h-24 w-full" />
                     </div>
-                ) : !profile ? (
-                    <div className="text-center py-12 bg-surface rounded-xl border-2 border-foreground/10">
-                        <Wrench size={32} className="mx-auto text-foreground/20 mb-3" />
-                        <p className="text-foreground/50">{t("contractor.notFound")}</p>
-                    </div>
-                ) : (
-                    <div className="bg-surface rounded-xl border-2 border-foreground/10 p-6">
+                }>
+                    {!profile ? (
+                        <div className="text-center py-12 bg-surface rounded-2xl border border-foreground/6 shadow-card">
+                            <Wrench size={32} className="mx-auto text-foreground/20 mb-3" />
+                            <p className="text-foreground/50">{t("contractor.notFound")}</p>
+                        </div>
+                    ) : (
+                    <div className="bg-surface rounded-2xl border border-foreground/6 shadow-card p-6">
                         <div className="flex items-start gap-5 mb-6">
                             {profile.logoUrl ? (
-                                <img src={profile.logoUrl} alt={profile.companyName} className="w-20 h-20 rounded-lg object-cover" />
+                                <img src={profile.logoUrl} alt={profile.companyName} className="w-20 h-20 rounded-lg object-cover" loading="lazy" />
                             ) : (
                                 <div className="w-20 h-20 rounded-lg bg-primary/10 flex items-center justify-center">
                                     <Wrench size={32} className="text-primary" />
@@ -146,7 +147,7 @@ export default function PublicContractorProfile() {
                                         <Link
                                             key={a.id}
                                             to={`/buildings/${a.buildingId}`}
-                                            className="block p-3 bg-background rounded-lg border border-foreground/10 hover:border-primary/30 transition-colors"
+                                            className="block p-3 bg-background rounded-xl border border-foreground/6 hover:border-primary/30 transition-colors"
                                         >
                                             <div className="flex items-center justify-between">
                                                 <span className="font-medium">{a.buildingName}</span>
@@ -161,7 +162,8 @@ export default function PublicContractorProfile() {
                         )}
                     </div>
                 )}
-            </main>
+                </ContentLoader>
+            </PageTransition>
         </div>
     );
 }

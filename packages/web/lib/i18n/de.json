@@ -20,7 +20,9 @@
     "analytics": "Analytik",
     "findContractors": "Auftragnehmer finden",
     "browseProjects": "Projekte durchsuchen",
-    "myProjects": "Meine Projekte"
+    "myApplications": "Meine Bewerbungen",
+    "myProjects": "Meine Projekte",
+    "favorites": "Favoriten"
   },
   "home": {
     "badge": "KI-gestützte Plattform",
@@ -122,6 +124,15 @@
     "minPrice": "Mindestpreis",
     "maxPrice": "Höchstpreis",
     "minBedrooms": "Min. Schlafzimmer",
+    "location": "Standort",
+    "locationPlaceholder": "Stadt oder Gebiet...",
+    "minArea": "Min. Größe (m²)",
+    "maxArea": "Max. Größe (m²)",
+    "sortBy": "Sortieren nach",
+    "newest": "Neueste zuerst",
+    "priceLowHigh": "Preis: aufsteigend",
+    "priceHighLow": "Preis: absteigend",
+    "sizeLargeSmall": "Größe: absteigend",
     "apply": "Filter anwenden",
     "reset": "Zurücksetzen",
     "any": "Beliebig"
@@ -206,7 +217,15 @@
     "saving": "Speichern...",
     "namePlaceholder": "Max Mustermann",
     "phonePlaceholder": "+49 30 1234567",
-    "addressPlaceholder": "Straße, Stadt, Land"
+    "addressPlaceholder": "Straße, Stadt, Land",
+    "edit": {
+      "personalInfo": "Persönliche Informationen",
+      "account": "Konto",
+      "password": "Passwort",
+      "passwordDesc": "Wir senden einen Link zum Zurücksetzen des Passworts an Ihre E-Mail-Adresse.",
+      "changePassword": "Passwort ändern",
+      "documents": "Dokumente"
+    }
   },
   "toast": {
     "reservationSent": "Reservierungsanfrage gesendet!",
@@ -276,7 +295,9 @@
     "processing": "Verarbeitung...",
     "search": "Suchen",
     "searching": "Suche läuft",
-    "back": "Zurück"
+    "back": "Zurück",
+    "yes": "Ja",
+    "no": "Nein"
   },
   "messages": {
     "noConversations": "Noch keine Unterhaltungen",
@@ -518,7 +539,15 @@
       "completed": "Abgeschlossen"
     },
     "deleteProfileTitle": "Profil löschen",
-    "deleteProfileMsg": "Möchten Sie Ihr Auftragnehmer-Profil wirklich löschen? Dies kann nicht rückgängig gemacht werden."
+    "deleteProfileMsg": "Möchten Sie Ihr Auftragnehmer-Profil wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
+    "applications": {
+      "title": "Meine Bewerbungen",
+      "description": "Verfolgen Sie den Status Ihrer Bewerbungen für Bauprojekte.",
+      "noApplicationsAll": "Sie haben sich noch bei keinem Projekt beworben.",
+      "noApplicationsFiltered": "Keine {{status}} Bewerbungen.",
+      "browseProjects": "Verfügbare Projekte durchsuchen",
+      "unknownBuilding": "Unbekanntes Gebäude"
+    }
   },
   "customizations": {
     "options": "Optionen",
@@ -676,7 +705,14 @@
       "townhouse": "Reihenhaus",
       "cottage": "Landhaus"
     },
-    "edit": "Haus bearbeiten"
+    "edit": "Haus bearbeiten",
+    "render3d": "3D-Darstellung",
+    "compare2d3d": "2D / 3D Vergleich",
+    "houseType": "Typ",
+    "reserveConfirm": "Sie bekunden Interesse an <strong>{{title}}</strong> zum Preis von <strong>{{currency}} {{price}}</strong>.",
+    "alreadyRequested": "Sie haben bereits eine Reservierungsanfrage gestellt.",
+    "notAvailable": "Dieses Haus ist derzeit nicht zur Reservierung verfügbar.",
+    "messageFailed": "Gespräch konnte nicht gestartet werden"
   },
   "charts": {
     "revenue": "Umsatz",
@@ -1327,5 +1363,41 @@
     "scopeSaveFailed": "Leistungsumfang konnte nicht gespeichert werden",
     "scopeReset": "Auf Gebäudestandard zurückgesetzt",
     "noOptionsForSubcategory": "Keine Optionstypen für diese Unterkategorie definiert"
+  },
+  "photos": {
+    "gallery": "Fotogalerie",
+    "upload": "Immobilienfotos",
+    "max5": "Maximal 5 Fotos",
+    "dragToReorder": "Klicken oder Fotos hierher ziehen",
+    "uploading": "Wird hochgeladen...",
+    "previous": "Vorheriges Foto",
+    "next": "Nächstes Foto",
+    "close": "Galerie schließen",
+    "photoOf": "{{current}} von {{total}}"
+  },
+  "favorites": {
+    "title": "Meine Favoriten",
+    "empty": "Noch keine Favoriten",
+    "emptyDesc": "Durchsuchen Sie Immobilien, um Ihre Favoriten zu speichern.",
+    "addedToFavorites": "Zu Favoriten hinzugefügt",
+    "removedFromFavorites": "Aus Favoriten entfernt"
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "passwordMin": "Passwort muss mindestens 6 Zeichen lang sein",
+    "nameMin": "Name muss mindestens 2 Zeichen lang sein",
+    "phoneMin": "Telefonnummer muss mindestens 5 Zeichen lang sein",
+    "addressMin": "Adresse muss mindestens 3 Zeichen lang sein",
+    "companyNameMin": "Firmenname muss mindestens 2 Zeichen lang sein",
+    "titleMin": "Titel muss mindestens 3 Zeichen lang sein",
+    "pricePositive": "Preis muss größer als 0 sein",
+    "areaPositive": "Fläche muss größer als 0 sein",
+    "lotSizePositive": "Grundstücksgröße muss größer als 0 sein",
+    "minZero": "Wert muss 0 oder größer sein",
+    "bedroomsMax": "Maximal 20 Schlafzimmer",
+    "bathroomsMax": "Maximal 10 Badezimmer",
+    "storiesMin": "Muss mindestens 1 Stockwerk haben",
+    "storiesMax": "Maximal 10 Stockwerke"
   }
 }

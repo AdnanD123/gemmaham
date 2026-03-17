@@ -22,7 +22,7 @@ const MessageThread = ({ messages, currentUserId, partnerName }: Props) => {
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 && (
                 <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-16">
-                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 rounded-full bg-primary/8 flex items-center justify-center mb-4">
                         <MessageSquare size={28} className="text-primary" />
                     </div>
                     {partnerName ? (
@@ -58,9 +58,9 @@ const MessageThread = ({ messages, currentUserId, partnerName }: Props) => {
                                         : `/flats/${msg.cardData.linkId}`}
                                     className="block group"
                                 >
-                                    <div className="rounded-2xl border-2 border-foreground/10 overflow-hidden hover:border-primary/40 transition-colors bg-surface">
+                                    <div className="rounded-2xl border border-foreground/6 overflow-hidden hover:border-primary/40 transition-colors bg-surface shadow-card">
                                         {msg.cardData.imageUrl && (
-                                            <img src={msg.cardData.imageUrl} alt="" className="w-full h-32 object-cover" />
+                                            <img src={msg.cardData.imageUrl} alt="" className="w-full h-32 object-cover" loading="lazy" />
                                         )}
                                         <div className="p-3">
                                             <p className="font-medium text-sm group-hover:text-primary">{msg.cardData.title}</p>
@@ -75,7 +75,7 @@ const MessageThread = ({ messages, currentUserId, partnerName }: Props) => {
                                 {hasText && (
                                     <div className={`px-4 py-2.5 rounded-2xl ${
                                         isMine
-                                            ? "bg-primary text-white rounded-br-md"
+                                            ? "bg-primary/10 text-foreground rounded-br-md"
                                             : "bg-surface-highlight text-foreground rounded-bl-md"
                                     }`}>
                                         <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
@@ -94,11 +94,11 @@ const MessageThread = ({ messages, currentUserId, partnerName }: Props) => {
                     <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
                         <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${
                             isMine
-                                ? "bg-primary text-white rounded-br-md"
+                                ? "bg-primary/10 text-foreground rounded-br-md"
                                 : "bg-surface-highlight text-foreground rounded-bl-md"
                         }`}>
                             <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                            <p className={`text-[10px] mt-1 ${isMine ? "text-white/60" : "text-foreground/30"}`}>
+                            <p className={`text-[10px] mt-1 ${isMine ? "text-foreground/30" : "text-foreground/30"}`}>
                                 {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                             </p>
                         </div>

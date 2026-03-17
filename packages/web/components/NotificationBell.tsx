@@ -76,9 +76,9 @@ const NotificationBell = ({ userId }: NotificationBellProps) => {
             </button>
 
             {open && (
-                <div role="menu" className="absolute right-0 top-full mt-2 w-80 bg-surface border-2 border-foreground/10 rounded-xl shadow-lg z-50 overflow-hidden">
+                <div role="menu" className="absolute right-0 top-full mt-2 w-80 border border-foreground/6 rounded-2xl shadow-card z-50 overflow-hidden" style={{ background: "var(--color-glass)", backdropFilter: "blur(20px) saturate(1.8)" }}>
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-foreground/10">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-foreground/6">
                         <span className="text-sm font-semibold">{t("notifications.title")}</span>
                         {unreadCount > 0 && (
                             <button
@@ -121,6 +121,17 @@ const NotificationBell = ({ userId }: NotificationBellProps) => {
                                 </div>
                             ))
                         )}
+                    </div>
+
+                    {/* View all link */}
+                    <div className="border-t border-foreground/6">
+                        <Link
+                            to="/notifications"
+                            onClick={() => setOpen(false)}
+                            className="block px-4 py-2.5 text-center text-sm font-medium text-primary hover:text-primary/80 hover:bg-foreground/5 transition-colors"
+                        >
+                            {t("notifications.viewAll")}
+                        </Link>
                     </div>
                 </div>
             )}

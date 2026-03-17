@@ -1,17 +1,15 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Menu } from "lucide-react";
-import Button from "./ui/Button";
+import { Box, Menu, LogOut } from "lucide-react";
 import ThemeToggle from "./ui/ThemeToggle";
 import LanguageSwitcher from "./ui/LanguageSwitcher";
 import NotificationBell from "./NotificationBell";
 import MobileMenu from "./MobileMenu";
-import { useOutletContext, Link } from "react-router";
+import { Link } from "react-router";
 import type { AuthContext } from "@gemmaham/shared";
 
-const Navbar = () => {
+const Navbar = ({ auth }: { auth: AuthContext }) => {
     const { t } = useTranslation();
-    const auth = useOutletContext<AuthContext>();
     const { user, role, signOut } = auth;
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -22,6 +20,11 @@ const Navbar = () => {
             console.error(`Sign out failed: ${e}`);
         }
     };
+
+    const profileLink = role === "contractor" ? "/contractor/profile"
+        : role === "user" ? "/user/profile"
+        : role === "company" ? "/company/dashboard"
+        : "/";
 
     return (
         <>
@@ -35,34 +38,6 @@ const Navbar = () => {
                                 <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-yellow-400 text-yellow-900 uppercase tracking-wide">test</span>
                             )}
                         </Link>
-
-                        <ul className="links">
-                            {(!role || role === "user") && (
-                                <li><Link to="/properties">{t("nav.browseProperties")}</Link></li>
-                            )}
-                            {role === "company" && (
-                                <>
-                                    <li><Link to="/company/dashboard">{t("nav.dashboard")}</Link></li>
-                                    <li><Link to="/company/contractors">{t("nav.findContractors")}</Link></li>
-                                    <li><Link to="/company/properties">{t("nav.properties")}</Link></li>
-                                    <li><Link to="/company/messages">{t("nav.messages")}</Link></li>
-                                </>
-                            )}
-                            {role === "user" && (
-                                <>
-                                    <li><Link to="/user/reservations">{t("nav.reservations")}</Link></li>
-                                    <li><Link to="/user/messages">{t("nav.messages")}</Link></li>
-                                </>
-                            )}
-                            {role === "contractor" && (
-                                <>
-                                    <li><Link to="/contractor/dashboard">{t("nav.dashboard")}</Link></li>
-                                    <li><Link to="/contractor/browse">{t("nav.browseProjects")}</Link></li>
-                                    <li><Link to="/contractor/projects">{t("nav.myProjects")}</Link></li>
-                                    <li><Link to="/contractor/messages">{t("nav.messages")}</Link></li>
-                                </>
-                            )}
-                        </ul>
                     </div>
 
                     <div className="actions">
@@ -72,20 +47,28 @@ const Navbar = () => {
                             <>
                                 <NotificationBell userId={user.uid} />
                                 <Link
-                                    to={role === "contractor" ? "/contractor/profile" : role === "user" ? "/user/profile" : "/"}
+                                    to={profileLink}
                                     className="greeting hidden md:inline hover:text-primary transition-colors"
                                 >
                                     {user.displayName ? t("nav.hi", { name: user.displayName }) : "Signed in"}
                                 </Link>
 
-                                <Button size="sm" onClick={handleSignOut} className="btn hidden md:inline-flex">
-                                    {t("nav.logOut")}
-                                </Button>
+                                <button
+                                    onClick={handleSignOut}
+                                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
+                                    title={t("nav.logOut")}
+                                >
+                                    <LogOut size={14} />
+                                    <span className="hidden lg:inline">{t("nav.logOut")}</span>
+                                </button>
                             </>
                         ) : (
                             <>
-                                <Link to="/auth/login" className="hidden md:inline">
-                                    <Button size="sm" variant="ghost">{t("nav.logIn")}</Button>
+                                <Link
+                                    to="/auth/login"
+                                    className="login hidden md:inline"
+                                >
+                                    {t("nav.logIn")}
                                 </Link>
 
                                 <Link to="/auth/register" className="cta hidden md:inline-flex">{t("nav.getStarted")}</Link>

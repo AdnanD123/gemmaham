@@ -2,7 +2,7 @@ import { SkeletonLine, SkeletonCircle } from "../ui/Skeleton";
 
 function ConversationItemSkeleton() {
     return (
-        <div className="p-4 bg-surface rounded-xl border-2 border-foreground/10 flex items-center gap-3">
+        <div className="p-4 bg-surface rounded-2xl border border-foreground/6 flex items-center gap-3">
             <SkeletonCircle className="w-10 h-10 shrink-0" />
             <div className="flex-1 space-y-2">
                 <SkeletonLine className="w-32 h-4" />

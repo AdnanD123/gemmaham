@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import RevenueChart from "../../components/charts/RevenueChart";
 import OccupancyChart from "../../components/charts/OccupancyChart";
@@ -9,6 +8,7 @@ import RevenueByPropertyChart from "../../components/charts/RevenueByPropertyCha
 import { listCompanyFlats, listCompanyHouses, getCompanyReservations } from "../../lib/firestore";
 import { deriveCompanyRevenue } from "../../lib/revenue";
 import type { AuthContext, Flat, House, Reservation } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 type DateRange = "30d" | "90d" | "1y" | "all";
 
@@ -56,9 +56,9 @@ export default function CompanyAnalytics() {
     // Occupancy data
     const allProperties = [...flats, ...houses];
     const occupancyData = [
-        { label: "Available", value: allProperties.filter((p) => p.status === "available").length, color: "#22c55e" },
-        { label: "Reserved", value: allProperties.filter((p) => p.status === "reserved").length, color: "#f97316" },
-        { label: "Sold", value: allProperties.filter((p) => p.status === "sold").length, color: "#ef4444" },
+        { label: "Available", value: allProperties.filter((p) => p.status === "available").length, color: "#30d158" },
+        { label: "Reserved", value: allProperties.filter((p) => p.status === "reserved").length, color: "#5856d6" },
+        { label: "Sold", value: allProperties.filter((p) => p.status === "sold").length, color: "#ff6b6b" },
     ];
 
     // Property performance table
@@ -66,8 +66,8 @@ export default function CompanyAnalytics() {
 
     return (
         <RoleGuard allowedRole="company">
-            <Navbar />
-            <div className="flex mt-20">
+            <PageTransition>
+            <div className="flex">
                 <main className="flex-1 p-6 max-w-5xl">
                     <h1 className="font-serif text-2xl font-bold mb-6">{t("analytics.title")}</h1>
 
@@ -87,7 +87,7 @@ export default function CompanyAnalytics() {
                     </div>
 
                     {/* Charts */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                         <RevenueChart
                             data={filterMonthly(revenue.monthly)}
                             title={t("charts.monthlyRevenue")}
@@ -100,7 +100,7 @@ export default function CompanyAnalytics() {
                         />
                     </div>
 
-                    <div className="mb-6">
+                    <div className="mb-8">
                         <RevenueByPropertyChart
                             flatRevenue={revenue.byType.flat}
                             houseRevenue={revenue.byType.house}
@@ -110,14 +110,14 @@ export default function CompanyAnalytics() {
                     </div>
 
                     {/* Property performance table */}
-                    <div className="bg-surface rounded-xl border-2 border-foreground/10 overflow-hidden">
-                        <div className="p-4 border-b border-foreground/10">
+                    <div className="bg-surface rounded-2xl border border-foreground/6 overflow-hidden">
+                        <div className="p-4 border-b border-foreground/6">
                             <h3 className="font-semibold">{t("analytics.propertyPerformance")}</h3>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="border-b border-foreground/10 text-foreground/50">
+                                    <tr className="border-b border-foreground/6 text-foreground/50">
                                         <th className="text-left p-3">Title</th>
                                         <th className="text-left p-3">Type</th>
                                         <th className="text-left p-3">Status</th>
@@ -139,6 +139,7 @@ export default function CompanyAnalytics() {
                     </div>
                 </main>
             </div>
+            </PageTransition>
         </RoleGuard>
     );
 }

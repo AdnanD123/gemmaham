@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useId } from "react";
 import { X } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface ModalProps {
     isOpen: boolean;
@@ -57,27 +58,41 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
         };
     }, [isOpen, handleKeyDown]);
 
-    if (!isOpen) return null;
-
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-            <div
-                ref={dialogRef}
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby={titleId}
-                className="relative bg-surface rounded-xl border-2 border-foreground/10 shadow-lg w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
-            >
-                <div className="flex items-center justify-between p-6 border-b border-foreground/10">
-                    <h2 id={titleId} className="text-xl font-bold">{title}</h2>
-                    <button onClick={onClose} aria-label="Close" className="p-1 hover:bg-surface-highlight rounded-lg transition-colors">
-                        <X size={20} />
-                    </button>
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute inset-0 bg-foreground/35 backdrop-blur-xl"
+                        onClick={onClose}
+                        aria-hidden="true"
+                    />
+                    <motion.div
+                        ref={dialogRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby={titleId}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
+                        className="relative bg-surface rounded-2xl border-2 border-foreground/6 shadow-elevated w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto"
+                    >
+                        <div className="flex items-center justify-between p-6 border-b border-foreground/6">
+                            <h2 id={titleId} className="text-xl font-bold">{title}</h2>
+                            <button onClick={onClose} aria-label="Close" className="p-1 hover:bg-surface-highlight rounded-lg transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6">{children}</div>
+                    </motion.div>
                 </div>
-                <div className="p-6">{children}</div>
-            </div>
-        </div>
+            )}
+        </AnimatePresence>
     );
 };
 

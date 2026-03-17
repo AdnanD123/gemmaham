@@ -137,6 +137,19 @@ export const uploadHouseFloorPlan = async (
   return getDownloadURL(storageRef);
 };
 
+export const uploadPropertyPhoto = async (
+  storagePath: string,
+  file: File,
+  onProgress?: (progress: number) => void,
+): Promise<string> => {
+  validateFile(file, 10, IMAGE_TYPES);
+  const name = `${Date.now()}-${file.name.replace(/[^a-z0-9._-]/gi, "_")}`;
+  const storageRef = ref(storage, `${storagePath}/${name}`);
+  await uploadBytes(storageRef, file, { contentType: file.type });
+  onProgress?.(100);
+  return getDownloadURL(storageRef);
+};
+
 function getExtension(file: File): string {
   const parts = file.name.split(".");
   return parts.length > 1 ? parts.pop()!.toLowerCase() : "png";

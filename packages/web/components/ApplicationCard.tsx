@@ -42,12 +42,12 @@ export default function ApplicationCard({ application, onAccept, onReject }: Pro
     const isPending = application.status === "pending";
 
     return (
-        <div className="p-4 bg-surface rounded-xl border-2 border-foreground/10">
+        <div className="p-4 bg-surface rounded-2xl border border-foreground/6 shadow-card">
             <div className="flex items-start gap-3">
                 {application.contractorLogoUrl ? (
-                    <img src={application.contractorLogoUrl} alt={application.contractorName} className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                    <img src={application.contractorLogoUrl} alt={application.contractorName} className="w-12 h-12 rounded-lg object-cover shrink-0" loading="lazy" />
                 ) : (
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
                         <Wrench size={18} className="text-primary" />
                     </div>
                 )}
@@ -90,7 +90,7 @@ export default function ApplicationCard({ application, onAccept, onReject }: Pro
 
             {/* Company notes (for rejected) */}
             {application.companyNotes && (
-                <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/10 rounded-lg">
+                <div className="mt-2 p-2 bg-accent/10 rounded-lg">
                     <p className="text-xs text-foreground/50 mb-0.5">{t("applications.companyNotes")}:</p>
                     <p className="text-sm">{application.companyNotes}</p>
                 </div>

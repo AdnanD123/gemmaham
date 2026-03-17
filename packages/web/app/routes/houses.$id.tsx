@@ -10,6 +10,8 @@ import Textarea from "../../components/ui/Textarea";
 import { getHouse, getCompany, createReservation, getUserReservationForProperty, getOrCreateHouseConversation } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, House, Company } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
+import { PhotoGallery } from "../../components/PhotoGallery";
 
 export default function HouseDetail() {
     const { t } = useTranslation();
@@ -106,6 +108,7 @@ export default function HouseDetail() {
         return (
             <>
                 <Navbar />
+                <PageTransition>
                 <main className="max-w-4xl mx-auto px-4 py-8 mt-20">
                     <div className="animate-pulse space-y-4">
                         <div className="h-64 bg-foreground/10 rounded-xl" />
@@ -113,6 +116,7 @@ export default function HouseDetail() {
                         <div className="h-4 bg-foreground/10 rounded w-1/3" />
                     </div>
                 </main>
+                </PageTransition>
             </>
         );
     }
@@ -121,10 +125,12 @@ export default function HouseDetail() {
         return (
             <>
                 <Navbar />
+                <PageTransition>
                 <main className="max-w-4xl mx-auto px-4 py-8 mt-20 text-center">
                     <p className="text-foreground/50">{t("houses.notFound")}</p>
                     <Link to="/properties"><Button variant="ghost" className="mt-4">{t("houses.backToBrowse")}</Button></Link>
                 </main>
+                </PageTransition>
             </>
         );
     }
@@ -132,6 +138,7 @@ export default function HouseDetail() {
     return (
         <>
             <Navbar />
+            <PageTransition>
             <main className="max-w-4xl mx-auto px-4 py-8 mt-20">
                 <Link to="/properties" className="flex items-center gap-1 text-sm text-foreground/50 hover:text-foreground mb-4">
                     <ArrowLeft size={16} /> {t("houses.backToBrowse")}
@@ -139,7 +146,7 @@ export default function HouseDetail() {
 
                 {/* Cover image */}
                 {(house.coverImageUrl || house.floorPlanUrl) && (
-                    <img
+                    <img loading="lazy"
                         src={house.coverImageUrl || house.floorPlanUrl}
                         alt={house.title}
                         className="w-full h-64 md:h-80 object-cover rounded-xl mb-6"
@@ -157,35 +164,35 @@ export default function HouseDetail() {
 
                 {/* Specs grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/10">
+                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/6">
                         <Bed size={18} className="text-foreground/40" />
                         <div>
                             <p className="font-semibold">{house.bedrooms}</p>
                             <p className="text-xs text-foreground/50">{t("houses.bedrooms")}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/10">
+                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/6">
                         <Bath size={18} className="text-foreground/40" />
                         <div>
                             <p className="font-semibold">{house.bathrooms}</p>
                             <p className="text-xs text-foreground/50">{t("houses.bathrooms")}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/10">
+                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/6">
                         <Maximize size={18} className="text-foreground/40" />
                         <div>
                             <p className="font-semibold">{house.area} {house.areaUnit}</p>
                             <p className="text-xs text-foreground/50">{t("houses.area")}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/10">
+                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/6">
                         <LandPlot size={18} className="text-foreground/40" />
                         <div>
                             <p className="font-semibold">{house.lotSize} {house.lotSizeUnit}</p>
                             <p className="text-xs text-foreground/50">{t("houses.lotSize")}</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/10">
+                    <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/6">
                         <Layers size={18} className="text-foreground/40" />
                         <div>
                             <p className="font-semibold">{house.stories}</p>
@@ -193,7 +200,7 @@ export default function HouseDetail() {
                         </div>
                     </div>
                     {house.garage && (
-                        <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/10">
+                        <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/6">
                             <Car size={18} className="text-foreground/40" />
                             <div>
                                 <p className="font-semibold">{house.garageSpaces}</p>
@@ -202,7 +209,7 @@ export default function HouseDetail() {
                         </div>
                     )}
                     {house.hasYard && (
-                        <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/10">
+                        <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/6">
                             <TreePine size={18} className="text-foreground/40" />
                             <div>
                                 <p className="font-semibold">Yes</p>
@@ -211,7 +218,7 @@ export default function HouseDetail() {
                         </div>
                     )}
                     {house.hasPool && (
-                        <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/10">
+                        <div className="flex items-center gap-2 p-3 bg-surface rounded-lg border border-foreground/6">
                             <Waves size={18} className="text-foreground/40" />
                             <div>
                                 <p className="font-semibold">Yes</p>
@@ -231,9 +238,12 @@ export default function HouseDetail() {
                 {house.floorPlanUrl && (
                     <div className="mb-6">
                         <h2 className="font-semibold text-lg mb-2">{t("houses.floorPlan")}</h2>
-                        <img src={house.floorPlanUrl} alt="Floor plan" className="rounded-xl max-h-96 object-contain" />
+                        <img loading="lazy" src={house.floorPlanUrl} alt="Floor plan" className="rounded-xl max-h-96 object-contain" />
                     </div>
                 )}
+
+                {/* Photo Gallery */}
+                <PhotoGallery photos={house.photos || []} alt={house.title} />
 
                 {/* Listed by */}
                 {company && (
@@ -260,6 +270,7 @@ export default function HouseDetail() {
                     )}
                 </div>
             </main>
+            </PageTransition>
 
             {/* Reserve modal */}
             {showReserve && (

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import HouseForm from "../../components/HouseForm";
 import Button from "../../components/ui/Button";
@@ -10,6 +9,7 @@ import { getHouse, updateHouse, deleteHouse } from "../../lib/firestore";
 import { uploadHouseCover, uploadHouseFloorPlan } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, House, AreaUnit, HouseType } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function CompanyEditHouse() {
     const { t } = useTranslation();
@@ -32,7 +32,7 @@ export default function CompanyEditHouse() {
         })();
     }, [id]);
 
-    const handleSubmit = async (data: any, coverFile: File | null, floorPlanFile: File | null) => {
+    const handleSubmit = async (data: any, coverFile: File | null, floorPlanFile: File | null, photos?: string[]) => {
         if (!id || !auth.companyId) return;
         setSubmitting(true);
         try {
@@ -56,6 +56,7 @@ export default function CompanyEditHouse() {
                 houseType: data.houseType as HouseType,
                 yearBuilt: data.yearBuilt || null,
                 featured: data.featured,
+                photos: photos || [],
             });
 
             if (coverFile) {
@@ -89,10 +90,11 @@ export default function CompanyEditHouse() {
     if (loading) {
         return (
             <RoleGuard allowedRole="company">
-                <Navbar />
-                <div className="flex mt-20">
-                    <main className="flex-1 p-6"><div className="animate-pulse h-96 bg-foreground/5 rounded-xl" /></main>
+                <PageTransition>
+                <div className="flex">
+                    <main className="flex-1 p-6"><div className="animate-pulse h-96 bg-foreground/5 rounded-2xl" /></main>
                 </div>
+            </PageTransition>
             </RoleGuard>
         );
     }
@@ -100,8 +102,7 @@ export default function CompanyEditHouse() {
     if (!house) {
         return (
             <RoleGuard allowedRole="company">
-                <Navbar />
-                <div className="flex mt-20">
+                <div className="flex">
                     <main className="flex-1 p-6 text-center text-foreground/50">{t("houses.notFound")}</main>
                 </div>
             </RoleGuard>
@@ -110,8 +111,7 @@ export default function CompanyEditHouse() {
 
     return (
         <RoleGuard allowedRole="company">
-            <Navbar />
-            <div className="flex mt-20">
+            <div className="flex">
                 <main className="flex-1 p-6 max-w-3xl">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="font-serif text-2xl font-bold">{t("common.edit")}: {house.title}</h1>

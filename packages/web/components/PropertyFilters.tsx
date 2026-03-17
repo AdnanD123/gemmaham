@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Select from "./ui/Select";
-import type { PropertyFilters as PropertyFiltersType, PropertyType, HouseType } from "@gemmaham/shared";
+import type { PropertyFilters as PropertyFiltersType, PropertyType, HouseType, SortBy } from "@gemmaham/shared";
 
 interface Props {
     onFilter: (filters: PropertyFiltersType) => void;
@@ -25,13 +25,21 @@ const PropertyFilters = ({ onFilter }: Props) => {
     const [maxPrice, setMaxPrice] = useState("");
     const [minBedrooms, setMinBedrooms] = useState("");
     const [houseType, setHouseType] = useState("");
+    const [location, setLocation] = useState("");
+    const [minArea, setMinArea] = useState("");
+    const [maxArea, setMaxArea] = useState("");
+    const [sortBy, setSortBy] = useState<SortBy>("newest");
 
-    const buildFilters = (typeOverride?: PropertyType | "all") => ({
+    const buildFilters = (typeOverride?: PropertyType | "all"): PropertyFiltersType => ({
         propertyType: typeOverride ?? propertyType,
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
         minBedrooms: minBedrooms ? Number(minBedrooms) : undefined,
         houseType: houseType ? (houseType as HouseType) : undefined,
+        location: location || undefined,
+        minArea: minArea ? Number(minArea) : undefined,
+        maxArea: maxArea ? Number(maxArea) : undefined,
+        sortBy,
     });
 
     const apply = () => {
@@ -49,11 +57,15 @@ const PropertyFilters = ({ onFilter }: Props) => {
         setMaxPrice("");
         setMinBedrooms("");
         setHouseType("");
+        setLocation("");
+        setMinArea("");
+        setMaxArea("");
+        setSortBy("newest");
         onFilter({});
     };
 
     return (
-        <div className="p-4 bg-surface rounded-xl border-2 border-foreground/10 mb-6">
+        <div className="p-4 bg-surface rounded-2xl border border-foreground/6 mb-6">
             {/* Type toggle */}
             <div className="flex gap-2 mb-4">
                 {(["all", "building", "house"] as const).map((type) => (
@@ -72,6 +84,13 @@ const PropertyFilters = ({ onFilter }: Props) => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Input
+                    label={t("filters.location")}
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder={t("filters.locationPlaceholder")}
+                />
                 <Input
                     label={t("filters.minPrice")}
                     type="number"
@@ -92,6 +111,31 @@ const PropertyFilters = ({ onFilter }: Props) => {
                     value={minBedrooms}
                     onChange={(e) => setMinBedrooms(e.target.value)}
                     placeholder="1"
+                />
+                <Input
+                    label={t("filters.minArea")}
+                    type="number"
+                    value={minArea}
+                    onChange={(e) => setMinArea(e.target.value)}
+                    placeholder="0"
+                />
+                <Input
+                    label={t("filters.maxArea")}
+                    type="number"
+                    value={maxArea}
+                    onChange={(e) => setMaxArea(e.target.value)}
+                    placeholder={t("filters.any")}
+                />
+                <Select
+                    label={t("filters.sortBy")}
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as SortBy)}
+                    options={[
+                        { value: "newest", label: t("filters.newest") },
+                        { value: "price_asc", label: t("filters.priceLowHigh") },
+                        { value: "price_desc", label: t("filters.priceHighLow") },
+                        { value: "size_desc", label: t("filters.sizeLargeSmall") },
+                    ]}
                 />
                 {propertyType === "house" && (
                     <Select

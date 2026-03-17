@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Search, Users } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import ContractorProfileCard from "../../components/ContractorProfileCard";
 import Input from "../../components/ui/Input";
 import Select from "../../components/ui/Select";
 import { SkeletonBlock } from "../../components/ui/Skeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import { searchContractors } from "../../lib/firestore";
 import { CONTRACTOR_CATEGORIES } from "@gemmaham/shared";
 import type { ContractorProfile, ContractorCategory, ContractorSubcategory } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function CompanyContractors() {
     const { t } = useTranslation();
@@ -53,8 +54,8 @@ export default function CompanyContractors() {
 
     return (
         <RoleGuard allowedRole="company">
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6">
                         <div className="max-w-5xl">
@@ -112,28 +113,31 @@ export default function CompanyContractors() {
                             </div>
 
                             {/* Results */}
-                            {loading ? (
+                            <ContentLoader loading={loading} skeleton={
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {Array.from({ length: 6 }).map((_, i) => (
                                         <SkeletonBlock key={i} className="h-48 rounded-xl" />
                                     ))}
                                 </div>
-                            ) : contractors.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <Users size={40} className="mx-auto text-foreground/20 mb-3" />
-                                    <p className="text-foreground/50">{t("contractors.noResults")}</p>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {contractors.map((c) => (
-                                        <ContractorProfileCard key={c.id} contractor={c} />
-                                    ))}
-                                </div>
-                            )}
+                            }>
+                                {contractors.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Users size={40} className="mx-auto text-foreground/20 mb-3" />
+                                        <p className="text-foreground/50">{t("contractors.noResults")}</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {contractors.map((c) => (
+                                            <ContractorProfileCard key={c.id} contractor={c} />
+                                        ))}
+                                    </div>
+                                )}
+                            </ContentLoader>
                         </div>
                     </main>
                 </div>
             </div>
+            </PageTransition>
         </RoleGuard>
     );
 }

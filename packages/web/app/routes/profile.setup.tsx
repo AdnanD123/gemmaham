@@ -4,10 +4,13 @@ import { useTranslation } from "react-i18next";
 import { Box, Camera, Lock } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import { PageTransition } from "../../components/ui/PageTransition";
 import Textarea from "../../components/ui/Textarea";
 import { updateUserProfile, updateContractorProfile } from "../../lib/firestore";
 import { uploadProfilePhoto, uploadContractorProfileLogo } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
+import { profileSetupSchema, contractorProfileSetupSchema } from "../../lib/validation";
+import { useFormValidation } from "../../lib/hooks/useFormValidation";
 import CategorySubcategoryPicker, { deriveCategoryKeys, deriveSubcategoryKeys } from "../../components/CategorySubcategoryPicker";
 import type { AuthContext, ContractorCategorySelection } from "@gemmaham/shared";
 
@@ -18,6 +21,9 @@ export default function ProfileSetup() {
     const { addToast } = useToast();
 
     const isContractor = auth.role === "contractor";
+
+    const { errors: fieldErrors, validate: validateProfile, clearError } = useFormValidation(profileSetupSchema);
+    const { errors: contractorFieldErrors, validate: validateContractor, clearError: clearContractorError } = useFormValidation(contractorProfileSetupSchema);
 
     const [displayName, setDisplayName] = useState(auth.user?.displayName || "");
     const [phone, setPhone] = useState("");
@@ -53,13 +59,15 @@ export default function ProfileSetup() {
         if (!auth.user) return;
 
         if (isContractor) {
-            if (!displayName.trim() || !phone.trim() || !companyName.trim() || categories.length === 0) {
+            if (!validateContractor({ displayName: displayName.trim(), phone: phone.trim(), companyName: companyName.trim() })) return;
+            if (categories.length === 0) {
                 addToast("warning", t("toast.fillRequired"));
                 return;
             }
         } else {
+            if (!validateProfile({ displayName: displayName.trim(), phone: phone.trim(), address: address.trim() })) return;
             const TEST_MODE = import.meta.env.VITE_EMAIL_VERIFICATION !== "true";
-            if (!displayName.trim() || !phone.trim() || !address.trim() || (!TEST_MODE && !photoFile)) {
+            if (!TEST_MODE && !photoFile) {
                 addToast("warning", t("toast.fillRequired"));
                 return;
             }
@@ -144,7 +152,7 @@ export default function ProfileSetup() {
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
-            <div className="w-full max-w-lg">
+            <PageTransition className="w-full max-w-lg">
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center gap-2 mb-4">
                         <Box className="w-8 h-8 text-primary" />
@@ -156,14 +164,14 @@ export default function ProfileSetup() {
                     </p>
                 </div>
 
-                <div className="bg-surface border-2 border-foreground/10 rounded-xl p-8">
+                <div className="bg-surface border border-foreground/6 rounded-2xl shadow-elevated p-8">
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Photo Upload */}
                         <div className="flex flex-col items-center gap-3">
                             <div className="relative">
                                 <div className="w-24 h-24 rounded-full bg-foreground/10 overflow-hidden flex items-center justify-center">
                                     {photoPreview ? (
-                                        <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
+                                        <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" loading="lazy" />
                                     ) : (
                                         <Camera size={32} className="text-foreground/30" />
                                     )}
@@ -187,7 +195,8 @@ export default function ProfileSetup() {
                             label={t("profile.fullName") + " *"}
                             placeholder={t("profile.namePlaceholder")}
                             value={displayName}
-                            onChange={(e) => setDisplayName(e.target.value)}
+                            onChange={(e) => { setDisplayName(e.target.value); clearError("displayName"); clearContractorError("displayName"); }}
+                            error={(fieldErrors.displayName || contractorFieldErrors.displayName) ? t(fieldErrors.displayName || contractorFieldErrors.displayName) : undefined}
                             required
                         />
 
@@ -196,7 +205,8 @@ export default function ProfileSetup() {
                             type="tel"
                             placeholder={t("profile.phonePlaceholder")}
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={(e) => { setPhone(e.target.value); clearError("phone"); clearContractorError("phone"); }}
+                            error={(fieldErrors.phone || contractorFieldErrors.phone) ? t(fieldErrors.phone || contractorFieldErrors.phone) : undefined}
                             required
                         />
 
@@ -206,7 +216,8 @@ export default function ProfileSetup() {
                                     label={t("contractor.businessName") + " *"}
                                     placeholder={t("contractor.businessNamePlaceholder")}
                                     value={companyName}
-                                    onChange={(e) => setCompanyName(e.target.value)}
+                                    onChange={(e) => { setCompanyName(e.target.value); clearContractorError("companyName"); }}
+                                    error={contractorFieldErrors.companyName ? t(contractorFieldErrors.companyName) : undefined}
                                     required
                                 />
 
@@ -236,12 +247,12 @@ export default function ProfileSetup() {
                                     <div className="flex items-center gap-4">
                                         <div className="w-16 h-16 rounded-lg bg-foreground/10 overflow-hidden flex items-center justify-center">
                                             {logoPreview ? (
-                                                <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                                                <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" loading="lazy" />
                                             ) : (
                                                 <Camera size={20} className="text-foreground/30" />
                                             )}
                                         </div>
-                                        <label className="px-4 py-2 border-2 border-foreground/10 rounded-lg cursor-pointer hover:border-foreground/20 transition-colors text-sm">
+                                        <label className="px-4 py-2 border border-foreground/6 rounded-xl cursor-pointer hover:border-foreground/20 transition-colors text-sm">
                                             {t("contractor.uploadLogo")}
                                             <input
                                                 type="file"
@@ -257,7 +268,7 @@ export default function ProfileSetup() {
                                     label={t("profile.address")}
                                     placeholder={t("profile.addressPlaceholder")}
                                     value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
+                                    onChange={(e) => { setAddress(e.target.value); clearError("address"); }}
                                 />
                             </>
                         ) : (
@@ -266,12 +277,13 @@ export default function ProfileSetup() {
                                     label={t("profile.address") + " *"}
                                     placeholder={t("profile.addressPlaceholder")}
                                     value={address}
-                                    onChange={(e) => setAddress(e.target.value)}
+                                    onChange={(e) => { setAddress(e.target.value); clearError("address"); }}
+                                    error={fieldErrors.address ? t(fieldErrors.address) : undefined}
                                     required
                                 />
 
                                 {/* Future-ready fields (disabled) */}
-                                <div className="border-t border-foreground/10 pt-5 mt-5">
+                                <div className="border-t border-foreground/6 pt-5 mt-5">
                                     <div className="flex items-center gap-2 mb-3">
                                         <Lock size={14} className="text-foreground/30" />
                                         <span className="text-xs font-medium text-foreground/40 uppercase tracking-wide">{t("profile.comingSoon")}</span>
@@ -290,7 +302,7 @@ export default function ProfileSetup() {
                                             <label className="block text-sm font-medium mb-1 text-foreground/50">
                                                 {t("profile.documents")}
                                             </label>
-                                            <div className="border-2 border-dashed border-foreground/10 rounded-lg p-4 text-center">
+                                            <div className="border border-dashed border-foreground/10 rounded-xl p-4 text-center">
                                                 <p className="text-xs text-foreground/30">{t("profile.documentsPlaceholder")}</p>
                                             </div>
                                         </div>
@@ -304,7 +316,7 @@ export default function ProfileSetup() {
                         </Button>
                     </form>
                 </div>
-            </div>
+            </PageTransition>
         </div>
     );
 }

@@ -2,15 +2,16 @@ import { useState, useEffect } from "react";
 import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import ReservationListSkeleton from "../../components/skeletons/ReservationSkeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import { listCompanyBuildings, deleteBuilding } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, Building } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function CompanyBuildingsList() {
     const { t } = useTranslation();
@@ -66,8 +67,8 @@ export default function CompanyBuildingsList() {
 
     return (
         <RoleGuard allowedRole="company">
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-6xl">
                         <div className="flex items-center justify-between mb-6">
@@ -77,92 +78,92 @@ export default function CompanyBuildingsList() {
                             </Link>
                         </div>
 
-                        {loading ? (
-                            <ReservationListSkeleton />
-                        ) : buildings.length === 0 ? (
-                            <div className="text-center py-12">
-                                <p className="text-foreground/40 mb-4">{t("buildings.noBuildings")}</p>
-                                <Link to="/company/buildings/new">
-                                    <Button>{t("buildings.addFirstBuilding")}</Button>
-                                </Link>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {buildings.map((building) => (
-                                    <div
-                                        key={building.id}
-                                        className="bg-surface rounded-xl border-2 border-foreground/10 overflow-hidden hover:border-primary/30 transition-colors"
-                                    >
-                                        <Link to={`/company/buildings/${building.id}`}>
-                                            {building.coverImageUrl ? (
-                                                <img
-                                                    src={building.coverImageUrl}
-                                                    alt={building.title}
-                                                    className="w-full h-48 object-cover"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-48 bg-foreground/5 flex items-center justify-center">
-                                                    <span className="text-4xl">🏗</span>
-                                                </div>
-                                            )}
-                                        </Link>
-                                        <div className="p-4">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <Link
-                                                    to={`/company/buildings/${building.id}`}
-                                                    className="font-bold truncate hover:text-primary transition-colors"
-                                                >
-                                                    {building.title}
-                                                </Link>
-                                                <Badge variant={building.status}>
-                                                    {t(`buildings.status.${building.status}`)}
-                                                </Badge>
-                                            </div>
-                                            <p className="text-sm text-foreground/50 truncate">{building.address}</p>
-
-                                            {/* Progress bar */}
-                                            <div className="mt-3">
-                                                <div className="flex items-center justify-between text-xs text-foreground/50 mb-1">
-                                                    <span>{t(`buildings.phase.${building.currentPhase}`)}</span>
-                                                    <span>
-                                                        {building.availableUnits}/{building.totalUnits}{" "}
-                                                        {t("buildings.unitsAvailable")}
-                                                    </span>
-                                                </div>
-                                                <div className="w-full h-2 bg-foreground/10 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full bg-primary rounded-full transition-all"
-                                                        style={{ width: getProgressWidth(building.status) }}
+                        <ContentLoader loading={loading} skeleton={<ReservationListSkeleton />}>
+                            {buildings.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-foreground/40 mb-4">{t("buildings.noBuildings")}</p>
+                                    <Link to="/company/buildings/new">
+                                        <Button>{t("buildings.addFirstBuilding")}</Button>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                    {buildings.map((building) => (
+                                        <div
+                                            key={building.id}
+                                            className="bg-surface rounded-2xl border border-foreground/6 overflow-hidden hover:border-primary/30 transition-colors"
+                                        >
+                                            <Link to={`/company/buildings/${building.id}`}>
+                                                {building.coverImageUrl ? (
+                                                    <img loading="lazy"
+                                                        src={building.coverImageUrl}
+                                                        alt={building.title}
+                                                        className="w-full h-48 object-cover"
                                                     />
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center justify-between mt-3">
-                                                <div className="flex items-center gap-3 text-xs text-foreground/40">
-                                                    <span>{building.floors} {t("buildings.floorsLabel")}</span>
-                                                    <span>·</span>
-                                                    <span>{t("buildings.est")}: {building.estimatedCompletion}</span>
-                                                </div>
-                                                <div className="flex gap-1">
-                                                    <Link to={`/company/buildings/${building.id}`}>
-                                                        <Button size="sm" variant="ghost">
-                                                            <Pencil size={14} />
-                                                        </Button>
-                                                    </Link>
-                                                    <Button
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={() => setDeleteTarget(building.id)}
+                                                ) : (
+                                                    <div className="w-full h-48 bg-foreground/5 flex items-center justify-center">
+                                                        <span className="text-4xl">🏗</span>
+                                                    </div>
+                                                )}
+                                            </Link>
+                                            <div className="p-4">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <Link
+                                                        to={`/company/buildings/${building.id}`}
+                                                        className="font-bold truncate hover:text-primary transition-colors"
                                                     >
-                                                        <Trash2 size={14} />
-                                                    </Button>
+                                                        {building.title}
+                                                    </Link>
+                                                    <Badge variant={building.status}>
+                                                        {t(`buildings.status.${building.status}`)}
+                                                    </Badge>
+                                                </div>
+                                                <p className="text-sm text-foreground/50 truncate">{building.address}</p>
+
+                                                {/* Progress bar */}
+                                                <div className="mt-3">
+                                                    <div className="flex items-center justify-between text-xs text-foreground/50 mb-1">
+                                                        <span>{t(`buildings.phase.${building.currentPhase}`)}</span>
+                                                        <span>
+                                                            {building.availableUnits}/{building.totalUnits}{" "}
+                                                            {t("buildings.unitsAvailable")}
+                                                        </span>
+                                                    </div>
+                                                    <div className="w-full h-2 bg-foreground/10 rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-primary rounded-full transition-all"
+                                                            style={{ width: getProgressWidth(building.status) }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center justify-between mt-3">
+                                                    <div className="flex items-center gap-3 text-xs text-foreground/40">
+                                                        <span>{building.floors} {t("buildings.floorsLabel")}</span>
+                                                        <span>·</span>
+                                                        <span>{t("buildings.est")}: {building.estimatedCompletion}</span>
+                                                    </div>
+                                                    <div className="flex gap-1">
+                                                        <Link to={`/company/buildings/${building.id}`}>
+                                                            <Button size="sm" variant="ghost">
+                                                                <Pencil size={14} />
+                                                            </Button>
+                                                        </Link>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={() => setDeleteTarget(building.id)}
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                                    ))}
+                                </div>
+                            )}
+                        </ContentLoader>
                     </main>
                 </div>
             </div>
@@ -176,6 +177,7 @@ export default function CompanyBuildingsList() {
                 confirmLabel={t("common.delete")}
                 loading={deleting}
             />
+            </PageTransition>
         </RoleGuard>
     );
 }

@@ -21,7 +21,7 @@ export default function ThemeToggle() {
     return (
         <button
             onClick={cycle}
-            className="p-2 rounded-lg text-foreground/60 hover:text-foreground hover:bg-foreground/5 transition-colors"
+            className="p-2 rounded-xl text-foreground/60 hover:text-foreground hover:bg-foreground/6 focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors"
             title={`${labels[theme]}`}
         >
             {icons[theme]}

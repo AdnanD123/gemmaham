@@ -18,6 +18,8 @@ import {
 import { useToast } from "../../lib/contexts/ToastContext";
 import { SkeletonBlock, SkeletonLine } from "../../components/ui/Skeleton";
 import type { AuthContext, Flat, Company, Building, CustomizationOption, Contractor, CustomizationRequest, Reservation } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
+import { PhotoGallery } from "../../components/PhotoGallery";
 
 // Parse price impact strings like "+€1,500 for Oak" → 1500
 function parsePriceImpact(priceImpact: string | null, selectedChoice: string, defaultOption: string): number {
@@ -309,6 +311,7 @@ export default function FlatDetail() {
 
     if (loading) {
         return (
+            <PageTransition>
             <div className="home">
                 <Navbar />
                 <div className="max-w-7xl mx-auto px-4 py-24">
@@ -317,7 +320,7 @@ export default function FlatDetail() {
                             <SkeletonBlock className="aspect-video rounded-xl" />
                         </div>
                         <div className="space-y-4">
-                            <div className="p-6 bg-surface rounded-xl border-2 border-foreground/10 space-y-3">
+                            <div className="p-6 bg-surface rounded-2xl border border-foreground/6 space-y-3">
                                 <SkeletonLine className="w-20 h-6 rounded-full" />
                                 <SkeletonLine className="w-3/4 h-7" />
                                 <SkeletonLine className="w-1/2 h-4" />
@@ -327,11 +330,13 @@ export default function FlatDetail() {
                     </div>
                 </div>
             </div>
+            </PageTransition>
         );
     }
 
     if (!flat) {
         return (
+            <PageTransition>
             <div className="home">
                 <Navbar />
                 <div className="max-w-7xl mx-auto px-4 py-24 text-center">
@@ -339,12 +344,14 @@ export default function FlatDetail() {
                     <Link to="/flats" className="text-primary hover:underline">{t("flats.backToBrowse")}</Link>
                 </div>
             </div>
+            </PageTransition>
         );
     }
 
     const activeRequests = userRequests.filter((r) => r.status !== "cancelled");
 
     return (
+        <PageTransition>
         <div className="home">
             <Navbar />
             <div className="max-w-7xl mx-auto px-4 py-24">
@@ -356,9 +363,9 @@ export default function FlatDetail() {
                     {/* Left column */}
                     <div className="lg:col-span-2 space-y-4">
                         {/* Image */}
-                        <div className="rounded-xl overflow-hidden border-2 border-foreground/10">
+                        <div className="rounded-2xl overflow-hidden border border-foreground/6">
                             {flat.renderedImageUrl || flat.floorPlanUrl ? (
-                                <img
+                                <img loading="lazy"
                                     src={flat.renderedImageUrl || flat.floorPlanUrl}
                                     alt={flat.title}
                                     className="w-full h-auto object-cover"
@@ -371,13 +378,13 @@ export default function FlatDetail() {
                         </div>
                         {flat.renderedImageUrl && flat.floorPlanUrl && (
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="rounded-lg overflow-hidden border-2 border-foreground/10">
+                                <div className="rounded-lg overflow-hidden border border-foreground/6">
                                     <p className="text-xs font-medium text-foreground/50 p-2 bg-surface">{t("flats.floorPlan")}</p>
-                                    <img src={flat.floorPlanUrl} alt="Floor plan" className="w-full h-auto" />
+                                    <img loading="lazy" src={flat.floorPlanUrl} alt="Floor plan" className="w-full h-auto" />
                                 </div>
-                                <div className="rounded-lg overflow-hidden border-2 border-foreground/10">
+                                <div className="rounded-lg overflow-hidden border border-foreground/6">
                                     <p className="text-xs font-medium text-foreground/50 p-2 bg-surface">{t("flats.render3d")}</p>
-                                    <img src={flat.renderedImageUrl} alt="3D render" className="w-full h-auto" />
+                                    <img loading="lazy" src={flat.renderedImageUrl} alt="3D render" className="w-full h-auto" />
                                 </div>
                             </div>
                         )}
@@ -390,6 +397,9 @@ export default function FlatDetail() {
                                 <Eye size={16} /> {t("flats.view2d3d")}
                             </Link>
                         )}
+
+                        {/* Photo Gallery */}
+                        <PhotoGallery photos={flat.photos || []} alt={flat.title} />
 
                         {/* Description */}
                         {flat.description && (
@@ -416,14 +426,14 @@ export default function FlatDetail() {
                                         return (
                                             <div
                                                 key={opt.id}
-                                                className={`p-4 bg-surface rounded-xl border-2 transition-colors ${
+                                                className={`p-4 bg-surface rounded-2xl border-2 transition-colors ${
                                                     existingRequest
                                                         ? "border-primary/30 bg-primary/5"
                                                         : opt.locked || deadlinePassed
-                                                          ? "border-foreground/10 opacity-60"
+                                                          ? "border-foreground/6 opacity-60"
                                                           : isNonDefault
                                                             ? "border-primary/40"
-                                                            : "border-foreground/10"
+                                                            : "border-foreground/6"
                                                 }`}
                                             >
                                                 <div className="flex items-center gap-2 mb-2">
@@ -486,8 +496,8 @@ export default function FlatDetail() {
                                                                     isSelected
                                                                         ? "bg-primary/15 text-primary border-primary/40 font-medium ring-1 ring-primary/20"
                                                                         : isInteractive
-                                                                          ? "bg-foreground/5 text-foreground/60 border-foreground/10 hover:border-primary/30 hover:text-primary/80 cursor-pointer"
-                                                                          : "bg-foreground/5 text-foreground/40 border-foreground/10 cursor-not-allowed"
+                                                                          ? "bg-foreground/5 text-foreground/60 border-foreground/6 hover:border-primary/30 hover:text-primary/80 cursor-pointer"
+                                                                          : "bg-foreground/5 text-foreground/40 border-foreground/6 cursor-not-allowed"
                                                                 }`}
                                                             >
                                                                 {choice}
@@ -524,7 +534,7 @@ export default function FlatDetail() {
 
                                                 {/* Request Change button — only for users with approved/reserved reservation */}
                                                 {isInteractive && isNonDefault && auth.user && auth.role === "user" && (
-                                                    <div className="mt-3 pt-3 border-t border-foreground/10">
+                                                    <div className="mt-3 pt-3 border-t border-foreground/6">
                                                         {userReservation && ["approved", "reserved"].includes(userReservation.status) ? (
                                                             <Button
                                                                 variant="ghost"
@@ -544,7 +554,7 @@ export default function FlatDetail() {
 
                                                 {/* Sign in prompt for unauthenticated users */}
                                                 {isInteractive && isNonDefault && !auth.user && (
-                                                    <div className="mt-3 pt-3 border-t border-foreground/10">
+                                                    <div className="mt-3 pt-3 border-t border-foreground/6">
                                                         <Link to="/auth/login" className="text-xs text-primary hover:underline">
                                                             {t("flatCustomization.signInToCustomize")}
                                                         </Link>
@@ -553,7 +563,7 @@ export default function FlatDetail() {
 
                                                 {/* Cancel button for pending requests */}
                                                 {existingRequest && existingRequest.status === "pending" && (
-                                                    <div className="mt-3 pt-3 border-t border-foreground/10">
+                                                    <div className="mt-3 pt-3 border-t border-foreground/6">
                                                         <button
                                                             type="button"
                                                             onClick={() => setCancelRequestId(existingRequest.id)}
@@ -578,11 +588,11 @@ export default function FlatDetail() {
                                     {contractors.map((c) => (
                                         <div
                                             key={c.id}
-                                            className={`p-4 bg-surface rounded-xl border-2 border-foreground/10 ${c.status === "completed" ? "opacity-50" : ""}`}
+                                            className={`p-4 bg-surface rounded-2xl border border-foreground/6 ${c.status === "completed" ? "opacity-50" : ""}`}
                                         >
                                             <div className="flex items-start gap-3">
                                                 {c.logoUrl ? (
-                                                    <img src={c.logoUrl} alt={c.name} className="w-10 h-10 rounded-lg object-cover" />
+                                                    <img loading="lazy" src={c.logoUrl} alt={c.name} className="w-10 h-10 rounded-lg object-cover" />
                                                 ) : (
                                                     <div className="w-10 h-10 rounded-lg bg-foreground/10 flex items-center justify-center text-sm">🔧</div>
                                                 )}
@@ -618,7 +628,7 @@ export default function FlatDetail() {
                     {/* Sidebar */}
                     <div className="space-y-4">
                         {/* Flat info card */}
-                        <div className="p-6 bg-surface rounded-xl border-2 border-foreground/10">
+                        <div className="p-6 bg-surface rounded-2xl border border-foreground/6">
                             <div className="flex items-center gap-2 mb-2">
                                 <Badge variant={flat.status}>{flat.status}</Badge>
                             </div>
@@ -690,7 +700,7 @@ export default function FlatDetail() {
 
                         {/* Price Calculator Card */}
                         {(priceDeltas.length > 0 || totalDelta !== 0) && (
-                            <div className="p-6 bg-surface rounded-xl border-2 border-primary/20">
+                            <div className="p-6 bg-surface rounded-2xl border-2 border-primary/20">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Calculator size={16} className="text-primary" />
                                     <h3 className="font-bold">{t("flatCustomization.estimatedTotal")}</h3>
@@ -711,7 +721,7 @@ export default function FlatDetail() {
                                         </div>
                                     ))}
 
-                                    <div className="border-t border-foreground/10 pt-2 flex justify-between">
+                                    <div className="border-t border-foreground/6 pt-2 flex justify-between">
                                         <span className="font-bold">{t("flatCustomization.estimatedTotal")}</span>
                                         <span className="font-bold text-primary">
                                             {flat.currency} {(flat.price + totalDelta).toLocaleString()}
@@ -725,7 +735,7 @@ export default function FlatDetail() {
 
                         {/* My Selections Card */}
                         {auth.user && activeRequests.length > 0 && (
-                            <div className="p-6 bg-surface rounded-xl border-2 border-foreground/10">
+                            <div className="p-6 bg-surface rounded-2xl border border-foreground/6">
                                 <div className="flex items-center gap-2 mb-3">
                                     <Palette size={16} className="text-primary" />
                                     <h3 className="font-bold">{t("flatCustomization.mySelections")}</h3>
@@ -765,7 +775,7 @@ export default function FlatDetail() {
 
                         {/* Building Progress Card */}
                         {building && (
-                            <div className="p-6 bg-surface rounded-xl border-2 border-foreground/10">
+                            <div className="p-6 bg-surface rounded-2xl border border-foreground/6">
                                 <h3 className="font-bold mb-3">{t("flatCustomization.buildingProgress")}</h3>
                                 <Link to={`/buildings/${building.id}`} className="block hover:text-primary transition-colors">
                                     <p className="font-medium">{building.title}</p>
@@ -793,11 +803,11 @@ export default function FlatDetail() {
 
                         {/* Company Info */}
                         {company && (
-                            <div className="p-6 bg-surface rounded-xl border-2 border-foreground/10">
+                            <div className="p-6 bg-surface rounded-2xl border border-foreground/6">
                                 <h3 className="font-bold mb-2">{t("flats.listedBy")}</h3>
                                 <div className="flex items-center gap-3">
                                     {company.logo && (
-                                        <img src={company.logo} alt={company.name} className="w-10 h-10 rounded-full object-cover" />
+                                        <img loading="lazy" src={company.logo} alt={company.name} className="w-10 h-10 rounded-full object-cover" />
                                     )}
                                     <div>
                                         <p className="font-medium">{company.name}</p>
@@ -906,5 +916,6 @@ export default function FlatDetail() {
                 loading={cancelLoading}
             />
         </div>
+        </PageTransition>
     );
 }

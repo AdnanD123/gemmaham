@@ -32,7 +32,7 @@ const ProjectProgressChart = ({ data, title = "Project Progress", loading }: Pro
                     <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} stroke="var(--color-foreground)" opacity={0.4} />
                     <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11 }} stroke="var(--color-foreground)" opacity={0.4} />
                     <Tooltip formatter={(value: number) => [`${value}%`, "Progress"]} />
-                    <Bar dataKey="progress" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="progress" fill="#5856d6" radius={[0, 4, 4, 0]} />
                 </BarChart>
             </ResponsiveContainer>
         </ChartContainer>

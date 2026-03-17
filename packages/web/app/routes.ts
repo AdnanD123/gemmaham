@@ -12,6 +12,9 @@ export default [
   // Profile
   route("profile/setup", "routes/profile.setup.tsx"),
 
+  // Notifications (all roles)
+  route("notifications", "routes/notifications.tsx"),
+
   // Unified property browsing (NEW)
   route("properties", "routes/properties._index.tsx"),
   route("houses/:id", "routes/houses.$id.tsx"),
@@ -40,8 +43,10 @@ export default [
   route("company/messages", "routes/company.messages.tsx"),
   route("company/messages/:conversationId", "routes/company.messages.$conversationId.tsx"),
   route("company/contractors", "routes/company.contractors.tsx"),
+  route("company/finances", "routes/company.finances.tsx"),
 
   // User routes
+  route("user/favorites", "routes/user.favorites.tsx"),
   route("user/profile", "routes/user.profile.tsx"),
   route("user/dashboard", "routes/user.dashboard.tsx"),
   route("user/reservations", "routes/user.reservations.tsx"),
@@ -50,6 +55,7 @@ export default [
   route("user/messages/:conversationId", "routes/user.messages.$conversationId.tsx"),
 
   // Contractor routes
+  route("contractor/applications", "routes/contractor.applications.tsx"),
   route("contractor/browse", "routes/contractor.browse.tsx"),
   route("contractor/dashboard", "routes/contractor.dashboard.tsx"),
   route("contractor/projects", "routes/contractor.projects._index.tsx"),
@@ -58,6 +64,7 @@ export default [
   route("contractor/buildings/:id", "routes/contractor.buildings.$id.tsx"),
   route("contractor/messages", "routes/contractor.messages.tsx"),
   route("contractor/messages/:conversationId", "routes/contractor.messages.$conversationId.tsx"),
+  route("contractor/finances", "routes/contractor.finances.tsx"),
   route("contractor/profile", "routes/contractor.profile.tsx"),
 
   // Public contractor profiles

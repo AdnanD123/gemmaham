@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Building2 } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import ProjectCard from "../../components/ProjectCard";
 import ApplicationModal from "../../components/ApplicationModal";
 import { SkeletonBlock } from "../../components/ui/Skeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import { listBrowsableProjects, getCompany, getContractorProfile, getContractorApplicationForBuilding } from "../../lib/firestore";
 import type { AuthContext, Building, ContractorProfile } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function ContractorBrowse() {
     const { t } = useTranslation();
@@ -71,38 +72,40 @@ export default function ContractorBrowse() {
 
     return (
         <RoleGuard allowedRole="contractor">
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6">
                         <div className="max-w-5xl">
                             <h1 className="text-2xl font-bold mb-1">{t("applications.browseProjectsTitle")}</h1>
                             <p className="text-foreground/50 mb-6">{t("applications.browseProjectsDesc")}</p>
 
-                            {loading ? (
+                            <ContentLoader loading={loading} skeleton={
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {Array.from({ length: 6 }).map((_, i) => (
                                         <SkeletonBlock key={i} className="h-72 rounded-xl" />
                                     ))}
                                 </div>
-                            ) : buildings.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <Building2 size={40} className="mx-auto text-foreground/20 mb-3" />
-                                    <p className="text-foreground/50">{t("applications.noProjects")}</p>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {buildings.map((b) => (
-                                        <ProjectCard
-                                            key={b.id}
-                                            building={b}
-                                            companyName={companyNames[b.companyId] || ""}
-                                            alreadyApplied={appliedIds.has(b.id)}
-                                            onApply={setApplyTarget}
-                                        />
-                                    ))}
-                                </div>
-                            )}
+                            }>
+                                {buildings.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <Building2 size={40} className="mx-auto text-foreground/20 mb-3" />
+                                        <p className="text-foreground/50">{t("applications.noProjects")}</p>
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {buildings.map((b) => (
+                                            <ProjectCard
+                                                key={b.id}
+                                                building={b}
+                                                companyName={companyNames[b.companyId] || ""}
+                                                alreadyApplied={appliedIds.has(b.id)}
+                                                onApply={setApplyTarget}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </ContentLoader>
                         </div>
                     </main>
                 </div>
@@ -117,6 +120,7 @@ export default function ContractorBrowse() {
                     onSuccess={handleApplySuccess}
                 />
             )}
+            </PageTransition>
         </RoleGuard>
     );
 }

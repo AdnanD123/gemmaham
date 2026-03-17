@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Link } from "react-router";
 import { Bed, Bath, Maximize, LandPlot, ArrowUpRight } from "lucide-react";
 import Badge from "./ui/Badge";
+import { FavoriteButton } from "./FavoriteButton";
 import type { House } from "@gemmaham/shared";
 
 const houseTypeLabels: Record<string, string> = {
@@ -16,10 +17,12 @@ const HouseCard = memo(({ house }: { house: House }) => {
     return (
         <Link to={`/houses/${house.id}`} className="project-card group">
             <div className="preview">
+                <FavoriteButton propertyId={house.id} propertyType="house" />
                 {house.coverImageUrl || house.floorPlanUrl ? (
                     <img
                         src={house.coverImageUrl || house.floorPlanUrl}
                         alt={house.title}
+                        loading="lazy"
                     />
                 ) : (
                     <div className="w-full h-full min-h-[160px] bg-foreground/5 flex items-center justify-center">

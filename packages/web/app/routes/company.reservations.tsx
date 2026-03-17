@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import { User, Phone, Mail, Calendar, Banknote, CheckCircle2, XCircle, Lock, Trophy } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
@@ -12,12 +11,14 @@ import Modal from "../../components/ui/Modal";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import ReservationTimeline from "../../components/ReservationTimeline";
 import ReservationListSkeleton from "../../components/skeletons/ReservationSkeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import {
     getCompanyReservations, updateReservationStatus, getFlat,
     updateReservationMeeting, completeReservationMeeting, confirmDeposit,
 } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, Reservation, ReservationStatus } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 type TabKey = "requests" | "active" | "history";
 
@@ -174,20 +175,19 @@ export default function CompanyReservations() {
 
     return (
         <RoleGuard allowedRole="company">
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-5xl">
-                        <h1 className="text-2xl font-bold mb-6">{t("company.reservationsTitle")}</h1>
+                        <h1 className="text-2xl font-serif font-bold mb-8">{t("company.reservationsTitle")}</h1>
 
-                        {loading ? (
-                            <ReservationListSkeleton />
-                        ) : reservations.length === 0 ? (
-                            <p className="text-center py-12 text-foreground/40">{t("company.noReservations")}</p>
-                        ) : (
+                        <ContentLoader loading={loading} skeleton={<ReservationListSkeleton />}>
+                            {reservations.length === 0 ? (
+                                <p className="text-center py-12 text-foreground/50">{t("company.noReservations")}</p>
+                            ) : (
                             <>
                                 {/* Tabs */}
-                                <div className="flex gap-1 mb-6 bg-foreground/5 rounded-lg p-1 w-fit">
+                                <div className="flex gap-1 mb-8 bg-foreground/5 rounded-lg p-1 w-fit">
                                     {tabs.map((tab) => (
                                         <button
                                             key={tab.key}
@@ -195,7 +195,7 @@ export default function CompanyReservations() {
                                             onClick={() => { setActiveTab(tab.key); setExpandedId(null); }}
                                             className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                                                 activeTab === tab.key
-                                                    ? "bg-surface shadow-sm font-medium text-foreground"
+                                                    ? "bg-primary text-white font-medium"
                                                     : "text-foreground/50 hover:text-foreground/70"
                                             }`}
                                         >
@@ -208,7 +208,7 @@ export default function CompanyReservations() {
                                 </div>
 
                                 {currentList.length === 0 ? (
-                                    <p className="text-center py-8 text-foreground/40">{t("reservation.noRequests")}</p>
+                                    <p className="text-center py-8 text-foreground/50">{t("reservation.noRequests")}</p>
                                 ) : (
                                     <div className="space-y-6">
                                         {grouped.map((group) => (
@@ -222,7 +222,7 @@ export default function CompanyReservations() {
 
                                                 <div className="space-y-3">
                                                     {group.reservations.map((r) => (
-                                                        <div key={r.id} className="p-4 bg-surface rounded-xl border-2 border-foreground/10">
+                                                        <div key={r.id} className="p-4 bg-surface rounded-2xl border border-foreground/6">
                                                             <div className="flex items-start gap-4">
                                                                 {/* User snapshot */}
                                                                 <div className="flex-1 min-w-0">
@@ -239,7 +239,7 @@ export default function CompanyReservations() {
                                                                             <div className="space-y-1">
                                                                                 <div className="flex items-center gap-2 text-sm">
                                                                                     {r.userSnapshot.photoURL && (
-                                                                                        <img src={r.userSnapshot.photoURL} alt="" className="w-6 h-6 rounded-full" />
+                                                                                        <img loading="lazy" src={r.userSnapshot.photoURL} alt="" className="w-6 h-6 rounded-full" />
                                                                                     )}
                                                                                     <User size={14} className="text-foreground/40" />
                                                                                     <span>{r.userSnapshot.displayName}</span>
@@ -342,7 +342,7 @@ export default function CompanyReservations() {
                                                             </button>
 
                                                             {expandedId === r.id && r.statusHistory && (
-                                                                <div className="mt-3 pt-3 border-t border-foreground/10">
+                                                                <div className="mt-3 pt-3 border-t border-foreground/6">
                                                                     <ReservationTimeline history={r.statusHistory} />
                                                                 </div>
                                                             )}
@@ -355,6 +355,7 @@ export default function CompanyReservations() {
                                 )}
                             </>
                         )}
+                        </ContentLoader>
                     </main>
                 </div>
             </div>
@@ -418,6 +419,7 @@ export default function CompanyReservations() {
                     </div>
                 </div>
             </Modal>
+            </PageTransition>
         </RoleGuard>
     );
 }

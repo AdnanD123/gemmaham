@@ -17,10 +17,13 @@ import { detectAndApplyLanguage } from "../lib/i18n";
 import { useAuth } from "../lib/hooks/useAuth";
 import { ToastProvider } from "../lib/contexts/ToastContext";
 import ToastContainer from "../components/ui/Toast";
+import Navbar from "../components/Navbar";
 import HomeSidebar from "../components/HomeSidebar";
 
-// These routes don't need a sidebar
-const NO_SIDEBAR_PREFIXES = ["/auth/", "/profile/", "/visualizer/"];
+// These routes render without chrome (no navbar, no sidebar)
+const NO_CHROME_PREFIXES = ["/visualizer/"];
+// These routes render with navbar but no sidebar
+const NO_SIDEBAR_PREFIXES = ["/auth/", "/profile/"];
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -59,7 +62,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   const auth = useAuth();
   const location = useLocation();
-  const showSidebar = !NO_SIDEBAR_PREFIXES.some((p) => location.pathname.startsWith(p));
+
+  const noChrome = NO_CHROME_PREFIXES.some((p) => location.pathname.startsWith(p));
+  const showSidebar = !noChrome && !NO_SIDEBAR_PREFIXES.some((p) => location.pathname.startsWith(p));
+  const showNavbar = !noChrome;
 
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -82,11 +88,14 @@ export default function App() {
   return (
     <ToastProvider>
       <main className="min-h-screen bg-background text-foreground relative z-10">
+        {showNavbar && <Navbar auth={auth} />}
         {showSidebar && (
           <HomeSidebar auth={auth} collapsed={collapsed} onToggle={handleToggle} />
         )}
         <div
           className={`transition-all duration-300 ${
+            showNavbar ? "pt-14" : ""
+          } ${
             showSidebar ? (collapsed ? "pl-14" : "pl-56") : ""
           }`}
         >
@@ -126,7 +135,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       <p className="text-foreground/50 max-w-md mb-8">{details}</p>
       <a
         href="/"
-        className="inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-bold uppercase tracking-wide bg-primary text-white hover:bg-[#ea580c] transition-colors"
+        className="inline-flex items-center justify-center rounded-lg px-6 py-3 text-sm font-bold uppercase tracking-wide bg-primary text-white hover:bg-primary-hover transition-colors"
       >
         {t("common.goHome")}
       </a>

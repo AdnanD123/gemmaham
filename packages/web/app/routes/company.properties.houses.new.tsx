@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import HouseForm from "../../components/HouseForm";
 import { createHouse, updateHouse } from "../../lib/firestore";
 import { uploadHouseCover, uploadHouseFloorPlan } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, HouseType, AreaUnit } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function CompanyAddHouse() {
     const { t } = useTranslation();
@@ -20,6 +20,7 @@ export default function CompanyAddHouse() {
         data: any,
         coverFile: File | null,
         floorPlanFile: File | null,
+        photos?: string[],
     ) => {
         if (!auth.companyId) return;
         setSubmitting(true);
@@ -47,6 +48,7 @@ export default function CompanyAddHouse() {
                 coverImageUrl: null,
                 floorPlanUrl: "",
                 renderedImageUrl: null,
+                photos: photos || [],
                 status: "available",
                 featured: data.featured,
             });
@@ -73,13 +75,14 @@ export default function CompanyAddHouse() {
 
     return (
         <RoleGuard allowedRole="company">
-            <Navbar />
-            <div className="flex mt-20">
+            <PageTransition>
+            <div className="flex">
                 <main className="flex-1 p-6 max-w-3xl">
                     <h1 className="font-serif text-2xl font-bold mb-6">{t("houses.create")}</h1>
                     <HouseForm onSubmit={handleSubmit} submitting={submitting} />
                 </main>
             </div>
+            </PageTransition>
         </RoleGuard>
     );
 }

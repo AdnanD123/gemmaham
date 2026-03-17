@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
@@ -11,6 +10,7 @@ import { createBuilding, updateBuilding } from "../../lib/firestore";
 import { uploadBuildingCover } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, BuildingStatus, ConstructionPhase } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function CompanyAddBuilding() {
     const { t } = useTranslation();
@@ -99,8 +99,8 @@ export default function CompanyAddBuilding() {
 
     return (
         <RoleGuard allowedRole="company">
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-3xl">
                         <h1 className="text-2xl font-bold mb-6">{t("buildings.addNewBuilding")}</h1>
@@ -254,7 +254,7 @@ export default function CompanyAddBuilding() {
                                 <div className="border-2 border-dashed border-foreground/20 rounded-xl p-6 text-center">
                                     {preview ? (
                                         <div className="space-y-2">
-                                            <img src={preview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
+                                            <img loading="lazy" src={preview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
                                             <p className="text-sm text-foreground/50">{coverFile?.name}</p>
                                         </div>
                                     ) : (
@@ -282,6 +282,7 @@ export default function CompanyAddBuilding() {
                     </main>
                 </div>
             </div>
+            </PageTransition>
         </RoleGuard>
     );
 }

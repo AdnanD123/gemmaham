@@ -36,7 +36,7 @@ const RevenueChart = ({ data, title = "Revenue", loading, currency = "EUR" }: Pr
                         formatter={(value: number) => [`${currency} ${value.toLocaleString()}`, "Revenue"]}
                         contentStyle={{ borderRadius: 8, border: "2px solid var(--color-foreground)", opacity: 0.9 }}
                     />
-                    <Bar dataKey="revenue" fill="#f97316" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="revenue" fill="#5856d6" radius={[4, 4, 0, 0]} />
                 </BarChart>
             </ResponsiveContainer>
         </ChartContainer>

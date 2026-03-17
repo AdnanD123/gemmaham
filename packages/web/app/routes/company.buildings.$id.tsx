@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
@@ -19,6 +18,7 @@ import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, Building, Flat, BuildingStatus, ConstructionPhase, FlatStatus, AreaUnit } from "@gemmaham/shared";
 import { Link } from "react-router";
 import { Plus, X } from "lucide-react";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 type Tab = "details" | "units" | "updates" | "contractors" | "customizations" | "applications";
 
@@ -209,8 +209,8 @@ export default function CompanyBuildingDetail() {
     if (loading) {
         return (
             <RoleGuard allowedRole="company">
+                <PageTransition>
                 <div className="home">
-                    <Navbar />
                     <div className="flex">
                         <main className="flex-1 p-6 max-w-4xl space-y-4">
                             <SkeletonLine className="w-48 h-8" />
@@ -220,6 +220,7 @@ export default function CompanyBuildingDetail() {
                         </main>
                     </div>
                 </div>
+            </PageTransition>
             </RoleGuard>
         );
     }
@@ -228,7 +229,6 @@ export default function CompanyBuildingDetail() {
         return (
             <RoleGuard allowedRole="company">
                 <div className="home">
-                    <Navbar />
                     <div className="flex">
                         <main className="flex-1 p-6 text-center">
                             <p className="text-foreground/50">{t("buildings.notFound")}</p>
@@ -242,13 +242,12 @@ export default function CompanyBuildingDetail() {
     return (
         <RoleGuard allowedRole="company">
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-4xl">
                         <h1 className="text-2xl font-bold mb-6">{t("buildings.editBuilding")}</h1>
 
                         {/* Tabs */}
-                        <div className="flex gap-1 mb-6 border-b-2 border-foreground/10">
+                        <div className="flex gap-1 mb-6 border-b-2 border-foreground/6">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.key}
@@ -272,15 +271,15 @@ export default function CompanyBuildingDetail() {
                             <div>
                                 {/* Cover image */}
                                 <div className="mb-6">
-                                    <div className="relative rounded-lg overflow-hidden border-2 border-foreground/10">
+                                    <div className="relative rounded-lg overflow-hidden border border-foreground/6">
                                         {building.coverImageUrl ? (
-                                            <img src={building.coverImageUrl} alt={building.title} className="w-full h-48 object-cover" />
+                                            <img loading="lazy" src={building.coverImageUrl} alt={building.title} className="w-full h-48 object-cover" />
                                         ) : (
                                             <div className="w-full h-48 bg-foreground/5 flex items-center justify-center">
                                                 <span className="text-foreground/30 text-4xl">🏗</span>
                                             </div>
                                         )}
-                                        <label className="absolute bottom-2 right-2 px-3 py-1.5 bg-background/90 rounded-lg text-xs font-medium cursor-pointer hover:bg-background transition-colors border border-foreground/10">
+                                        <label className="absolute bottom-2 right-2 px-3 py-1.5 bg-background/90 rounded-lg text-xs font-medium cursor-pointer hover:bg-background transition-colors border border-foreground/6">
                                             {t("buildings.changeCover")}
                                             <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
                                         </label>
@@ -409,7 +408,7 @@ export default function CompanyBuildingDetail() {
 
                                 {/* Inline Add Unit Form */}
                                 {showAddUnit && (
-                                    <div className="mb-6 bg-surface border-2 border-foreground/10 rounded-xl p-5">
+                                    <div className="mb-6 bg-surface border border-foreground/6 rounded-2xl p-5">
                                         <div className="flex items-center justify-between mb-4">
                                             <h3 className="font-semibold text-base">{t("buildings.addUnit")}</h3>
                                             <button onClick={() => { setShowAddUnit(false); setFloorPlanFile(null); setFloorPlanPreview(null); }} className="text-foreground/40 hover:text-foreground transition-colors">
@@ -441,7 +440,7 @@ export default function CompanyBuildingDetail() {
                                                 <div className="border-2 border-dashed border-foreground/20 rounded-xl p-4 text-center relative">
                                                     {floorPlanPreview ? (
                                                         <div className="space-y-2">
-                                                            <img src={floorPlanPreview} alt="Preview" className="max-h-36 mx-auto rounded-lg" />
+                                                            <img loading="lazy" src={floorPlanPreview} alt="Preview" className="max-h-36 mx-auto rounded-lg" />
                                                             <p className="text-xs text-foreground/50">{floorPlanFile?.name}</p>
                                                         </div>
                                                     ) : (
@@ -477,12 +476,12 @@ export default function CompanyBuildingDetail() {
                                                 <Link
                                                     key={flat.id}
                                                     to={`/company/flats/${flat.id}`}
-                                                    className="block bg-surface rounded-xl border-2 border-foreground/10 overflow-hidden hover:border-primary/30 transition-colors"
+                                                    className="block bg-surface rounded-2xl border border-foreground/6 overflow-hidden hover:border-primary/30 transition-colors"
                                                 >
                                                     {/* Image */}
                                                     {flat.renderedImageUrl || flat.floorPlanUrl ? (
                                                         <div className="relative">
-                                                            <img
+                                                            <img loading="lazy"
                                                                 src={flat.renderedImageUrl || flat.floorPlanUrl}
                                                                 alt={flat.title}
                                                                 className="w-full h-40 object-cover"

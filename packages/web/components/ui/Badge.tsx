@@ -1,30 +1,39 @@
 const variants = {
-    available: "bg-green-100 text-green-700 border-green-200",
-    reserved: "bg-orange-100 text-orange-700 border-orange-200",
-    sold: "bg-red-100 text-red-700 border-red-200",
-    pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
-    confirmed: "bg-green-100 text-green-700 border-green-200",
-    cancelled: "bg-gray-100 text-gray-500 border-gray-200",
-    planning: "bg-blue-100 text-blue-700 border-blue-200",
-    under_construction: "bg-orange-100 text-orange-700 border-orange-200",
-    near_completion: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    completed: "bg-green-100 text-green-700 border-green-200",
-    upcoming: "bg-blue-100 text-blue-700 border-blue-200",
-    in_progress: "bg-orange-100 text-orange-700 border-orange-200",
-    approved: "bg-green-100 text-green-700 border-green-200",
-    rejected: "bg-red-100 text-red-700 border-red-200",
-    requested: "bg-blue-100 text-blue-700 border-blue-200",
-    expired: "bg-gray-100 text-gray-400 border-gray-200",
-    accepted: "bg-green-100 text-green-700 border-green-200",
-    withdrawn: "bg-gray-100 text-gray-500 border-gray-200",
-    detached: "bg-indigo-100 text-indigo-700 border-indigo-200",
-    semi_detached: "bg-teal-100 text-teal-700 border-teal-200",
-    villa: "bg-purple-100 text-purple-700 border-purple-200",
-    townhouse: "bg-cyan-100 text-cyan-700 border-cyan-200",
-    cottage: "bg-amber-100 text-amber-700 border-amber-200",
-    flat: "bg-blue-100 text-blue-700 border-blue-200",
-    house: "bg-indigo-100 text-indigo-700 border-indigo-200",
-    default: "bg-gray-100 text-gray-700 border-gray-200",
+    // Status — success/positive
+    available: "bg-secondary/10 text-secondary border-secondary/20",
+    confirmed: "bg-secondary/10 text-secondary border-secondary/20",
+    completed: "bg-secondary/10 text-secondary border-secondary/20",
+    approved: "bg-secondary/10 text-secondary border-secondary/20",
+    accepted: "bg-secondary/10 text-secondary border-secondary/20",
+    near_completion: "bg-secondary/10 text-secondary border-secondary/20",
+
+    // Status — in progress/pending
+    reserved: "bg-primary/10 text-primary border-primary/20",
+    pending: "bg-primary/10 text-primary border-primary/20",
+    requested: "bg-primary/10 text-primary border-primary/20",
+    under_construction: "bg-primary/10 text-primary border-primary/20",
+    in_progress: "bg-primary/10 text-primary border-primary/20",
+    planning: "bg-primary/10 text-primary border-primary/20",
+    upcoming: "bg-primary/10 text-primary border-primary/20",
+
+    // Status — negative/error
+    sold: "bg-accent/10 text-accent border-accent/20",
+    rejected: "bg-accent/10 text-accent border-accent/20",
+    cancelled: "bg-foreground/6 text-foreground/40 border-foreground/10",
+    expired: "bg-foreground/6 text-foreground/35 border-foreground/10",
+    withdrawn: "bg-foreground/6 text-foreground/40 border-foreground/10",
+
+    // Property types
+    detached: "bg-primary/8 text-primary/80 border-primary/15",
+    semi_detached: "bg-secondary/8 text-secondary/80 border-secondary/15",
+    villa: "bg-accent/8 text-accent/80 border-accent/15",
+    townhouse: "bg-primary/8 text-primary/80 border-primary/15",
+    cottage: "bg-secondary/8 text-secondary/80 border-secondary/15",
+    flat: "bg-primary/8 text-primary/80 border-primary/15",
+    house: "bg-primary/8 text-primary/80 border-primary/15",
+
+    // Default
+    default: "bg-foreground/6 text-foreground/60 border-foreground/10",
 } as const;
 
 interface BadgeProps {
@@ -35,7 +44,7 @@ interface BadgeProps {
 
 const Badge = ({ variant = "default", children, className = "" }: BadgeProps) => {
     return (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${variants[variant]} ${className}`}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-lg text-[11px] font-semibold tracking-wide border ${variants[variant]} ${className}`}>
             {children}
         </span>
     );
