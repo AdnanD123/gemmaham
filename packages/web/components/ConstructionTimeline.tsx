@@ -122,7 +122,7 @@ export default function ConstructionTimeline({ buildingId, companyId }: Props) {
 
             {/* Add Update Form */}
             {showForm && (
-                <form onSubmit={handleSubmit} className="space-y-3 p-4 bg-surface rounded-xl border-2 border-foreground/10 mb-6">
+                <form onSubmit={handleSubmit} className="space-y-3 p-4 bg-surface rounded-2xl border border-foreground/6 mb-6">
                     <Input
                         label={t("construction.updateTitle")}
                         placeholder={t("construction.updateTitlePlaceholder")}
@@ -143,7 +143,7 @@ export default function ConstructionTimeline({ buildingId, companyId }: Props) {
                     {/* Photo upload */}
                     <div>
                         <label className="block text-sm font-medium mb-1">{t("construction.photos")}</label>
-                        <label className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-foreground/20 rounded-lg cursor-pointer hover:border-primary/30 transition-colors">
+                        <label className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-foreground/6 rounded-xl cursor-pointer hover:border-primary/30 transition-colors">
                             <ImagePlus size={16} className="text-foreground/40" />
                             <span className="text-sm text-foreground/50">{t("construction.addPhotos")}</span>
                             <input type="file" accept="image/*" multiple onChange={handleFileChange} className="hidden" />
@@ -176,7 +176,7 @@ export default function ConstructionTimeline({ buildingId, companyId }: Props) {
             ) : (
                 <div className="relative">
                     {/* Vertical line */}
-                    <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-foreground/10" />
+                    <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-foreground/6" />
 
                     <div className="space-y-6">
                         {updates.map((update) => (
@@ -184,7 +184,7 @@ export default function ConstructionTimeline({ buildingId, companyId }: Props) {
                                 {/* Dot */}
                                 <div className="absolute left-2.5 top-2 w-3 h-3 rounded-full bg-primary border-2 border-background" />
 
-                                <div className="p-4 bg-surface rounded-xl border-2 border-foreground/10">
+                                <div className="p-4 bg-surface rounded-2xl border border-foreground/6">
                                     <div className="flex items-start justify-between gap-2">
                                         <div>
                                             <div className="flex items-center gap-2 mb-1">
@@ -204,7 +204,7 @@ export default function ConstructionTimeline({ buildingId, companyId }: Props) {
                                             <span>{t("construction.progress")}</span>
                                             <span>{update.progressPercent}%</span>
                                         </div>
-                                        <div className="w-full h-2 bg-foreground/10 rounded-full overflow-hidden">
+                                        <div className="w-full h-2 bg-foreground/4 rounded-full overflow-hidden">
                                             <div
                                                 className="h-full bg-primary rounded-full transition-all"
                                                 style={{ width: `${update.progressPercent}%` }}
@@ -220,7 +220,7 @@ export default function ConstructionTimeline({ buildingId, companyId }: Props) {
                                                     key={i}
                                                     src={img}
                                                     alt=""
-                                                    className="w-24 h-24 rounded-lg object-cover border border-foreground/10"
+                                                    className="w-24 h-24 rounded-lg object-cover border border-foreground/6"
                                                 />
                                             ))}
                                         </div>

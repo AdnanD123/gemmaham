@@ -14,10 +14,10 @@ const BuildingCard = memo(function BuildingCard({ building }: Props) {
     return (
         <Link
             to={`/buildings/${building.id}`}
-            className="block bg-surface rounded-xl border-2 border-foreground/10 overflow-hidden hover:border-primary/30 transition-colors"
+            className="block bg-surface rounded-2xl border border-foreground/6 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200"
         >
             {building.coverImageUrl ? (
-                <img src={building.coverImageUrl} alt={building.title} className="w-full h-48 object-cover" />
+                <img src={building.coverImageUrl} alt={building.title} className="w-full h-48 object-cover" loading="lazy" />
             ) : (
                 <div className="w-full h-48 bg-foreground/5 flex items-center justify-center">
                     <span className="text-4xl">🏗</span>
@@ -36,7 +36,7 @@ const BuildingCard = memo(function BuildingCard({ building }: Props) {
                         <span>{t(`buildings.phase.${building.currentPhase}`)}</span>
                         <span>{building.availableUnits}/{building.totalUnits} {t("buildings.unitsAvailable")}</span>
                     </div>
-                    <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+                    <div className="w-full h-1 bg-foreground/6 rounded-full overflow-hidden">
                         <div
                             className="h-full bg-primary rounded-full"
                             style={{

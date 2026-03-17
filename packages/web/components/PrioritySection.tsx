@@ -28,7 +28,7 @@ const PrioritySection = ({ priority, count, children, defaultExpanded }: Priorit
         <div className="mb-6">
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="flex items-center gap-2 mb-3 w-full text-left"
+                className="flex items-center gap-2 mb-3 w-full text-left hover:bg-foreground/4 rounded-xl px-2 py-1 transition-colors"
             >
                 {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 <Badge variant={config.variant as any}>{config.label}</Badge>

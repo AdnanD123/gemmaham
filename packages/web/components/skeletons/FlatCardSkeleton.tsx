@@ -2,7 +2,7 @@ import { SkeletonBlock, SkeletonLine } from "../ui/Skeleton";
 
 export function FlatCardSkeleton() {
     return (
-        <div className="bg-surface rounded-xl overflow-hidden border-2 border-foreground/10">
+        <div className="bg-surface rounded-2xl overflow-hidden border border-foreground/6">
             <SkeletonBlock className="aspect-4/3 rounded-none" />
             <div className="p-5 space-y-3">
                 <SkeletonLine className="w-3/4 h-5" />

@@ -26,7 +26,7 @@ const ConversationList = ({ conversations, role, basePath }: Props) => {
                     <Link
                         key={conv.id}
                         to={`${basePath}/${conv.id}`}
-                        className="block p-4 bg-surface rounded-xl border-2 border-foreground/10 hover:border-primary/30 transition-colors"
+                        className="block p-4 bg-surface rounded-2xl border border-foreground/6 shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200"
                     >
                         <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0">

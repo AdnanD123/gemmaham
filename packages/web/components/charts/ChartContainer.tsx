@@ -7,7 +7,7 @@ interface Props {
 
 const ChartContainer = ({ title, subtitle, loading, children }: Props) => {
     return (
-        <div className="p-4 bg-surface rounded-xl border-2 border-foreground/10">
+        <div className="p-4 bg-surface rounded-2xl border border-foreground/6 shadow-card">
             <div className="mb-4">
                 <h3 className="font-semibold">{title}</h3>
                 {subtitle && <p className="text-xs text-foreground/50">{subtitle}</p>}

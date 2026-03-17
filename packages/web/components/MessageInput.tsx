@@ -40,16 +40,17 @@ const MessageInput = ({ onSend, disabled, attachedCard, onRemoveCard }: Props) =
     };
 
     return (
-        <form onSubmit={handleSubmit} className="border-t-2 border-foreground/5">
+        <form onSubmit={handleSubmit} className="border-t border-foreground/6">
             {/* Attached card preview */}
             {attachedCard && (
                 <div className="px-4 pt-3">
-                    <div className="flex items-start gap-3 p-3 bg-surface rounded-xl border-2 border-primary/20">
+                    <div className="flex items-start gap-3 p-3 bg-surface rounded-xl border border-foreground/6">
                         {attachedCard.imageUrl && (
                             <img
                                 src={attachedCard.imageUrl}
                                 alt=""
                                 className="w-16 h-16 rounded-lg object-cover shrink-0"
+                                loading="lazy"
                             />
                         )}
                         <div className="flex-1 min-w-0">
@@ -82,7 +83,7 @@ const MessageInput = ({ onSend, disabled, attachedCard, onRemoveCard }: Props) =
                     onKeyDown={handleKeyDown}
                     placeholder={attachedCard ? t("messages.addMessagePlaceholder") : t("messages.typePlaceholder")}
                     disabled={disabled}
-                    className="flex-1 px-4 py-2.5 border-2 border-foreground/10 rounded-2xl bg-background focus:border-primary focus:outline-none text-sm resize-none"
+                    className="flex-1 px-4 py-2.5 border border-foreground/6 rounded-2xl bg-background focus:border-primary focus:outline-none text-sm resize-none"
                 />
                 <button
                     type="submit"

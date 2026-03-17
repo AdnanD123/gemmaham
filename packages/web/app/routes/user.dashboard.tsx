@@ -2,15 +2,16 @@ import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Clock, Lock, Trophy, MessageSquare, Palette } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import AuthGuard from "../../components/AuthGuard";
 import StatCard from "../../components/StatCard";
 import DashboardPropertyList from "../../components/DashboardPropertyList";
 import DashboardSkeleton from "../../components/skeletons/DashboardSkeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import { getUserReservations, getUserCustomizationRequests, getFlat, getHouse } from "../../lib/firestore";
 import { updateReservationStatus } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, Reservation } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function UserDashboard() {
     const auth = useOutletContext<AuthContext>();
@@ -76,19 +77,16 @@ export default function UserDashboard() {
 
     return (
         <AuthGuard>
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-5xl">
-                        <h1 className="text-2xl font-bold mb-2">
+                        <h1 className="text-2xl font-serif font-bold mb-2">
                             {auth.user?.displayName ? t("user.welcome", { name: auth.user.displayName }) : t("user.dashboard")}
                         </h1>
                         <p className="text-foreground/50 mb-8">{t("user.browseDesc")}</p>
 
-                        {loading ? (
-                            <DashboardSkeleton />
-                        ) : (
-                            <>
+                        <ContentLoader loading={loading} skeleton={<DashboardSkeleton />}>
                                 {/* Stat cards */}
                                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                                     <StatCard icon={Lock} value={stats.active} label={t("dashboard.active")} linkTo="/user/reservations" />
@@ -105,11 +103,11 @@ export default function UserDashboard() {
                                     propertyTitles={propertyTitles}
                                     onCancel={handleCancel}
                                 />
-                            </>
-                        )}
+                        </ContentLoader>
                     </main>
                 </div>
             </div>
+            </PageTransition>
         </AuthGuard>
     );
 }

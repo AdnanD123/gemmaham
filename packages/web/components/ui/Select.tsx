@@ -20,7 +20,7 @@ const Select = ({ label, error, options, className = "", id: propId, ...props }:
                 id={id}
                 aria-invalid={error ? true : undefined}
                 aria-describedby={errorId}
-                className={`w-full px-4 py-3 border-2 border-foreground/10 rounded-lg bg-background focus:border-primary focus:outline-none transition-colors ${error ? "border-red-400" : ""} ${className}`}
+                className={`w-full px-4 py-3 border-2 border-foreground/6 rounded-xl bg-background focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors ${error ? "border-red-400" : ""} ${className}`}
                 {...props}
             >
                 {options.map((opt) => (

@@ -229,6 +229,7 @@ export interface Flat {
   areaUnit: AreaUnit;
   floorPlanUrl: string;
   renderedImageUrl: string | null;
+  photos?: string[];
   status: FlatStatus;
   featured: boolean;
   customizationConfig: FlatCustomizationConfig | null;
@@ -279,6 +280,7 @@ export interface House {
   coverImageUrl: string | null;
   floorPlanUrl: string;
   renderedImageUrl: string | null;
+  photos?: string[];
   status: HouseStatus;
   featured: boolean;
   createdAt: TimestampLike;
@@ -287,6 +289,9 @@ export interface House {
 
 export type HouseInput = Omit<House, "id" | "createdAt" | "updatedAt">;
 
+// ─── Sort ────────────────────────────────────────────────
+export type SortBy = "newest" | "price_asc" | "price_desc" | "size_desc";
+
 // ─── House Filters (frontend) ──────────────────────────
 export interface HouseFilters {
   status?: HouseStatus;
@@ -294,6 +299,9 @@ export interface HouseFilters {
   maxPrice?: number;
   minBedrooms?: number;
   minArea?: number;
+  maxArea?: number;
+  location?: string;
+  sortBy?: SortBy;
   houseType?: HouseType;
   companyId?: string;
 }
@@ -306,6 +314,9 @@ export interface PropertyFilters {
   maxPrice?: number;
   minBedrooms?: number;
   minArea?: number;
+  maxArea?: number;
+  location?: string;
+  sortBy?: SortBy;
   companyId?: string;
   houseType?: HouseType;
 }
@@ -418,6 +429,9 @@ export interface FlatFilters {
   maxPrice?: number;
   minBedrooms?: number;
   minArea?: number;
+  maxArea?: number;
+  location?: string;
+  sortBy?: SortBy;
   companyId?: string;
 }
 

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
@@ -12,6 +11,8 @@ import { generate3DView } from "../../lib/ai.action";
 import { useToast } from "../../lib/contexts/ToastContext";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
 import type { AuthContext, Flat, FlatStatus, AreaUnit } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
+import { PhotoUploader } from "../../components/PhotoUploader";
 
 export default function CompanyEditFlat() {
     const { t } = useTranslation();
@@ -22,6 +23,7 @@ export default function CompanyEditFlat() {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [generating, setGenerating] = useState(false);
+    const [photos, setPhotos] = useState<string[]>([]);
     const { addToast } = useToast();
 
     const [form, setForm] = useState({
@@ -47,6 +49,7 @@ export default function CompanyEditFlat() {
                 const f = await getFlat(id);
                 if (f) {
                     setFlat(f);
+                    setPhotos(f.photos || []);
                     setForm({
                         title: f.title,
                         description: f.description,
@@ -92,6 +95,7 @@ export default function CompanyEditFlat() {
                 areaUnit: form.areaUnit,
                 status: form.status,
                 featured: form.featured,
+                photos,
             });
             navigate(form.buildingId ? `/company/buildings/${form.buildingId}` : "/company/buildings");
         } catch (e) {
@@ -122,8 +126,8 @@ export default function CompanyEditFlat() {
     if (loading) {
         return (
             <RoleGuard allowedRole="company">
+                <PageTransition>
                 <div className="home">
-                    <Navbar />
                     <div className="flex">
                         <main className="flex-1 p-6 max-w-3xl space-y-4">
                             <SkeletonLine className="w-48 h-8" />
@@ -137,6 +141,7 @@ export default function CompanyEditFlat() {
                         </main>
                     </div>
                 </div>
+            </PageTransition>
             </RoleGuard>
         );
     }
@@ -145,7 +150,6 @@ export default function CompanyEditFlat() {
         return (
             <RoleGuard allowedRole="company">
                 <div className="home">
-                    <Navbar />
                     <div className="flex">
                         <main className="flex-1 p-6 text-center">
                             <p className="text-foreground/50">{t("company.flatNotFound")}</p>
@@ -159,7 +163,6 @@ export default function CompanyEditFlat() {
     return (
         <RoleGuard allowedRole="company">
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-3xl">
                         <h1 className="text-2xl font-bold mb-6">{t("company.editFlat")}</h1>
@@ -167,15 +170,15 @@ export default function CompanyEditFlat() {
                         {/* Floor Plan & 3D Preview */}
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             {flat.floorPlanUrl && (
-                                <div className="rounded-lg overflow-hidden border-2 border-foreground/10">
+                                <div className="rounded-lg overflow-hidden border border-foreground/6">
                                     <p className="text-xs font-medium text-foreground/50 p-2 bg-surface">{t("flats.floorPlan")}</p>
-                                    <img src={flat.floorPlanUrl} alt="Floor plan" className="w-full h-auto" />
+                                    <img loading="lazy" src={flat.floorPlanUrl} alt="Floor plan" className="w-full h-auto" />
                                 </div>
                             )}
                             {flat.renderedImageUrl ? (
-                                <div className="rounded-lg overflow-hidden border-2 border-foreground/10">
+                                <div className="rounded-lg overflow-hidden border border-foreground/6">
                                     <p className="text-xs font-medium text-foreground/50 p-2 bg-surface">{t("flats.render3d")}</p>
-                                    <img src={flat.renderedImageUrl} alt="3D render" className="w-full h-auto" />
+                                    <img loading="lazy" src={flat.renderedImageUrl} alt="3D render" className="w-full h-auto" />
                                 </div>
                             ) : flat.floorPlanUrl ? (
                                 <div className="flex items-center justify-center border-2 border-dashed border-foreground/20 rounded-lg p-4">
@@ -240,6 +243,13 @@ export default function CompanyEditFlat() {
                                 />
                                 <span className="text-sm">{t("company.featured")}</span>
                             </label>
+
+                            {/* Property Photos */}
+                            <PhotoUploader
+                                photos={photos}
+                                onChange={setPhotos}
+                                storagePath={`properties/flats/${id}/photos`}
+                            />
 
                             <div className="flex gap-3 pt-4">
                                 <Button type="submit" disabled={submitting}>

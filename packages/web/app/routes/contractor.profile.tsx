@@ -2,19 +2,20 @@ import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Camera, Pencil, Trash2, Globe, Phone, Building2, UserCircle } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
 import Badge from "../../components/ui/Badge";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { getContractorProfile, updateContractorProfile, deleteContractorProfile } from "../../lib/firestore";
 import { uploadContractorProfileLogo } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import CategorySubcategoryPicker, { deriveCategoryKeys, deriveSubcategoryKeys } from "../../components/CategorySubcategoryPicker";
 import type { AuthContext, ContractorProfile, ContractorCategorySelection } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function ContractorProfilePage() {
     const { t } = useTranslation();
@@ -139,35 +140,36 @@ export default function ContractorProfilePage() {
 
     return (
         <RoleGuard allowedRole="contractor">
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-2xl">
                         <div className="mb-6">
                             <h1 className="text-2xl font-bold">{t("contractor.editProfile")}</h1>
                         </div>
 
-                        {loading ? (
+                        <ContentLoader loading={loading} skeleton={
                             <div className="space-y-4">
                                 <SkeletonLine className="h-10 w-full" />
                                 <SkeletonLine className="h-10 w-full" />
                                 <SkeletonLine className="h-10 w-full" />
                                 <SkeletonBlock className="h-24 w-full" />
                             </div>
-                        ) : editing ? (
-                            <form onSubmit={handleSave} className="space-y-5 bg-surface rounded-xl border-2 border-foreground/10 p-6">
+                        }>
+                        {editing ? (
+                            <form onSubmit={handleSave} className="space-y-5 bg-surface rounded-2xl border border-foreground/6 p-6">
                                 {/* Logo */}
                                 <div>
                                     <label className="block text-sm font-medium mb-2">{t("contractor.logo")}</label>
                                     <div className="flex items-center gap-4">
                                         <div className="w-16 h-16 rounded-lg bg-foreground/10 overflow-hidden flex items-center justify-center">
                                             {logoPreview ? (
-                                                <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                                                <img loading="lazy" src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
                                             ) : (
                                                 <Camera size={20} className="text-foreground/30" />
                                             )}
                                         </div>
-                                        <label className="px-4 py-2 border-2 border-foreground/10 rounded-lg cursor-pointer hover:border-foreground/20 transition-colors text-sm">
+                                        <label className="px-4 py-2 border border-foreground/6 rounded-lg cursor-pointer hover:border-foreground/20 transition-colors text-sm">
                                             {t("contractor.uploadLogo")}
                                             <input
                                                 type="file"
@@ -232,12 +234,12 @@ export default function ContractorProfilePage() {
                             </form>
                         ) : (
                             /* ── View mode ── */
-                            <div className="relative bg-surface rounded-xl border-2 border-foreground/10 p-6 space-y-6">
+                            <div className="relative bg-surface rounded-2xl border border-foreground/6 p-6 space-y-6">
                                 {/* Header: logo + name */}
                                 <div className="flex items-center gap-4">
                                     <div className="w-20 h-20 rounded-xl bg-foreground/10 overflow-hidden flex items-center justify-center shrink-0">
                                         {logoPreview ? (
-                                            <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
+                                            <img loading="lazy" src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
                                         ) : (
                                             <Camera size={28} className="text-foreground/30" />
                                         )}
@@ -251,7 +253,7 @@ export default function ContractorProfilePage() {
                                     </div>
                                 </div>
 
-                                <div className="border-t border-foreground/10" />
+                                <div className="border-t border-foreground/6" />
 
                                 {/* Details */}
                                 <div className="space-y-4">
@@ -282,7 +284,7 @@ export default function ContractorProfilePage() {
                                 {/* Categories */}
                                 {profile?.categories && profile.categories.length > 0 && (
                                     <>
-                                        <div className="border-t border-foreground/10" />
+                                        <div className="border-t border-foreground/6" />
                                         <div>
                                             <p className="text-xs font-medium text-foreground/50 uppercase tracking-wide mb-2">
                                                 {t("contractorCategories.label")}
@@ -315,6 +317,7 @@ export default function ContractorProfilePage() {
                                 </div>
                             </div>
                         )}
+                        </ContentLoader>
                     </main>
                 </div>
             </div>
@@ -327,6 +330,7 @@ export default function ContractorProfilePage() {
                 confirmLabel={t("common.delete")}
                 loading={deleting}
             />
+            </PageTransition>
         </RoleGuard>
     );
 }

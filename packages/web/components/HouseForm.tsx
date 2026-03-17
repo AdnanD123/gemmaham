@@ -4,6 +4,9 @@ import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
 import Select from "./ui/Select";
 import Button from "./ui/Button";
+import { PhotoUploader } from "./PhotoUploader";
+import { houseSchema } from "../lib/validation";
+import { useFormValidation } from "../lib/hooks/useFormValidation";
 import type { House, HouseType, AreaUnit } from "@gemmaham/shared";
 
 interface HouseFormData {
@@ -30,7 +33,7 @@ interface HouseFormData {
 
 interface Props {
     house?: House;
-    onSubmit: (data: HouseFormData, coverFile: File | null, floorPlanFile: File | null) => Promise<void>;
+    onSubmit: (data: HouseFormData, coverFile: File | null, floorPlanFile: File | null, photos?: string[]) => Promise<void>;
     submitting: boolean;
 }
 
@@ -59,6 +62,8 @@ const HouseForm = ({ house, onSubmit, submitting }: Props) => {
     const [floorPlanFile, setFloorPlanFile] = useState<File | null>(null);
     const [coverPreview, setCoverPreview] = useState<string | null>(null);
     const [floorPlanPreview, setFloorPlanPreview] = useState<string | null>(null);
+    const [photos, setPhotos] = useState<string[]>(house?.photos || []);
+    const { errors: fieldErrors, validate, clearError } = useFormValidation(houseSchema);
 
     const [form, setForm] = useState<HouseFormData>({
         title: "",
@@ -107,11 +112,13 @@ const HouseForm = ({ house, onSubmit, submitting }: Props) => {
             });
             if (house.coverImageUrl) setCoverPreview(house.coverImageUrl);
             if (house.floorPlanUrl) setFloorPlanPreview(house.floorPlanUrl);
+            setPhotos(house.photos || []);
         }
     }, [house]);
 
     const update = (field: string, value: string | boolean) => {
         setForm((prev) => ({ ...prev, [field]: value }));
+        clearError(field);
     };
 
     const handleCover = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,36 +137,51 @@ const HouseForm = ({ house, onSubmit, submitting }: Props) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(form, coverFile, floorPlanFile);
+
+        const parsed = {
+            title: form.title,
+            description: form.description,
+            address: form.address,
+            price: Number(form.price),
+            bedrooms: Number(form.bedrooms),
+            bathrooms: Number(form.bathrooms),
+            area: Number(form.area),
+            lotSize: Number(form.lotSize),
+            stories: Number(form.stories),
+        };
+
+        if (!validate(parsed)) return;
+
+        onSubmit(form, coverFile, floorPlanFile, photos);
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label={t("houses.title")} required value={form.title} onChange={(e) => update("title", e.target.value)} />
-                <Input label={t("houses.address")} required value={form.address} onChange={(e) => update("address", e.target.value)} />
+                <Input label={t("houses.title")} required value={form.title} onChange={(e) => update("title", e.target.value)} error={fieldErrors.title ? t(fieldErrors.title) : undefined} />
+                <Input label={t("houses.address")} required value={form.address} onChange={(e) => update("address", e.target.value)} error={fieldErrors.address ? t(fieldErrors.address) : undefined} />
             </div>
 
-            <Textarea label={t("houses.description")} required value={form.description} onChange={(e) => update("description", e.target.value)} />
+            <Textarea label={t("houses.description")} required value={form.description} onChange={(e) => update("description", e.target.value)} error={fieldErrors.description ? t(fieldErrors.description) : undefined} />
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Input label={t("houses.price")} type="number" required value={form.price} onChange={(e) => update("price", e.target.value)} />
+                <Input label={t("houses.price")} type="number" required value={form.price} onChange={(e) => update("price", e.target.value)} error={fieldErrors.price ? t(fieldErrors.price) : undefined} />
                 <Select label={t("houses.currency")} value={form.currency} onChange={(e) => update("currency", e.target.value)} options={currencyOptions} />
                 <Select label={t("properties.houseType")} value={form.houseType} onChange={(e) => update("houseType", e.target.value)} options={houseTypeOptions} />
                 <Input label={t("houses.yearBuilt")} value={form.yearBuilt} onChange={(e) => update("yearBuilt", e.target.value)} placeholder="2024" />
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Input label={t("houses.bedrooms")} type="number" required value={form.bedrooms} onChange={(e) => update("bedrooms", e.target.value)} />
-                <Input label={t("houses.bathrooms")} type="number" required value={form.bathrooms} onChange={(e) => update("bathrooms", e.target.value)} />
-                <Input label={t("houses.stories")} type="number" required value={form.stories} onChange={(e) => update("stories", e.target.value)} />
+                <Input label={t("houses.bedrooms")} type="number" required value={form.bedrooms} onChange={(e) => update("bedrooms", e.target.value)} error={fieldErrors.bedrooms ? t(fieldErrors.bedrooms) : undefined} />
+                <Input label={t("houses.bathrooms")} type="number" required value={form.bathrooms} onChange={(e) => update("bathrooms", e.target.value)} error={fieldErrors.bathrooms ? t(fieldErrors.bathrooms) : undefined} />
+                <Input label={t("houses.stories")} type="number" required value={form.stories} onChange={(e) => update("stories", e.target.value)} error={fieldErrors.stories ? t(fieldErrors.stories) : undefined} />
                 <Input label={t("houses.garageSpaces")} type="number" value={form.garageSpaces} onChange={(e) => update("garageSpaces", e.target.value)} />
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Input label={t("houses.area")} type="number" required value={form.area} onChange={(e) => update("area", e.target.value)} />
+                <Input label={t("houses.area")} type="number" required value={form.area} onChange={(e) => update("area", e.target.value)} error={fieldErrors.area ? t(fieldErrors.area) : undefined} />
                 <Select label={t("houses.areaUnit")} value={form.areaUnit} onChange={(e) => update("areaUnit", e.target.value)} options={areaUnitOptions} />
-                <Input label={t("houses.lotSize")} type="number" required value={form.lotSize} onChange={(e) => update("lotSize", e.target.value)} />
+                <Input label={t("houses.lotSize")} type="number" required value={form.lotSize} onChange={(e) => update("lotSize", e.target.value)} error={fieldErrors.lotSize ? t(fieldErrors.lotSize) : undefined} />
                 <Select label={t("houses.lotSizeUnit")} value={form.lotSizeUnit} onChange={(e) => update("lotSizeUnit", e.target.value)} options={areaUnitOptions} />
             </div>
 
@@ -199,6 +221,13 @@ const HouseForm = ({ house, onSubmit, submitting }: Props) => {
                     <img src={floorPlanPreview} alt="Floor plan preview" className="mt-2 h-32 object-cover rounded-lg" />
                 )}
             </div>
+
+            {/* Property Photos */}
+            <PhotoUploader
+                photos={photos}
+                onChange={setPhotos}
+                storagePath={`properties/houses/${house?.id || "new"}/photos`}
+            />
 
             <Button type="submit" disabled={submitting}>
                 {submitting ? t("common.saving") : house ? t("common.save") : t("houses.create")}

@@ -43,8 +43,8 @@ export default function MobileMenu({ isOpen, onClose, auth, onSignOut }: MobileM
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
             {/* Drawer */}
-            <div className="absolute right-0 top-0 h-full w-72 bg-background border-l border-foreground/10 shadow-xl animate-[slide-in_0.2s_ease-out]">
-                <div className="flex items-center justify-between p-4 border-b border-foreground/10">
+            <div className="absolute right-0 top-0 h-full w-72 border-l border-foreground/6 shadow-xl animate-[slide-in_0.2s_ease-out]" style={{ background: "var(--color-glass)", backdropFilter: "blur(20px) saturate(1.8)" }}>
+                <div className="flex items-center justify-between p-4 border-b border-foreground/6">
                     <span className="font-serif font-bold text-lg">{t("common.menu")}</span>
                     <button onClick={onClose} className="p-2 hover:bg-foreground/5 rounded-lg transition-colors">
                         <X size={20} />
@@ -88,7 +88,7 @@ export default function MobileMenu({ isOpen, onClose, auth, onSignOut }: MobileM
                     )}
                 </nav>
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-foreground/10">
+                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-foreground/6">
                     {user ? (
                         <div className="space-y-3">
                             <p className="text-xs font-semibold uppercase tracking-wide text-foreground/50 truncate">

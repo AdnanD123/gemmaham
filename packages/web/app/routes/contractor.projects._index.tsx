@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import { getContractorAssignments } from "../../lib/firestore";
 import type { AuthContext, Contractor } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 type Assignment = Contractor & { buildingName: string };
 
@@ -39,7 +40,7 @@ export default function ContractorProjects() {
         <Link
             key={a.id}
             to={`/contractor/projects/${a.buildingId}`}
-            className="block p-4 bg-surface rounded-xl border-2 border-foreground/10 hover:border-primary/20 transition-colors"
+            className="block p-4 bg-surface rounded-2xl border border-foreground/6 hover:border-primary/20 transition-colors"
         >
             <div className="flex items-center justify-between">
                 <div>
@@ -64,20 +65,21 @@ export default function ContractorProjects() {
 
     return (
         <RoleGuard allowedRole="contractor">
-            <Navbar />
-            <div className="flex mt-20">
+            <PageTransition>
+            <div className="flex">
                 <main className="flex-1 p-6 max-w-4xl">
                     <h1 className="font-serif text-2xl font-bold mb-6">{t("nav.projects")}</h1>
 
-                    {loading ? (
+                    <ContentLoader loading={loading} skeleton={
                         <div className="space-y-3">
                             {[1, 2, 3].map((i) => (
-                                <div key={i} className="h-20 bg-foreground/5 rounded-xl animate-pulse" />
+                                <div key={i} className="h-20 bg-foreground/5 rounded-2xl animate-pulse" />
                             ))}
                         </div>
-                    ) : assignments.length === 0 ? (
-                        <p className="text-foreground/50 text-center py-12">{t("contractor.noAssignments")}</p>
-                    ) : (
+                    }>
+                        {assignments.length === 0 ? (
+                            <p className="text-foreground/50 text-center py-12">{t("contractor.noAssignments")}</p>
+                        ) : (
                         <>
                             {grouped.in_progress.length > 0 && (
                                 <div className="mb-6">
@@ -99,8 +101,10 @@ export default function ContractorProjects() {
                             )}
                         </>
                     )}
+                    </ContentLoader>
                 </main>
             </div>
+            </PageTransition>
         </RoleGuard>
     );
 }

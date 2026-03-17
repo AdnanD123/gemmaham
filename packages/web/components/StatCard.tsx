@@ -10,9 +10,9 @@ interface StatCardProps {
 
 const StatCard = ({ icon: Icon, value, label, linkTo }: StatCardProps) => {
     const content = (
-        <div className="p-4 bg-surface rounded-xl border-2 border-foreground/10 hover:border-primary/20 transition-colors">
+        <div className="p-4 bg-surface rounded-2xl border border-foreground/6 shadow-card transition-all duration-200 hover:shadow-card-hover hover:-translate-y-0.5">
             <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
+                <div className="p-2 rounded-lg bg-primary/8">
                     <Icon size={20} className="text-primary" />
                 </div>
                 <div>

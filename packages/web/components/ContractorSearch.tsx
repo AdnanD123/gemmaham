@@ -79,7 +79,7 @@ export default function ContractorSearch({ isOpen, onClose, onAssign, existingCo
     return (
         <Modal isOpen={isOpen} onClose={handleClose} title={t("contractors.searchAssign")}>
             {/* Tabs */}
-            <div className="flex border-b border-foreground/10 mb-4">
+            <div className="flex border-b border-foreground/6 mb-4">
                 <button
                     onClick={() => { setTab("email"); setResults([]); setSearched(false); }}
                     className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
@@ -188,7 +188,7 @@ export default function ContractorSearch({ isOpen, onClose, onAssign, existingCo
                     {results.map((c) => {
                         const assigned = isAlreadyAssigned(c.id);
                         return (
-                            <div key={c.id} className="flex items-center gap-3 p-3 bg-background rounded-lg border border-foreground/10">
+                            <div key={c.id} className="flex items-center gap-3 p-3 bg-background rounded-xl border border-foreground/6">
                                 {c.logoUrl ? (
                                     <img src={c.logoUrl} alt={c.displayName} className="w-10 h-10 rounded-lg object-cover shrink-0" />
                                 ) : (

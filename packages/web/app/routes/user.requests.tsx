@@ -1,15 +1,16 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import ReservationListSkeleton from "../../components/skeletons/ReservationSkeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import { getUserCustomizationRequests, updateCustomizationRequestStatus, getFlat } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, CustomizationRequest, RequestStatus } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 interface EnrichedRequest extends CustomizationRequest {
     flatTitle?: string;
@@ -95,19 +96,18 @@ export default function UserRequests() {
 
     return (
         <RoleGuard allowedRole="user">
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-4xl">
                         <h1 className="text-2xl font-bold mb-6">{t("customizations.myRequests")}</h1>
 
-                        {loading ? (
-                            <ReservationListSkeleton />
-                        ) : requests.length === 0 ? (
-                            <div className="text-center py-12">
-                                <p className="text-foreground/40">{t("customizations.noRequestsUser")}</p>
-                            </div>
-                        ) : (
+                        <ContentLoader loading={loading} skeleton={<ReservationListSkeleton />}>
+                            {requests.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-foreground/40">{t("customizations.noRequestsUser")}</p>
+                                </div>
+                            ) : (
                             <>
                                 {/* Filter Tabs */}
                                 <div className="flex gap-1 mb-6 bg-foreground/5 rounded-lg p-1 w-fit">
@@ -118,7 +118,7 @@ export default function UserRequests() {
                                             onClick={() => setActiveFilter(tab.key)}
                                             className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                                                 activeFilter === tab.key
-                                                    ? "bg-surface shadow-sm font-medium text-foreground"
+                                                    ? "bg-primary text-white font-medium"
                                                     : "text-foreground/50 hover:text-foreground/70"
                                             }`}
                                         >
@@ -152,7 +152,7 @@ export default function UserRequests() {
                                                 {/* Requests for this flat */}
                                                 <div className="space-y-3">
                                                     {group.requests.map((req) => (
-                                                        <div key={req.id} className="p-4 bg-surface rounded-xl border-2 border-foreground/10">
+                                                        <div key={req.id} className="p-4 bg-surface rounded-2xl border border-foreground/6">
                                                             <div className="flex items-start justify-between gap-4">
                                                                 <div className="flex-1">
                                                                     <div className="flex items-center gap-2 mb-1">
@@ -194,6 +194,7 @@ export default function UserRequests() {
                                 )}
                             </>
                         )}
+                        </ContentLoader>
                     </main>
                 </div>
             </div>
@@ -206,6 +207,7 @@ export default function UserRequests() {
                 message={t("customizations.cancelRequestMsg")}
                 confirmLabel={t("common.confirm")}
             />
+            </PageTransition>
         </RoleGuard>
     );
 }

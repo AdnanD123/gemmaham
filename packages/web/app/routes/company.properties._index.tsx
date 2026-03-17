@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, Edit, Building2 } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import { listCompanyBuildings, listCompanyHouses, deleteBuilding, deleteHouse } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, Building, House } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function CompanyProperties() {
     const { t } = useTranslation();
@@ -58,8 +59,9 @@ export default function CompanyProperties() {
 
     return (
         <RoleGuard allowedRole="company">
-            <Navbar />
-            <div className="flex mt-20">
+            <PageTransition>
+            <div className="home">
+            <div className="flex">
                 <main className="flex-1 p-6 max-w-5xl">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="font-serif text-2xl font-bold">{t("nav.properties")}</h1>
@@ -89,13 +91,14 @@ export default function CompanyProperties() {
                         </button>
                     </div>
 
-                    {loading ? (
+                    <ContentLoader loading={loading} skeleton={
                         <div className="space-y-3">
                             {[1, 2, 3].map((i) => (
                                 <div key={i} className="h-16 bg-foreground/5 rounded-lg animate-pulse" />
                             ))}
                         </div>
-                    ) : tab === "buildings" ? (
+                    }>
+                    {tab === "buildings" ? (
                         buildings.length === 0 ? (
                             <div className="text-center py-12">
                                 <Building2 size={32} className="mx-auto text-foreground/20 mb-3" />
@@ -104,7 +107,7 @@ export default function CompanyProperties() {
                         ) : (
                             <div className="space-y-3">
                                 {buildings.map((building) => (
-                                    <div key={building.id} className="flex items-center justify-between p-4 bg-surface rounded-xl border-2 border-foreground/10">
+                                    <div key={building.id} className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-foreground/6">
                                         <div className="flex items-center gap-3 min-w-0">
                                             <div className="min-w-0">
                                                 <h3 className="font-medium truncate">{building.title}</h3>
@@ -132,7 +135,7 @@ export default function CompanyProperties() {
                         ) : (
                             <div className="space-y-3">
                                 {houses.map((house) => (
-                                    <div key={house.id} className="flex items-center justify-between p-4 bg-surface rounded-xl border-2 border-foreground/10">
+                                    <div key={house.id} className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-foreground/6">
                                         <div className="flex items-center gap-3 min-w-0">
                                             <div className="min-w-0">
                                                 <h3 className="font-medium truncate">{house.title}</h3>
@@ -154,7 +157,10 @@ export default function CompanyProperties() {
                             </div>
                         )
                     )}
+                    </ContentLoader>
                 </main>
+            </div>
+
             </div>
 
             {deleteTarget && (
@@ -165,6 +171,7 @@ export default function CompanyProperties() {
                     onCancel={() => setDeleteTarget(null)}
                 />
             )}
+            </PageTransition>
         </RoleGuard>
     );
 }

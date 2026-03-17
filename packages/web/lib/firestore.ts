@@ -24,7 +24,7 @@ import { db } from "./firebase";
 import {
   toMillis,
   type Company, type CompanyInput,
-  type Flat, type FlatInput, type FlatFilters,
+  type Flat, type FlatInput, type FlatFilters, type SortBy,
   type House, type HouseInput, type HouseFilters, type PropertyType, type PropertyFilters,
   type Reservation, type ReservationInput, type ReservationStatus, type StatusHistoryEntry, type UserSnapshot,
   type Conversation, type Message,
@@ -122,6 +122,24 @@ export const deleteFlat = async (flatId: string): Promise<void> => {
   await deleteDoc(doc(db, "flats", flatId));
 };
 
+const applySortBy = <T extends { price: number; area: number; createdAt: unknown }>(
+  items: T[],
+  sortBy?: SortBy,
+): T[] => {
+  if (!sortBy || sortBy === "newest") return items;
+  const sorted = [...items];
+  switch (sortBy) {
+    case "price_asc":
+      return sorted.sort((a, b) => a.price - b.price);
+    case "price_desc":
+      return sorted.sort((a, b) => b.price - a.price);
+    case "size_desc":
+      return sorted.sort((a, b) => b.area - a.area);
+    default:
+      return sorted;
+  }
+};
+
 export const listFlats = async (
   filters: FlatFilters = {},
   pagination?: PaginationOptions,
@@ -156,6 +174,16 @@ export const listFlats = async (
   if (filters.minPrice) items = items.filter((f) => f.price >= filters.minPrice!);
   if (filters.maxPrice) items = items.filter((f) => f.price <= filters.maxPrice!);
   if (filters.minArea) items = items.filter((f) => f.area >= filters.minArea!);
+  if (filters.maxArea) items = items.filter((f) => f.area <= filters.maxArea!);
+
+  // Client-side location filtering (case-insensitive address match)
+  if (filters.location) {
+    const loc = filters.location.toLowerCase();
+    items = items.filter((f) => f.address.toLowerCase().includes(loc));
+  }
+
+  // Client-side sorting
+  items = applySortBy(items, filters.sortBy);
 
   return {
     items,
@@ -233,6 +261,16 @@ export const listHouses = async (
   if (filters.minPrice) items = items.filter((h) => h.price >= filters.minPrice!);
   if (filters.maxPrice) items = items.filter((h) => h.price <= filters.maxPrice!);
   if (filters.minArea) items = items.filter((h) => h.area >= filters.minArea!);
+  if (filters.maxArea) items = items.filter((h) => h.area <= filters.maxArea!);
+
+  // Client-side location filtering (case-insensitive address match)
+  if (filters.location) {
+    const loc = filters.location.toLowerCase();
+    items = items.filter((h) => h.address.toLowerCase().includes(loc));
+  }
+
+  // Client-side sorting
+  items = applySortBy(items, filters.sortBy);
 
   return {
     items,
@@ -280,6 +318,8 @@ export const listAllProperties = async (filters: PropertyFilters = {}): Promise<
     if (filters.maxPrice) houseFilters.maxPrice = filters.maxPrice;
     if (filters.minBedrooms) houseFilters.minBedrooms = filters.minBedrooms;
     if (filters.minArea) houseFilters.minArea = filters.minArea;
+    if (filters.maxArea) houseFilters.maxArea = filters.maxArea;
+    if (filters.location) houseFilters.location = filters.location;
     if (filters.companyId) houseFilters.companyId = filters.companyId;
     if (filters.houseType) houseFilters.houseType = filters.houseType;
     if (filters.status) houseFilters.status = filters.status as HouseFilters["status"];
@@ -288,8 +328,30 @@ export const listAllProperties = async (filters: PropertyFilters = {}): Promise<
     results.push(...houseResult.items.map((h) => ({ ...h, __propertyType: "house" as const })));
   }
 
-  // Sort merged results by createdAt descending
-  results.sort((a, b) => toMillis(b.createdAt) - toMillis(a.createdAt));
+  // Client-side location filtering for buildings (which don't filter in listBuildings)
+  if (filters.location) {
+    const loc = filters.location.toLowerCase();
+    const filtered = results.filter((p) => p.address.toLowerCase().includes(loc));
+    results.length = 0;
+    results.push(...filtered);
+  }
+
+  // Sort merged results
+  if (filters.sortBy && filters.sortBy !== "newest") {
+    switch (filters.sortBy) {
+      case "price_asc":
+        results.sort((a, b) => ("price" in a ? a.price : 0) - ("price" in b ? b.price : 0));
+        break;
+      case "price_desc":
+        results.sort((a, b) => ("price" in b ? b.price : 0) - ("price" in a ? a.price : 0));
+        break;
+      case "size_desc":
+        results.sort((a, b) => ("area" in b ? b.area : 0) - ("area" in a ? a.area : 0));
+        break;
+    }
+  } else {
+    results.sort((a, b) => toMillis(b.createdAt) - toMillis(a.createdAt));
+  }
 
   return results;
 };
@@ -844,6 +906,24 @@ export const updateContractor = async (
   await updateDoc(doc(db, "buildings", buildingId, "contractors", contractorId), data);
 };
 
+export const updateContractorProgress = async (
+  buildingId: string,
+  contractorId: string,
+  update: { progressPercent: number; note?: string },
+): Promise<void> => {
+  const data: Record<string, unknown> = {
+    progressPercent: update.progressPercent,
+    updatedAt: serverTimestamp(),
+  };
+  if (update.progressPercent >= 100) {
+    data.status = "completed";
+  }
+  if (update.note) {
+    data.lastProgressNote = update.note;
+  }
+  await updateDoc(doc(db, "buildings", buildingId, "contractors", contractorId), data);
+};
+
 export const deleteContractor = async (buildingId: string, contractorId: string): Promise<void> => {
   await deleteDoc(doc(db, "buildings", buildingId, "contractors", contractorId));
 };
@@ -1293,6 +1373,62 @@ export const withdrawApplication = async (applicationId: string): Promise<void> 
   await updateDoc(doc(db, "applications", applicationId), {
     status: "withdrawn",
     updatedAt: serverTimestamp(),
+  });
+};
+
+// ─── Favorites ──────────────────────────────────────────
+export interface FavoriteDoc {
+  propertyId: string;
+  propertyType: "flat" | "house";
+  createdAt: TimestampLike;
+}
+
+export const addToFavorites = async (
+  userId: string,
+  propertyId: string,
+  propertyType: "flat" | "house",
+): Promise<void> => {
+  await setDoc(doc(db, "users", userId, "favorites", propertyId), {
+    propertyId,
+    propertyType,
+    createdAt: serverTimestamp(),
+  });
+};
+
+export const removeFromFavorites = async (
+  userId: string,
+  propertyId: string,
+): Promise<void> => {
+  await deleteDoc(doc(db, "users", userId, "favorites", propertyId));
+};
+
+export const getUserFavorites = async (userId: string): Promise<FavoriteDoc[]> => {
+  const q = query(
+    collection(db, "users", userId, "favorites"),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => docToData<FavoriteDoc>(d));
+};
+
+export const isPropertyFavorited = async (
+  userId: string,
+  propertyId: string,
+): Promise<boolean> => {
+  const snap = await getDoc(doc(db, "users", userId, "favorites", propertyId));
+  return snap.exists();
+};
+
+export const subscribeToFavorites = (
+  userId: string,
+  callback: (favorites: FavoriteDoc[]) => void,
+): Unsubscribe => {
+  const q = query(
+    collection(db, "users", userId, "favorites"),
+    orderBy("createdAt", "desc"),
+  );
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map((d) => docToData<FavoriteDoc>(d)));
   });
 };
 

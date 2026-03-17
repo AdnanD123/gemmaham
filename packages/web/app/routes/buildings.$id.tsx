@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { useParams, useOutletContext, Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { MessageSquare, Phone, Mail, Globe } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import FlatCard from "../../components/FlatCard";
+import { PageTransition } from "../../components/ui/PageTransition";
 import { SkeletonBlock, SkeletonLine } from "../../components/ui/Skeleton";
 import {
     getBuilding, listBuildingFlats, getConstructionUpdates,
@@ -57,7 +57,6 @@ export default function BuildingDetail() {
     if (loading) {
         return (
             <div className="home">
-                <Navbar />
                 <main className="max-w-5xl mx-auto p-6 space-y-4">
                     <SkeletonBlock className="h-64 rounded-xl" />
                     <SkeletonLine className="w-64 h-8" />
@@ -75,7 +74,6 @@ export default function BuildingDetail() {
     if (!building) {
         return (
             <div className="home">
-                <Navbar />
                 <main className="max-w-5xl mx-auto p-6 text-center py-16">
                     <p className="text-foreground/50">{t("buildings.notFound")}</p>
                     <Link to="/buildings" className="text-primary mt-2 inline-block">{t("buildings.backToBrowse")}</Link>
@@ -89,12 +87,11 @@ export default function BuildingDetail() {
 
     return (
         <div className="home">
-            <Navbar />
-            <main className="max-w-5xl mx-auto p-6">
+            <PageTransition className="max-w-5xl mx-auto p-6">
                 {/* Hero */}
-                <div className="relative rounded-xl overflow-hidden mb-6">
+                <div className="relative rounded-2xl overflow-hidden mb-6">
                     {building.coverImageUrl ? (
-                        <img src={building.coverImageUrl} alt={building.title} className="w-full h-72 object-cover" />
+                        <img src={building.coverImageUrl} alt={building.title} className="w-full h-72 object-cover" loading="lazy" />
                     ) : (
                         <div className="w-full h-72 bg-foreground/5 flex items-center justify-center">
                             <span className="text-6xl">🏗</span>
@@ -129,12 +126,12 @@ export default function BuildingDetail() {
                 {/* Overall Progress */}
                 <div className="mb-8">
                     <h2 className="text-lg font-bold mb-3">{t("construction.progressTitle")}</h2>
-                    <div className="bg-surface rounded-xl border-2 border-foreground/10 p-4">
+                    <div className="bg-surface rounded-2xl border border-foreground/6 shadow-card p-4">
                         <div className="flex items-center justify-between text-sm mb-2">
                             <span className="text-foreground/60">{t(`buildings.phase.${building.currentPhase}`)}</span>
                             <Badge variant={building.status}>{t(`buildings.status.${building.status}`)}</Badge>
                         </div>
-                        <div className="w-full h-3 bg-foreground/10 rounded-full overflow-hidden">
+                        <div className="w-full h-3 bg-foreground/6 rounded-full overflow-hidden">
                             <div
                                 className="h-full bg-primary rounded-full transition-all"
                                 style={{
@@ -153,12 +150,12 @@ export default function BuildingDetail() {
                     <div className="mb-8">
                         <h2 className="text-lg font-bold mb-3">{t("construction.timeline")}</h2>
                         <div className="relative">
-                            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-foreground/10" />
+                            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-foreground/6" />
                             <div className="space-y-4">
                                 {updates.map((update) => (
                                     <div key={update.id} className="relative pl-10">
                                         <div className="absolute left-2.5 top-2 w-3 h-3 rounded-full bg-primary border-2 border-background" />
-                                        <div className="p-4 bg-surface rounded-xl border-2 border-foreground/10">
+                                        <div className="p-4 bg-surface rounded-2xl border border-foreground/6 shadow-card">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <h3 className="font-medium">{update.title}</h3>
                                                 <Badge variant="default">{t(`buildings.phase.${update.phase}`)}</Badge>
@@ -168,7 +165,7 @@ export default function BuildingDetail() {
                                             {update.images.length > 0 && (
                                                 <div className="flex gap-2 mt-2 flex-wrap">
                                                     {update.images.map((img, i) => (
-                                                        <img key={i} src={img} alt="" className="w-20 h-20 rounded-lg object-cover" />
+                                                        <img key={i} src={img} alt="" className="w-20 h-20 rounded-lg object-cover" loading="lazy" />
                                                     ))}
                                                 </div>
                                             )}
@@ -187,10 +184,10 @@ export default function BuildingDetail() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Active contractors */}
                             {activeContractors.map((c) => (
-                                <div key={c.id} className="p-4 bg-surface rounded-xl border-2 border-foreground/10">
+                                <div key={c.id} className="p-4 bg-surface rounded-2xl border border-foreground/6 shadow-card">
                                     <div className="flex items-start gap-3">
                                         {c.logoUrl ? (
-                                            <img src={c.logoUrl} alt={c.name} className="w-10 h-10 rounded-lg object-cover" />
+                                            <img src={c.logoUrl} alt={c.name} className="w-10 h-10 rounded-lg object-cover" loading="lazy" />
                                         ) : (
                                             <div className="w-10 h-10 rounded-lg bg-foreground/10 flex items-center justify-center text-sm">🔧</div>
                                         )}
@@ -207,7 +204,7 @@ export default function BuildingDetail() {
                                         </div>
                                     </div>
                                     <div className="mt-2">
-                                        <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+                                        <div className="w-full h-1.5 bg-foreground/6 rounded-full overflow-hidden">
                                             <div className="h-full bg-primary rounded-full" style={{ width: `${c.progressPercent}%` }} />
                                         </div>
                                         <span className="text-xs text-foreground/40 mt-1 block">{c.progressPercent}%</span>
@@ -222,7 +219,7 @@ export default function BuildingDetail() {
 
                             {/* Completed contractors — grayed out */}
                             {completedContractors.map((c) => (
-                                <div key={c.id} className="p-4 bg-surface rounded-xl border-2 border-foreground/10 opacity-50">
+                                <div key={c.id} className="p-4 bg-surface rounded-2xl border border-foreground/6 shadow-card opacity-50">
                                     <div className="flex items-start gap-3">
                                         {c.logoUrl ? (
                                             <img src={c.logoUrl} alt={c.name} className="w-10 h-10 rounded-lg object-cover grayscale" />
@@ -238,7 +235,7 @@ export default function BuildingDetail() {
                                         </div>
                                     </div>
                                     <div className="mt-2">
-                                        <div className="w-full h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+                                        <div className="w-full h-1.5 bg-foreground/6 rounded-full overflow-hidden">
                                             <div className="h-full bg-green-500 rounded-full w-full" />
                                         </div>
                                     </div>
@@ -262,7 +259,7 @@ export default function BuildingDetail() {
 
                 {/* CTA */}
                 {company && auth.role !== "company" && (
-                    <div className="bg-surface rounded-xl border-2 border-foreground/10 p-6 text-center">
+                    <div className="bg-surface rounded-2xl border border-foreground/6 shadow-card p-6 text-center">
                         <p className="text-foreground/60 mb-3">{t("buildings.interestedCta")}</p>
                         <p className="font-medium mb-4">{t("flats.listedBy")}: {company.name}</p>
                         {auth.user ? (
@@ -311,7 +308,7 @@ export default function BuildingDetail() {
                         )}
                     </div>
                 )}
-            </main>
+            </PageTransition>
         </div>
     );
 }

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import BuildingCard from "../../components/BuildingCard";
 import { FlatGridSkeleton } from "../../components/skeletons/FlatCardSkeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
+import { PageTransition } from "../../components/ui/PageTransition";
 import { listBuildings } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { Building, BuildingStatus } from "@gemmaham/shared";
@@ -40,8 +41,7 @@ export default function BuildingsBrowse() {
 
     return (
         <div className="home">
-            <Navbar />
-            <main className="max-w-7xl mx-auto p-6">
+            <PageTransition className="max-w-7xl mx-auto p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold">{t("buildings.browseTitle")}</h1>
                     <div className="flex gap-2">
@@ -61,20 +61,20 @@ export default function BuildingsBrowse() {
                     </div>
                 </div>
 
-                {loading ? (
-                    <FlatGridSkeleton />
-                ) : buildings.length === 0 ? (
-                    <div className="text-center py-16">
-                        <p className="text-foreground/40">{t("buildings.noResults")}</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {buildings.map((b) => (
-                            <BuildingCard key={b.id} building={b} />
-                        ))}
-                    </div>
-                )}
-            </main>
+                <ContentLoader loading={loading} skeleton={<FlatGridSkeleton />}>
+                    {buildings.length === 0 ? (
+                        <div className="text-center py-16">
+                            <p className="text-foreground/40">{t("buildings.noResults")}</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {buildings.map((b) => (
+                                <BuildingCard key={b.id} building={b} />
+                            ))}
+                        </div>
+                    )}
+                </ContentLoader>
+            </PageTransition>
         </div>
     );
 }

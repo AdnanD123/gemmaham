@@ -9,7 +9,7 @@ interface Props {
     currency?: string;
 }
 
-const COLORS = ["#3b82f6", "#8b5cf6"];
+const COLORS = ["#5856d6", "#30d158"];
 
 const RevenueByPropertyChart = ({ flatRevenue, houseRevenue, title = "Revenue by Property", loading, currency = "EUR" }: Props) => {
     const total = flatRevenue + houseRevenue;

@@ -4,17 +4,17 @@ import { CheckCircle2, XCircle, Info, AlertTriangle, X } from "lucide-react";
 import { useToast, type ToastType } from "../../lib/contexts/ToastContext";
 
 const icons: Record<ToastType, React.ReactNode> = {
-    success: <CheckCircle2 size={18} className="text-green-500 shrink-0" />,
-    error: <XCircle size={18} className="text-red-500 shrink-0" />,
-    info: <Info size={18} className="text-blue-500 shrink-0" />,
-    warning: <AlertTriangle size={18} className="text-amber-500 shrink-0" />,
+    success: <CheckCircle2 size={18} className="text-secondary shrink-0" />,
+    error: <XCircle size={18} className="text-accent shrink-0" />,
+    info: <Info size={18} className="text-primary shrink-0" />,
+    warning: <AlertTriangle size={18} className="text-accent shrink-0" />,
 };
 
 const bgColors: Record<ToastType, string> = {
-    success: "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800",
-    error: "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800",
-    info: "bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800",
-    warning: "bg-amber-50 border-amber-200 dark:bg-amber-950 dark:border-amber-800",
+    success: "bg-secondary/10 text-secondary border-foreground/6",
+    error: "bg-accent/10 text-accent border-foreground/6",
+    info: "bg-primary/10 text-primary border-foreground/6",
+    warning: "bg-accent/10 text-accent border-foreground/6",
 };
 
 export default function ToastContainer() {
@@ -26,7 +26,7 @@ export default function ToastContainer() {
     if (!mounted) return null;
 
     return createPortal(
-        <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
+        <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none backdrop-blur-xl" style={{ WebkitBackdropFilter: "blur(20px) saturate(1.8)", backdropFilter: "blur(20px) saturate(1.8)" }}>
             {toasts.map((toast) => (
                 <div
                     key={toast.id}

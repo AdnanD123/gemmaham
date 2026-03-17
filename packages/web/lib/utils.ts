@@ -1,3 +1,10 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
+
 export const getImageExtension = (contentType: string, url: string): string => {
     const type = (contentType || "").toLowerCase();
     const typeMatch = type.match(/image\/(png|jpe?g|webp|gif|svg\+xml|svg)/);

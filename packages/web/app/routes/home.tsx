@@ -1,6 +1,6 @@
 import type { Route } from "./+types/home";
-import Navbar from "../../components/Navbar";
 import { ArrowRight, ArrowUpRight, Clock, Layers, Building2, Search } from "lucide-react";
+import { motion } from "motion/react";
 import Button from "../../components/ui/Button";
 import { Link, useOutletContext, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { getFeaturedFlats } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import { FlatGridSkeleton } from "../../components/skeletons/FlatCardSkeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import type { Flat, AuthContext } from "@gemmaham/shared";
 
 export function meta({}: Route.MetaArgs) {
@@ -42,7 +43,6 @@ export default function Home() {
 
     return (
         <div className="home">
-            <Navbar />
             <section className="hero">
                 <div className="announce">
                     <div className="dot">
@@ -51,13 +51,13 @@ export default function Home() {
                     <p>{t("home.badge")}</p>
                 </div>
 
-                <h1>{t("home.title")}</h1>
+                <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>{t("home.title")}</motion.h1>
 
-                <p className="subtitle">
+                <motion.p className="subtitle" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}>
                     {t("home.subtitle")}
-                </p>
+                </motion.p>
 
-                <div className="actions">
+                <motion.div className="actions" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}>
                     <Link to="/flats" className="cta">
                         {t("home.demo")} <Search className="icon" />
                     </Link>
@@ -75,7 +75,7 @@ export default function Home() {
                             </Button>
                         </Link>
                     ) : null}
-                </div>
+                </motion.div>
 
                 <div id="upload" className="upload-shell">
                     <div className="grid-overlay" />
@@ -119,51 +119,52 @@ export default function Home() {
                         </Link>
                     </div>
 
-                    {loading ? (
-                        <FlatGridSkeleton count={6} />
-                    ) : flats.length === 0 ? (
-                        <div className="text-center py-12 text-foreground/50">
-                            <p>{t("home.noFeatured")}</p>
-                        </div>
-                    ) : (
-                        <div className="projects-grid">
-                            {flats.map((flat) => (
-                                <Link
-                                    key={flat.id}
-                                    to={`/flats/${flat.id}`}
-                                    className="project-card group"
-                                >
-                                    <div className="preview">
-                                        <img
-                                            src={flat.renderedImageUrl || flat.floorPlanUrl}
-                                            alt={flat.title}
-                                        />
-                                        <div className="badge">
-                                            <span>{flat.status}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="card-body">
-                                        <div>
-                                            <h3>{flat.title}</h3>
-                                            <div className="meta">
-                                                <Clock size={12} />
-                                                <span>
-                                                    {flat.bedrooms} {t("home.bed")} &middot; {flat.bathrooms} {t("home.bath")} &middot; {flat.area} {flat.areaUnit}
-                                                </span>
+                    <ContentLoader loading={loading} skeleton={<FlatGridSkeleton count={6} />}>
+                        {flats.length === 0 ? (
+                            <div className="text-center py-12 text-foreground/50">
+                                <p>{t("home.noFeatured")}</p>
+                            </div>
+                        ) : (
+                            <div className="projects-grid">
+                                {flats.map((flat) => (
+                                    <Link
+                                        key={flat.id}
+                                        to={`/flats/${flat.id}`}
+                                        className="project-card group"
+                                    >
+                                        <div className="preview">
+                                            <img
+                                                src={flat.renderedImageUrl || flat.floorPlanUrl}
+                                                alt={flat.title}
+                                                loading="lazy"
+                                            />
+                                            <div className="badge">
+                                                <span>{flat.status}</span>
                                             </div>
-                                            <p className="text-primary font-bold mt-1">
-                                                {flat.currency} {flat.price.toLocaleString()}
-                                            </p>
                                         </div>
-                                        <div className="arrow">
-                                            <ArrowUpRight size={18} />
+
+                                        <div className="card-body">
+                                            <div>
+                                                <h3>{flat.title}</h3>
+                                                <div className="meta">
+                                                    <Clock size={12} />
+                                                    <span>
+                                                        {flat.bedrooms} {t("home.bed")} &middot; {flat.bathrooms} {t("home.bath")} &middot; {flat.area} {flat.areaUnit}
+                                                    </span>
+                                                </div>
+                                                <p className="text-primary font-bold mt-1">
+                                                    {flat.currency} {flat.price.toLocaleString()}
+                                                </p>
+                                            </div>
+                                            <div className="arrow">
+                                                <ArrowUpRight size={18} />
+                                            </div>
                                         </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </ContentLoader>
                 </div>
             </section>
         </div>

@@ -20,7 +20,9 @@
     "analytics": "Analitika",
     "findContractors": "Pronađi izvođače",
     "browseProjects": "Pregledaj projekte",
-    "myProjects": "Moji projekti"
+    "myApplications": "Moje prijave",
+    "myProjects": "Moji projekti",
+    "favorites": "Favoriti"
   },
   "home": {
     "badge": "AI platforma",
@@ -122,6 +124,15 @@
     "minPrice": "Min cijena",
     "maxPrice": "Max cijena",
     "minBedrooms": "Min soba",
+    "location": "Lokacija",
+    "locationPlaceholder": "Grad ili oblast...",
+    "minArea": "Min veličina (m²)",
+    "maxArea": "Max veličina (m²)",
+    "sortBy": "Sortiraj po",
+    "newest": "Najnovije prvo",
+    "priceLowHigh": "Cijena: niska ka visokoj",
+    "priceHighLow": "Cijena: visoka ka niskoj",
+    "sizeLargeSmall": "Veličina: velika ka maloj",
     "apply": "Primijeni filtere",
     "reset": "Resetuj",
     "any": "Bilo koji"
@@ -206,7 +217,15 @@
     "saving": "Čuvanje...",
     "namePlaceholder": "Ime Prezime",
     "phonePlaceholder": "+387 61 123 456",
-    "addressPlaceholder": "Ulica, Grad, Država"
+    "addressPlaceholder": "Ulica, Grad, Država",
+    "edit": {
+      "personalInfo": "Lični podaci",
+      "account": "Nalog",
+      "password": "Lozinka",
+      "passwordDesc": "Poslaćemo link za resetovanje lozinke na vašu email adresu.",
+      "changePassword": "Promijeni lozinku",
+      "documents": "Dokumenti"
+    }
   },
   "toast": {
     "reservationSent": "Zahtjev za rezervaciju je poslan!",
@@ -276,7 +295,9 @@
     "processing": "Obrađivanje...",
     "search": "Pretraži",
     "searching": "Pretraživanje",
-    "back": "Nazad"
+    "back": "Nazad",
+    "yes": "Da",
+    "no": "Ne"
   },
   "messages": {
     "noConversations": "Još nema razgovora",
@@ -518,7 +539,15 @@
       "completed": "Završeno"
     },
     "deleteProfileTitle": "Obriši profil",
-    "deleteProfileMsg": "Jeste li sigurni da želite obrisati vaš profil izvođača? Ova radnja se ne može poništiti."
+    "deleteProfileMsg": "Jeste li sigurni da želite obrisati vaš profil izvođača? Ova radnja se ne može poništiti.",
+    "applications": {
+      "title": "Moje prijave",
+      "description": "Pratite status vaših prijava na građevinske projekte.",
+      "noApplicationsAll": "Još niste aplicirali ni na jedan projekat.",
+      "noApplicationsFiltered": "Nema {{status}} prijava.",
+      "browseProjects": "Pregledajte dostupne projekte",
+      "unknownBuilding": "Nepoznata zgrada"
+    }
   },
   "customizations": {
     "options": "opcija",
@@ -676,7 +705,14 @@
       "townhouse": "Gradska kuća",
       "cottage": "Vikendica"
     },
-    "edit": "Uredi kuću"
+    "edit": "Uredi kuću",
+    "render3d": "3D Prikaz",
+    "compare2d3d": "2D / 3D Usporedba",
+    "houseType": "Tip",
+    "reserveConfirm": "Izražavate interes za <strong>{{title}}</strong> po cijeni <strong>{{currency}} {{price}}</strong>.",
+    "alreadyRequested": "Već ste poslali zahtjev za rezervaciju.",
+    "notAvailable": "Ova kuća trenutno nije dostupna za rezervaciju.",
+    "messageFailed": "Neuspješno pokretanje razgovora"
   },
   "charts": {
     "revenue": "Prihod",
@@ -1327,5 +1363,41 @@
     "scopeSaveFailed": "Čuvanje konfiguracije opsega nije uspjelo",
     "scopeReset": "Resetovano na zadane postavke zgrade",
     "noOptionsForSubcategory": "Nema definisanih tipova opcija za ovu potkategoriju"
+  },
+  "photos": {
+    "gallery": "Galerija fotografija",
+    "upload": "Fotografije nekretnine",
+    "max5": "Maksimalno 5 fotografija",
+    "dragToReorder": "Kliknite ili prevucite fotografije za upload",
+    "uploading": "Učitavanje...",
+    "previous": "Prethodna fotografija",
+    "next": "Sljedeća fotografija",
+    "close": "Zatvori galeriju",
+    "photoOf": "{{current}} od {{total}}"
+  },
+  "favorites": {
+    "title": "Moji favoriti",
+    "empty": "Još nema favorita",
+    "emptyDesc": "Pregledajte nekretnine da sačuvate svoje favorite.",
+    "addedToFavorites": "Dodano u favorite",
+    "removedFromFavorites": "Uklonjeno iz favorita"
+  },
+  "validation": {
+    "required": "Ovo polje je obavezno",
+    "invalidEmail": "Unesite ispravnu email adresu",
+    "passwordMin": "Lozinka mora imati najmanje 6 znakova",
+    "nameMin": "Ime mora imati najmanje 2 znaka",
+    "phoneMin": "Telefonski broj mora imati najmanje 5 znakova",
+    "addressMin": "Adresa mora imati najmanje 3 znaka",
+    "companyNameMin": "Naziv firme mora imati najmanje 2 znaka",
+    "titleMin": "Naslov mora imati najmanje 3 znaka",
+    "pricePositive": "Cijena mora biti veća od 0",
+    "areaPositive": "Površina mora biti veća od 0",
+    "lotSizePositive": "Veličina parcele mora biti veća od 0",
+    "minZero": "Vrijednost mora biti 0 ili veća",
+    "bedroomsMax": "Maksimalno 20 spavaćih soba",
+    "bathroomsMax": "Maksimalno 10 kupatila",
+    "storiesMin": "Mora imati najmanje 1 sprat",
+    "storiesMax": "Maksimalno 10 spratova"
   }
 }

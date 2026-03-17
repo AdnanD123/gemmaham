@@ -16,9 +16,9 @@ const ProjectCard = memo(function ProjectCard({ building, companyName, alreadyAp
     const { t } = useTranslation();
 
     return (
-        <div className="bg-surface rounded-xl border-2 border-foreground/10 overflow-hidden">
+        <div className="bg-surface rounded-2xl border border-foreground/6 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
             {building.coverImageUrl ? (
-                <img src={building.coverImageUrl} alt={building.title} className="w-full h-40 object-cover" />
+                <img src={building.coverImageUrl} alt={building.title} className="w-full h-40 object-cover" loading="lazy" />
             ) : (
                 <div className="w-full h-40 bg-foreground/5 flex items-center justify-center">
                     <span className="text-4xl">🏗</span>

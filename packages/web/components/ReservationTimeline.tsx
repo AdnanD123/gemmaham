@@ -46,7 +46,7 @@ const ReservationTimeline = ({ history }: ReservationTimelineProps) => {
                 <div key={i} className="flex gap-3 relative">
                     {/* Vertical line */}
                     {i < history.length - 1 && (
-                        <div className="absolute left-[7px] top-6 w-0.5 h-[calc(100%-8px)] bg-foreground/10" />
+                        <div className="absolute left-[7px] top-6 w-0.5 h-[calc(100%-8px)] bg-foreground/6" />
                     )}
                     {/* Icon */}
                     <div className="shrink-0 mt-0.5 z-10 bg-surface">

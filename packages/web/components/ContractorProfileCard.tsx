@@ -15,14 +15,14 @@ const ContractorProfileCard = memo(function ContractorProfileCard({ contractor }
     return (
         <Link
             to={`/contractors/${contractor.id}`}
-            className="block bg-surface rounded-xl border-2 border-foreground/10 overflow-hidden hover:border-primary/30 transition-colors"
+            className="block bg-surface rounded-2xl border border-foreground/6 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200"
         >
             <div className="p-5">
                 <div className="flex items-start gap-3">
                     {contractor.logoUrl ? (
-                        <img src={contractor.logoUrl} alt={contractor.displayName} className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                        <img src={contractor.logoUrl} alt={contractor.displayName} className="w-14 h-14 rounded-lg object-cover shrink-0" loading="lazy" />
                     ) : (
-                        <div className="w-14 h-14 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <div className="w-14 h-14 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
                             <Wrench size={22} className="text-primary" />
                         </div>
                     )}

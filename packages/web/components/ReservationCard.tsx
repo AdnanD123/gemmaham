@@ -24,7 +24,7 @@ const ReservationCard = memo(({ reservation, flatTitle, showActions, onConfirm, 
 
     return (
         <div
-            className={`p-4 bg-surface rounded-xl border-2 border-foreground/10 ${onExpand ? "cursor-pointer hover:border-primary/20 transition-colors" : ""}`}
+            className={`p-4 bg-surface rounded-2xl border border-foreground/6 shadow-card ${onExpand ? "cursor-pointer hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200" : ""}`}
             onClick={() => onExpand?.(reservation.id)}
         >
             <div className="flex items-center justify-between gap-4">
@@ -94,7 +94,7 @@ const ReservationCard = memo(({ reservation, flatTitle, showActions, onConfirm, 
 
             {/* Rejection reason */}
             {reservation.status === "rejected" && reservation.rejectionReason && (
-                <p className="text-xs text-red-500 mt-2">
+                <p className="text-xs text-accent mt-2">
                     {reservation.rejectionReason}
                 </p>
             )}

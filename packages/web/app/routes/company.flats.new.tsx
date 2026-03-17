@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
@@ -10,7 +9,11 @@ import Button from "../../components/ui/Button";
 import { createFlat, updateFlat, listCompanyBuildings, initFlatCustomizationConfig } from "../../lib/firestore";
 import { uploadFloorPlan } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
+import { flatSchema } from "../../lib/validation";
+import { useFormValidation } from "../../lib/hooks/useFormValidation";
 import type { AuthContext, FlatStatus, AreaUnit, Building } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
+import { PhotoUploader } from "../../components/PhotoUploader";
 
 export default function CompanyAddFlat() {
     const { t } = useTranslation();
@@ -20,8 +23,10 @@ export default function CompanyAddFlat() {
     const [submitting, setSubmitting] = useState(false);
     const [floorPlanFile, setFloorPlanFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
+    const [photos, setPhotos] = useState<string[]>([]);
     const [buildings, setBuildings] = useState<Building[]>([]);
     const { addToast } = useToast();
+    const { errors: fieldErrors, validate, clearError } = useFormValidation(flatSchema);
 
     const preselectedBuildingId = searchParams.get("buildingId") || "";
 
@@ -55,6 +60,7 @@ export default function CompanyAddFlat() {
 
     const updateField = (field: string, value: string | boolean) => {
         setForm((prev) => ({ ...prev, [field]: value }));
+        clearError(field);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,6 +74,18 @@ export default function CompanyAddFlat() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!auth.companyId || !floorPlanFile) return;
+
+        const parsed = {
+            title: form.title,
+            description: form.description || undefined,
+            address: form.address,
+            price: Number(form.price),
+            bedrooms: Number(form.bedrooms),
+            bathrooms: Number(form.bathrooms),
+            area: Number(form.area),
+        };
+
+        if (!validate(parsed)) return;
 
         setSubmitting(true);
         try {
@@ -87,6 +105,7 @@ export default function CompanyAddFlat() {
                 areaUnit: form.areaUnit,
                 floorPlanUrl: "", // Placeholder, will be updated
                 renderedImageUrl: null,
+                photos,
                 status: form.status,
                 featured: form.featured,
             });
@@ -117,8 +136,8 @@ export default function CompanyAddFlat() {
 
     return (
         <RoleGuard allowedRole="company">
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-3xl">
                         <h1 className="text-2xl font-bold mb-6">{t("company.addNewFlat")}</h1>
@@ -129,6 +148,7 @@ export default function CompanyAddFlat() {
                                 placeholder={t("company.titlePlaceholder")}
                                 value={form.title}
                                 onChange={(e) => updateField("title", e.target.value)}
+                                error={fieldErrors.title ? t(fieldErrors.title) : undefined}
                                 required
                             />
 
@@ -144,6 +164,7 @@ export default function CompanyAddFlat() {
                                 placeholder={t("company.addressPlaceholder")}
                                 value={form.address}
                                 onChange={(e) => updateField("address", e.target.value)}
+                                error={fieldErrors.address ? t(fieldErrors.address) : undefined}
                                 required
                             />
 
@@ -154,6 +175,7 @@ export default function CompanyAddFlat() {
                                     placeholder="250000"
                                     value={form.price}
                                     onChange={(e) => updateField("price", e.target.value)}
+                                    error={fieldErrors.price ? t(fieldErrors.price) : undefined}
                                     required
                                 />
                                 <Select
@@ -176,6 +198,7 @@ export default function CompanyAddFlat() {
                                     placeholder="2"
                                     value={form.bedrooms}
                                     onChange={(e) => updateField("bedrooms", e.target.value)}
+                                    error={fieldErrors.bedrooms ? t(fieldErrors.bedrooms) : undefined}
                                     required
                                     min="0"
                                 />
@@ -185,6 +208,7 @@ export default function CompanyAddFlat() {
                                     placeholder="1"
                                     value={form.bathrooms}
                                     onChange={(e) => updateField("bathrooms", e.target.value)}
+                                    error={fieldErrors.bathrooms ? t(fieldErrors.bathrooms) : undefined}
                                     required
                                     min="0"
                                 />
@@ -195,6 +219,7 @@ export default function CompanyAddFlat() {
                                         placeholder="75"
                                         value={form.area}
                                         onChange={(e) => updateField("area", e.target.value)}
+                                        error={fieldErrors.area ? t(fieldErrors.area) : undefined}
                                         required
                                         min="0"
                                     />
@@ -260,7 +285,7 @@ export default function CompanyAddFlat() {
                                 <div className="border-2 border-dashed border-foreground/20 rounded-xl p-6 text-center">
                                     {preview ? (
                                         <div className="space-y-2">
-                                            <img src={preview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
+                                            <img loading="lazy" src={preview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
                                             <p className="text-sm text-foreground/50">{floorPlanFile?.name}</p>
                                         </div>
                                     ) : (
@@ -277,6 +302,13 @@ export default function CompanyAddFlat() {
                                 </div>
                             </div>
 
+                            {/* Property Photos */}
+                            <PhotoUploader
+                                photos={photos}
+                                onChange={setPhotos}
+                                storagePath={`properties/flats/photos`}
+                            />
+
                             <div className="flex gap-3 pt-4">
                                 <Button type="submit" disabled={submitting || !floorPlanFile}>
                                     {submitting ? t("company.creating") : t("company.createFlat")}
@@ -289,6 +321,7 @@ export default function CompanyAddFlat() {
                     </main>
                 </div>
             </div>
+            </PageTransition>
         </RoleGuard>
     );
 }

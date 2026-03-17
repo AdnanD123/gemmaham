@@ -3,8 +3,11 @@ import { Link, useNavigate, useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Box, Building2, User, Wrench } from "lucide-react";
 import Button from "../../components/ui/Button";
+import { PageTransition } from "../../components/ui/PageTransition";
 import { updateUserProfile, createCompany, createContractorProfile } from "../../lib/firestore";
 import { setUserClaims, sendEmailVerification } from "../../lib/auth";
+import { registerSchema } from "../../lib/validation";
+import { useFormValidation } from "../../lib/hooks/useFormValidation";
 
 const EMAIL_VERIFICATION_REQUIRED = import.meta.env.VITE_EMAIL_VERIFICATION === "true";
 import type { AuthContext, UserRole } from "@gemmaham/shared";
@@ -19,6 +22,7 @@ export default function Register() {
     const [role, setRole] = useState<UserRole>("user");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const { errors: fieldErrors, validate, clearError } = useFormValidation(registerSchema);
 
     const setupUserRole = async (uid: string, userEmail: string, name: string) => {
         // 1. Write user profile with role first (Firestore rules use this as fallback)
@@ -72,6 +76,9 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+
+        if (!validate({ displayName, email, password, role })) return;
+
         setLoading(true);
 
         try {
@@ -113,17 +120,17 @@ export default function Register() {
 
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
+            <PageTransition className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <Link to="/" className="inline-flex items-center gap-2 mb-4">
                         <Box className="w-8 h-8 text-primary" />
                         <span className="text-2xl font-bold">Gemmaham</span>
                     </Link>
-                    <h1 className="text-3xl font-bold mb-2">{t("auth.createAccount")}</h1>
+                    <h1 className="text-3xl font-serif font-bold mb-2">{t("auth.createAccount")}</h1>
                     <p className="text-foreground/60">{t("auth.joinGemmaham")}</p>
                 </div>
 
-                <div className="card p-8 bg-surface border-2 border-foreground/10 rounded-xl">
+                <div className="card p-8 bg-surface border border-foreground/6 rounded-2xl shadow-elevated">
                     {error && (
                         <div className="mb-4 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">
                             {error}
@@ -137,10 +144,10 @@ export default function Register() {
                             <button
                                 type="button"
                                 onClick={() => setRole("user")}
-                                className={`flex flex-col items-center gap-2 p-4 border-2 rounded-lg transition-all ${
+                                className={`flex flex-col items-center gap-2 p-4 border rounded-xl transition-all ${
                                     role === "user"
                                         ? "border-primary bg-primary/5"
-                                        : "border-foreground/10 hover:border-foreground/20"
+                                        : "border-foreground/6 hover:border-foreground/20"
                                 }`}
                             >
                                 <User className="w-6 h-6" />
@@ -150,10 +157,10 @@ export default function Register() {
                             <button
                                 type="button"
                                 onClick={() => setRole("company")}
-                                className={`flex flex-col items-center gap-2 p-4 border-2 rounded-lg transition-all ${
+                                className={`flex flex-col items-center gap-2 p-4 border rounded-xl transition-all ${
                                     role === "company"
                                         ? "border-primary bg-primary/5"
-                                        : "border-foreground/10 hover:border-foreground/20"
+                                        : "border-foreground/6 hover:border-foreground/20"
                                 }`}
                             >
                                 <Building2 className="w-6 h-6" />
@@ -163,10 +170,10 @@ export default function Register() {
                             <button
                                 type="button"
                                 onClick={() => setRole("contractor")}
-                                className={`flex flex-col items-center gap-2 p-4 border-2 rounded-lg transition-all ${
+                                className={`flex flex-col items-center gap-2 p-4 border rounded-xl transition-all ${
                                     role === "contractor"
                                         ? "border-primary bg-primary/5"
-                                        : "border-foreground/10 hover:border-foreground/20"
+                                        : "border-foreground/6 hover:border-foreground/20"
                                 }`}
                             >
                                 <Wrench className="w-6 h-6" />
@@ -184,11 +191,12 @@ export default function Register() {
                             <input
                                 type="text"
                                 value={displayName}
-                                onChange={(e) => setDisplayName(e.target.value)}
-                                className="w-full px-4 py-3 border-2 border-foreground/10 rounded-lg bg-background focus:border-primary focus:outline-none transition-colors"
+                                onChange={(e) => { setDisplayName(e.target.value); clearError("displayName"); }}
+                                className={`w-full px-4 py-3 border border-foreground/6 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors ${fieldErrors.displayName ? "border-red-400" : ""}`}
                                 placeholder={t("auth.fullNamePlaceholder")}
                                 required
                             />
+                            {fieldErrors.displayName && <p className="text-sm text-red-500 mt-1">{t(fieldErrors.displayName)}</p>}
                         </div>
 
                         <div>
@@ -196,11 +204,12 @@ export default function Register() {
                             <input
                                 type="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 border-2 border-foreground/10 rounded-lg bg-background focus:border-primary focus:outline-none transition-colors"
+                                onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
+                                className={`w-full px-4 py-3 border border-foreground/6 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors ${fieldErrors.email ? "border-red-400" : ""}`}
                                 placeholder={t("auth.emailPlaceholder")}
                                 required
                             />
+                            {fieldErrors.email && <p className="text-sm text-red-500 mt-1">{t(fieldErrors.email)}</p>}
                         </div>
 
                         <div>
@@ -208,12 +217,13 @@ export default function Register() {
                             <input
                                 type="password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 border-2 border-foreground/10 rounded-lg bg-background focus:border-primary focus:outline-none transition-colors"
+                                onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
+                                className={`w-full px-4 py-3 border border-foreground/6 rounded-xl bg-background focus:border-primary focus:outline-none transition-colors ${fieldErrors.password ? "border-red-400" : ""}`}
                                 placeholder={t("auth.passwordHint")}
                                 minLength={6}
                                 required
                             />
+                            {fieldErrors.password && <p className="text-sm text-red-500 mt-1">{t(fieldErrors.password)}</p>}
                         </div>
 
                         <Button fullWidth disabled={loading}>
@@ -222,9 +232,9 @@ export default function Register() {
                     </form>
 
                     <div className="my-6 flex items-center gap-3">
-                        <div className="flex-1 h-px bg-foreground/10" />
+                        <div className="flex-1 h-px bg-foreground/6" />
                         <span className="text-sm text-foreground/40">{t("auth.or")}</span>
-                        <div className="flex-1 h-px bg-foreground/10" />
+                        <div className="flex-1 h-px bg-foreground/6" />
                     </div>
 
                     <Button variant="outline" fullWidth onClick={handleGoogle}>
@@ -238,7 +248,7 @@ export default function Register() {
                         </Link>
                     </p>
                 </div>
-            </div>
+            </PageTransition>
         </div>
     );
 }

@@ -1,15 +1,16 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
-import Navbar from "../../components/Navbar";
 import AuthGuard from "../../components/AuthGuard";
 import ReservationCard from "../../components/ReservationCard";
 import ReservationTimeline from "../../components/ReservationTimeline";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import ReservationListSkeleton from "../../components/skeletons/ReservationSkeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import { getUserReservations, updateReservationStatus, getFlat, getHouse } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import { toMillis, type AuthContext, type Reservation } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 type TabKey = "requests" | "active" | "history";
 
@@ -97,17 +98,16 @@ export default function UserReservations() {
 
     return (
         <AuthGuard>
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-4xl">
                         <h1 className="text-2xl font-bold mb-6">{t("user.myReservations")}</h1>
 
-                        {loading ? (
-                            <ReservationListSkeleton />
-                        ) : reservations.length === 0 ? (
-                            <p className="text-center py-12 text-foreground/40">{t("user.noReservations")}</p>
-                        ) : (
+                        <ContentLoader loading={loading} skeleton={<ReservationListSkeleton />}>
+                            {reservations.length === 0 ? (
+                                <p className="text-center py-12 text-foreground/40">{t("user.noReservations")}</p>
+                            ) : (
                             <>
                                 {/* Tabs */}
                                 <div className="flex gap-1 mb-6 bg-foreground/5 rounded-lg p-1 w-fit">
@@ -118,7 +118,7 @@ export default function UserReservations() {
                                             onClick={() => { setActiveTab(tab.key); setExpandedId(null); }}
                                             className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
                                                 activeTab === tab.key
-                                                    ? "bg-surface shadow-sm font-medium text-foreground"
+                                                    ? "bg-primary text-white font-medium"
                                                     : "text-foreground/50 hover:text-foreground/70"
                                             }`}
                                         >
@@ -144,7 +144,7 @@ export default function UserReservations() {
                                                 />
                                                 {/* Expanded detail */}
                                                 {expandedId === r.id && (
-                                                    <div className="ml-4 mt-2 p-4 bg-foreground/5 rounded-xl border border-foreground/10 space-y-4">
+                                                    <div className="ml-4 mt-2 p-4 bg-foreground/5 rounded-2xl border border-foreground/6 space-y-4">
                                                         {/* Timeline */}
                                                         {r.statusHistory && r.statusHistory.length > 0 && (
                                                             <div>
@@ -192,6 +192,7 @@ export default function UserReservations() {
                                 )}
                             </>
                         )}
+                        </ContentLoader>
                     </main>
                 </div>
             </div>
@@ -205,6 +206,7 @@ export default function UserReservations() {
                 confirmLabel={t("user.cancelReservation")}
                 loading={cancelling}
             />
+            </PageTransition>
         </AuthGuard>
     );
 }

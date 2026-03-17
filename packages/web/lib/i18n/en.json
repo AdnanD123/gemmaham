@@ -20,7 +20,10 @@
     "analytics": "Analytics",
     "findContractors": "Find Contractors",
     "browseProjects": "Browse Projects",
-    "myProjects": "My Projects"
+    "myApplications": "My Applications",
+    "myProjects": "My Projects",
+    "favorites": "Favorites",
+    "finances": "Finances"
   },
   "home": {
     "badge": "AI-Powered Platform",
@@ -122,6 +125,15 @@
     "minPrice": "Min Price",
     "maxPrice": "Max Price",
     "minBedrooms": "Min Bedrooms",
+    "location": "Location",
+    "locationPlaceholder": "City or area...",
+    "minArea": "Min Size (m²)",
+    "maxArea": "Max Size (m²)",
+    "sortBy": "Sort By",
+    "newest": "Newest First",
+    "priceLowHigh": "Price: Low to High",
+    "priceHighLow": "Price: High to Low",
+    "sizeLargeSmall": "Size: Large to Small",
     "apply": "Apply Filters",
     "reset": "Reset",
     "any": "Any"
@@ -206,7 +218,15 @@
     "saving": "Saving...",
     "namePlaceholder": "John Doe",
     "phonePlaceholder": "+387 61 123 456",
-    "addressPlaceholder": "Street, City, Country"
+    "addressPlaceholder": "Street, City, Country",
+    "edit": {
+      "personalInfo": "Personal Information",
+      "account": "Account",
+      "password": "Password",
+      "passwordDesc": "We will send a password reset link to your email address.",
+      "changePassword": "Change Password",
+      "documents": "Documents"
+    }
   },
   "toast": {
     "reservationSent": "Reservation request sent! The agency will review it.",
@@ -279,7 +299,9 @@
     "back": "Back",
     "apply": "Apply",
     "reset": "Reset",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "yes": "Yes",
+    "no": "No"
   },
   "messages": {
     "noConversations": "No conversations yet",
@@ -298,7 +320,11 @@
     "markAllRead": "Mark all read",
     "empty": "No notifications yet",
     "contractorAssigned": "New Building Assignment",
-    "contractorAssignedMsg": "You've been assigned to a new building project."
+    "contractorAssignedMsg": "You've been assigned to a new building project.",
+    "allNotifications": "All Notifications",
+    "viewAll": "View all notifications",
+    "noNotifications": "You have no notifications",
+    "noNotificationsDesc": "When something important happens, you'll see it here."
   },
   "reservation": {
     "status": {
@@ -520,8 +546,22 @@
       "in_progress": "In Progress",
       "completed": "Completed"
     },
+    "updateProgress": "Update Progress",
+    "progressNote": "Progress Note",
+    "progressNotePlaceholder": "e.g. Completed second floor wiring, passed inspection...",
+    "markComplete": "Mark as Complete",
+    "progressUpdated": "Progress updated successfully.",
+    "whatCompleted": "What did you complete?",
     "deleteProfileTitle": "Delete Profile",
-    "deleteProfileMsg": "Are you sure you want to delete your contractor profile? This cannot be undone."
+    "deleteProfileMsg": "Are you sure you want to delete your contractor profile? This cannot be undone.",
+    "applications": {
+      "title": "My Applications",
+      "description": "Track the status of your applications to building projects.",
+      "noApplicationsAll": "You haven't applied to any projects yet.",
+      "noApplicationsFiltered": "No {{status}} applications.",
+      "browseProjects": "Browse available projects",
+      "unknownBuilding": "Unknown Building"
+    }
   },
   "customizations": {
     "options": "options",
@@ -679,7 +719,14 @@
       "townhouse": "Townhouse",
       "cottage": "Cottage"
     },
-    "edit": "Edit House"
+    "edit": "Edit House",
+    "render3d": "3D Render",
+    "compare2d3d": "2D / 3D Comparison",
+    "houseType": "Type",
+    "reserveConfirm": "You're expressing interest in <strong>{{title}}</strong> listed at <strong>{{currency}} {{price}}</strong>.",
+    "alreadyRequested": "You have already submitted a reservation request.",
+    "notAvailable": "This house is currently not available for reservation.",
+    "messageFailed": "Failed to start conversation"
   },
   "charts": {
     "revenue": "Revenue",
@@ -1330,5 +1377,65 @@
     "scopeSaveFailed": "Failed to save scope configuration",
     "scopeReset": "Reset to building defaults",
     "noOptionsForSubcategory": "No option types defined for this subcategory"
+  },
+  "photos": {
+    "gallery": "Photo Gallery",
+    "upload": "Property Photos",
+    "max5": "Maximum 5 photos",
+    "dragToReorder": "Click or drag photos to upload",
+    "uploading": "Uploading...",
+    "previous": "Previous photo",
+    "next": "Next photo",
+    "close": "Close gallery",
+    "photoOf": "{{current}} of {{total}}"
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "empty": "No favorites yet",
+    "emptyDesc": "Browse properties to save your favorites.",
+    "addedToFavorites": "Added to favorites",
+    "removedFromFavorites": "Removed from favorites"
+  },
+  "finances": {
+    "title": "Finances",
+    "totalRevenue": "Total Revenue",
+    "totalCosts": "Total Costs",
+    "netProfit": "Net Profit",
+    "activeReservations": "Active Reservations",
+    "revenueByBuilding": "Revenue by Building",
+    "contractorCosts": "Contractor Costs",
+    "buildingName": "Building",
+    "flatsSold": "Flats Sold",
+    "contractorName": "Contractor",
+    "trade": "Trade",
+    "contractValue": "Contract Value",
+    "status": "Status",
+    "noData": "No data available yet",
+    "totalEarnings": "Total Earnings",
+    "pendingPayments": "Pending Payments",
+    "activeProjects": "Active Projects",
+    "completedProjects": "Completed Projects",
+    "earningsTable": "Earnings Overview",
+    "paymentStatus": "Payment Status",
+    "markReceived": "Mark Received",
+    "received": "Received"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "passwordMin": "Password must be at least 6 characters",
+    "nameMin": "Name must be at least 2 characters",
+    "phoneMin": "Phone number must be at least 5 characters",
+    "addressMin": "Address must be at least 3 characters",
+    "companyNameMin": "Company name must be at least 2 characters",
+    "titleMin": "Title must be at least 3 characters",
+    "pricePositive": "Price must be greater than 0",
+    "areaPositive": "Area must be greater than 0",
+    "lotSizePositive": "Lot size must be greater than 0",
+    "minZero": "Value must be 0 or greater",
+    "bedroomsMax": "Maximum 20 bedrooms",
+    "bathroomsMax": "Maximum 10 bathrooms",
+    "storiesMin": "Must have at least 1 story",
+    "storiesMax": "Maximum 10 stories"
   }
 }

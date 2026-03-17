@@ -2,16 +2,19 @@ import { memo } from "react";
 import { Link } from "react-router";
 import { Bed, Bath, Maximize, ArrowUpRight } from "lucide-react";
 import Badge from "./ui/Badge";
+import { FavoriteButton } from "./FavoriteButton";
 import type { Flat } from "@gemmaham/shared";
 
 const FlatCard = memo(({ flat }: { flat: Flat }) => {
     return (
         <Link to={`/flats/${flat.id}`} className="project-card group">
             <div className="preview">
+                <FavoriteButton propertyId={flat.id} propertyType="flat" />
                 {flat.renderedImageUrl || flat.floorPlanUrl ? (
                     <img
                         src={flat.renderedImageUrl || flat.floorPlanUrl}
                         alt={flat.title}
+                        loading="lazy"
                     />
                 ) : (
                     <div className="w-full h-full min-h-[160px] bg-foreground/5 flex items-center justify-center">

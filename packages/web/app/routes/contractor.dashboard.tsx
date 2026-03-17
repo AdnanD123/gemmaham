@@ -1,17 +1,18 @@
 import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Wrench, CheckCircle, DollarSign, FolderKanban } from "lucide-react";
-import Navbar from "../../components/Navbar";
 import RoleGuard from "../../components/RoleGuard";
 import StatCard from "../../components/StatCard";
 import Badge from "../../components/ui/Badge";
 import RevenueChart from "../../components/charts/RevenueChart";
 import ProjectProgressChart from "../../components/charts/ProjectProgressChart";
 import DashboardSkeleton from "../../components/skeletons/DashboardSkeleton";
+import { ContentLoader } from "../../components/ui/ContentLoader";
 import PrioritySection from "../../components/PrioritySection";
 import { useContractor } from "../../lib/hooks/useContractor";
 import { deriveContractorRevenue } from "../../lib/revenue";
 import type { AuthContext } from "@gemmaham/shared";
+import { PageTransition } from "../../components/ui/PageTransition";
 
 export default function ContractorDashboard() {
     const { t } = useTranslation();
@@ -33,7 +34,7 @@ export default function ContractorDashboard() {
         <Link
             key={a.id}
             to={`/contractor/projects/${a.buildingId}`}
-            className="flex items-center justify-between p-4 bg-surface rounded-xl border-2 border-foreground/10 hover:border-primary/20 transition-colors"
+            className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-foreground/6 hover:border-primary/20 transition-colors"
         >
             <div className="min-w-0">
                 <h3 className="font-medium truncate">{a.buildingName}</h3>
@@ -53,21 +54,18 @@ export default function ContractorDashboard() {
 
     return (
         <RoleGuard allowedRole="contractor">
+            <PageTransition>
             <div className="home">
-                <Navbar />
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-5xl">
-                        <h1 className="text-2xl font-bold mb-2">
+                        <h1 className="text-2xl font-serif font-bold mb-2">
                             {profile ? t("contractor.welcomeBack", { name: profile.displayName }) : t("contractor.dashboard")}
                         </h1>
                         <p className="text-foreground/50 mb-8">{t("contractor.dashboardDesc")}</p>
 
-                        {loading ? (
-                            <DashboardSkeleton />
-                        ) : (
-                            <>
+                        <ContentLoader loading={loading} skeleton={<DashboardSkeleton />}>
                                 {/* Stat cards */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                                     <StatCard icon={Wrench} value={inProgress.length} label={t("contractor.activeProjects")} linkTo="/contractor/projects" />
                                     <StatCard icon={FolderKanban} value={assignments.length} label={t("dashboard.totalProjects")} linkTo="/contractor/projects" />
                                     <StatCard icon={CheckCircle} value={completed.length} label={t("dashboard.completed")} />
@@ -92,7 +90,7 @@ export default function ContractorDashboard() {
 
                                 {/* Priority sections */}
                                 {assignments.length === 0 ? (
-                                    <div className="text-center py-8 bg-surface rounded-xl border-2 border-foreground/10">
+                                    <div className="text-center py-8 bg-surface rounded-2xl border border-foreground/6">
                                         <Wrench size={32} className="mx-auto text-foreground/20 mb-3" />
                                         <p className="text-foreground/50">{t("contractor.noAssignments")}</p>
                                     </div>
@@ -121,11 +119,11 @@ export default function ContractorDashboard() {
                                         )}
                                     </>
                                 )}
-                            </>
-                        )}
+                        </ContentLoader>
                     </main>
                 </div>
             </div>
+            </PageTransition>
         </RoleGuard>
     );
 }
