@@ -2,296 +2,315 @@
 
 ## Current Stack Assessment
 
-| Layer | Current | Quality | Gap |
-|-------|---------|---------|-----|
-| **UI Components** | Custom components (Button, Modal, Toast, etc.) | Medium-High | No component library, limited variants |
-| **Animations** | 3 custom keyframes + Tailwind `animate-pulse/spin` | Low | No page transitions, no micro-interactions, no scroll animations |
-| **Forms** | Manual `useState` per field, no validation | Low | No validation, no error mapping, not scalable |
-| **Charts** | Recharts (bar, pie) | Medium | Basic, no animated transitions, limited interactivity |
-| **Images** | Raw `<img>` tags, no optimization | Low | No lazy loading, no placeholders, no responsive sizes |
-| **Search** | Basic Firestore filters (price, bedrooms) | Low | No full-text search, no location/geo, no sort |
+| Layer | Current | Quality | Status |
+|-------|---------|---------|--------|
+| **UI Components** | Custom components (Button, Modal, Toast, AnimatedCard, FormWizard, ContentLoader, etc.) | High | 68 component files, 16 UI primitives |
+| **Animations** | Motion (Framer Motion) — page transitions, card animations, micro-interactions, AnimatePresence | High | INSTALLED (motion 12.38.0) |
+| **Forms** | Zod schemas + useFormValidation hook + useFormDraft hook | High | INSTALLED (zod 4.3.6) — 6 validation schemas, field-level errors, auto-save drafts |
+| **Charts** | Recharts (bar, pie, area) with ChartContainer wrapper | Medium-High | 4 chart components + container |
+| **Images** | Lazy loading on all images, PhotoGallery with lightbox + keyboard nav | High | PhotoUploader + PhotoGallery components |
+| **Search** | Enhanced filters: location, size range, price range, sort (newest/price/size) | Medium-High | PropertyFilters + FlatFilters components, SortBy type |
 | **Tables** | Manual HTML tables | Low | No sorting, pagination, or column management |
-| **Drag & Drop** | None | — | Needed for Kanban boards and photo reordering |
-| **Maps** | None | — | Skipped for now — not needed yet |
-| **Dates** | Raw date strings, split year/month selectors | Low | Poor UX, no proper date picker |
-| **File Upload** | Manual file input with preview | Medium | No drag-drop zone, no progress bar |
-| **Toasts** | Custom ToastContext | High | Works well, but could be lighter |
-| **Skeletons** | Custom with `animate-pulse` | Low | No shimmer effect, basic shapes |
+| **Drag & Drop** | None | — | Not needed yet (Kanban is click-based, not drag) |
+| **Maps** | None | — | Skipped — not needed yet |
+| **Dates** | date-fns for formatting + relative time + date math | High | INSTALLED (date-fns 4.1.0) |
+| **File Upload** | Manual file input with preview, uploadPropertyPhoto, uploadBuildingDocument, etc. | Medium-High | 14 storage upload functions |
+| **Toasts** | Custom ToastContext | High | Works well |
+| **Skeletons** | Shimmer skeleton loaders (5 skeleton components) | High | ChartSkeleton, DashboardSkeleton, FlatCardSkeleton, MessageSkeleton, ReservationSkeleton |
 | **PDF** | None | — | Needed for contracts, brochures |
-| **Real-time** | Raw Firestore `onSnapshot` | Medium | Works but verbose, no Suspense integration |
+| **Real-time** | Raw Firestore `onSnapshot` + custom hooks | Medium | useMessages, useNotifications, useUnreadMessages |
+| **Class Utilities** | clsx + tailwind-merge | High | INSTALLED (clsx 2.1.1, tailwind-merge 3.5.0) |
+| **Milestones** | MilestoneTimeline with phase bars, diamond markers, today line | High | BuildingMilestone type + component |
+| **Kanban** | KanbanBoard component (click-based, not drag) | High | List/board toggle on reservations |
+| **Documents** | DocumentManager component + BuildingDocument type | High | Per-building doc management with sharing controls |
+| **Accessibility** | Skip-to-content, focus-visible, ARIA, prefers-reduced-motion | High | Phase 4 complete |
+| **Mobile** | Sidebar hidden, 44px targets, responsive grids, sticky input | High | Phase 4 complete |
 
 ---
 
-## Recommended Technology Additions
+## Installed Libraries (Current)
+
+| Library | Version | License | Status | Purpose |
+|---------|---------|---------|--------|---------|
+| motion (Framer Motion) | 12.38.0 | MIT | INSTALLED | Page transitions, card animations, micro-interactions, AnimatePresence |
+| zod | 4.3.6 | MIT | INSTALLED | Schema-based form validation — 6 schemas (login, register, profile, contractor profile, flat, house) |
+| clsx | 2.1.1 | MIT | INSTALLED | Conditional class name utility |
+| tailwind-merge | 3.5.0 | MIT | INSTALLED | Tailwind class conflict resolution |
+| date-fns | 4.1.0 | MIT | INSTALLED | Date formatting, relative time, date math, deadline calculations |
+| react-compare-slider | 3.1.0 | MIT | INSTALLED | Before/after image comparison slider for 3D renders |
+| recharts | 3.7.0 | MIT | INSTALLED | Analytics charts (revenue, occupancy, property type, progress) |
+| lucide-react | 0.563.0 | ISC | INSTALLED | Icon library |
+| react-i18next | 16.5.4 | MIT | INSTALLED | Internationalization (3 languages) |
+
+---
+
+## Recommended Technology Additions (Remaining)
 
 ### Tier 1 — High Priority (Core Experience)
 
-> **All Tier 1 libraries are free and open-source (MIT license) unless noted otherwise.**
+> **All libraries are free and open-source (MIT license) unless noted otherwise.**
 
 #### 1. shadcn/ui — UI Component Foundation
 - **Cost**: FREE (MIT) — you copy the code into your project, no dependency
 - **What**: Copy-paste component library built on Radix UI + Tailwind CSS
-- **Why**: You own the code (no dependency lock-in). Accessible, keyboard-navigable, works with your existing Tailwind 4 + CSS custom properties. Components can be restyled to match the neobrutalism theme
-- **Impact**: Replaces and upgrades your custom Input, Select, Modal, Dialog, Dropdown, Tabs, Tooltip, etc. Saves time on building accessible primitives from scratch
+- **Why**: Accessible, keyboard-navigable components. Upgrades existing Input, Select, Modal, Dialog. Adds Calendar/Date Picker, Combobox, Command palette, Tooltip, Sheet
+- **Impact**: Replaces manual date handling in some forms, adds missing Combobox for location search, improves accessibility on all interactive elements
 - **Effort**: Medium — install Radix primitives, copy/adapt components one at a time
 - **Key Components to Adopt**:
-  - Dialog (upgrade Modal)
-  - Select + Combobox (upgrade Select, add searchable dropdowns)
-  - Tabs (standardize tabbed interfaces)
-  - Dropdown Menu (context menus, action menus)
-  - Popover (notification dropdown, filter panels)
-  - Calendar + Date Picker (replace split year/month selectors)
-  - Tooltip (add info tooltips across the app)
-  - Sheet (mobile-friendly slide-out panels)
+  - Calendar + Date Picker (for remaining split year/month selectors)
+  - Combobox (searchable dropdowns for location)
   - Command (command palette for power users)
+  - Tooltip (info tooltips)
+  - Sheet (mobile-friendly slide-out panels)
 
-#### 2. Conform + Zod — Form Handling & Validation
-- **Cost**: FREE (MIT) — both libraries
-- **What**: Conform is a form library built specifically for React Router 7. Zod provides schema-based validation
-- **Why**: Native SSR support — forms work without JavaScript, then enhance on client. Zod schemas can be shared between web (Conform) and Cloud Functions (server validation). Eliminates all manual `useState` form patterns
-- **Impact**: Every form in the app (login, registration, property creation, reservation, profile) gets proper validation with field-level error messages. Step-by-step form wizards become easier
-- **Effort**: High — need to migrate all existing forms. Start with new forms, gradually migrate
-- **Example**:
-  ```
-  Signup form: Zod schema validates email format, password strength, phone format
-  Property form: Validates required fields, price > 0, bedrooms 1-20, area > 0
-  Reservation form: Validates move-in date is future, required fields filled
-  ```
-
-#### 3. Sonner — Toast Notifications
+#### 2. Sonner — Toast Notifications
 - **Cost**: FREE (MIT)
 - **What**: 2-3KB toast library, TypeScript-first, global observer pattern
-- **Why**: Toasts persist across route changes (current custom implementation may not). Promise-based toasts show loading → success/error automatically (perfect for save/upload operations). Standard pairing with shadcn/ui
-- **Impact**: Replace custom ToastContext with lighter, more capable solution. Promise toasts for all async operations (save property, submit reservation, upload photo)
+- **Why**: Toasts persist across route changes. Promise-based toasts for async operations (save property, upload photo)
+- **Impact**: Replace custom ToastContext with lighter, more capable solution
 - **Effort**: Low — drop-in replacement, minimal migration
 
-#### 4. MiniSearch — Client-Side Property Search
-- **Cost**: FREE (MIT) — runs entirely in the browser, no server/hosting needed
-- **What**: Lightweight client-side full-text search engine with fuzzy matching and field boosting
-- **Why**: Firestore queries are limited (no full-text search, no typo tolerance). MiniSearch loads your properties into an in-memory index and provides instant search with typo tolerance, field weighting (title > description), and faceted filtering — all with zero infrastructure cost
-- **Impact**: Search bar on `/properties` page that searches across property titles, descriptions, addresses. Instant results as you type. Works offline
-- **Limitation**: Best for up to ~5,000 properties. If the platform scales beyond that, consider Typesense (open-source, self-hostable, but requires a server) or Algolia (paid SaaS)
-- **Effort**: Low — index properties from Firestore on page load, no backend changes
+#### 3. MiniSearch — Client-Side Property Search
+- **Cost**: FREE (MIT)
+- **What**: Lightweight client-side full-text search with fuzzy matching and field boosting
+- **Why**: Current filters are Firestore-based — no full-text search or typo tolerance. MiniSearch adds instant search with typo tolerance
+- **Impact**: Search bar on `/properties` that searches across titles, descriptions, addresses instantly
+- **Limitation**: Best for up to ~5,000 properties
+- **Effort**: Low — index properties from Firestore on page load
 
 ---
 
 ### Tier 2 — Medium Priority (Polish & Delight)
 
-> **All Tier 2 libraries are free and open-source (MIT license).**
+> **All libraries are free and open-source (MIT license).**
 
-#### 5. Motion (Framer Motion) — Animations & Micro-interactions
-- **Cost**: FREE (MIT)
-- **What**: Declarative animation library for React (~32KB). Layout animations, gesture handling, page transitions, scroll-triggered effects
-- **Why**: The current app has almost no animations. Motion adds the "feel" that makes a platform feel premium — smooth card transitions when filtering, page enter/exit animations, hover micro-interactions, animated number counters on dashboards
-- **Impact Areas**:
-  - **Page transitions**: Smooth fade/slide between routes
-  - **Property cards**: Staggered entrance animation when grid loads, smooth reflow when filters change
-  - **Kanban board**: Smooth card movement between columns
-  - **Dashboard stats**: Animated number counting on load
-  - **Modals**: Spring-based open/close instead of instant show/hide
-  - **Notifications**: Slide-in from top/right
-  - **Photo gallery**: Smooth lightbox open/close with shared layout animation
-  - **Progress bars**: Animated fill on load/update
-- **Effort**: Low per-component — can be added incrementally. Start with page transitions and card animations
-
-#### 6. TanStack Table — Data Tables
+#### 4. TanStack Table — Data Tables
 - **Cost**: FREE (MIT)
 - **What**: Headless table library (~30KB) with sorting, filtering, pagination, column resize
-- **Why**: The app has several table-heavy views (property performance, financial tracking, reservation lists, contractor lists) that currently use basic HTML tables or card lists. TanStack Table adds sortable columns, pagination, and search — essential for agencies managing 50+ properties
-- **Impact**: Upgrade analytics property performance table, financial tracking tables, contractor management lists. All with consistent sorting/pagination
-- **Effort**: Medium — headless means you style it with Tailwind (matches your design system)
+- **Why**: Financial tracking tables, property performance tables, contractor lists — all need sortable columns and pagination
+- **Impact**: Upgrade company analytics, financial tracking, contractor management tables
+- **Effort**: Medium — headless means you style it with Tailwind
 
-#### 7. Tremor — Dashboard Components
+#### 5. Tremor — Dashboard Components
 - **Cost**: FREE (Apache 2.0)
-- **What**: React components built on Tailwind for dashboards (~50KB). KPI cards, area charts, bar charts, donut charts, tables, badges
-- **Why**: Built specifically for Tailwind, so it drops into your existing design system. Provides polished dashboard primitives (stat cards with trend indicators, sparklines, progress bars) that would take significant effort to build from scratch
-- **Impact**: Upgrade company analytics dashboard, contractor earnings view, reservation stats. Consistent, polished dashboard UX
-- **Effort**: Low-Medium — components are ready to use, need theme customization to match neobrutalism
-- **Note**: Can replace Recharts for most chart needs, or use alongside it
+- **What**: React components built on Tailwind for dashboards
+- **Why**: Polished stat cards with trend indicators, sparklines, progress bars
+- **Impact**: Upgrade company/contractor dashboards with more polished metrics
+- **Effort**: Low-Medium — need theme customization to match glass design
 
-#### 8. Image Optimization Pipeline — BlurHash + Sharp + Lazy Loading
-- **Cost**: FREE (all MIT) — Sharp, BlurHash, and native browser APIs. Note: Sharp runs in Cloud Functions which count toward your Firebase usage quota
-- **What**: Multi-layer image strategy:
-  1. **Sharp** (in Cloud Functions): On upload, generate thumbnails (300px, 800px) + WebP versions
-  2. **BlurHash**: Generate blur placeholder hash server-side, store in Firestore alongside property
-  3. **Native `loading="lazy"`**: Browser-native lazy loading for below-fold images
-  4. **Responsive `srcset`**: Serve appropriate image size based on viewport
-- **Why**: Property photos are the heaviest assets on the page. Without optimization, the browsing experience is slow — images pop in with no placeholder, full-size images load on mobile, and scrolling triggers many simultaneous downloads
-- **Impact**: Perceived load time drops dramatically. Property cards show blur placeholder instantly, then crisp image fades in. Mobile data usage reduced by 60-70% with responsive sizes
-- **Effort**: Medium — Cloud Function for processing, Firestore schema update for image variants, component wrapper for lazy + blur
-
-#### 9. date-fns — Date Handling
-- **Cost**: FREE (MIT)
-- **What**: Lightweight date utility library (~5-10KB tree-shaken). Handles formatting, relative time, date math, timezone support
-- **Why**: The app currently uses raw date strings and awkward split year/month selectors. Proper date handling is needed for: reservation dates, construction deadlines, meeting scheduling, milestone tracking, deadline urgency calculations
-- **Impact**: Better date pickers (via shadcn Calendar component), correct timezone handling, relative time display ("3 days ago"), deadline countdown ("5 days remaining"), date range calculations for analytics
-- **Effort**: Low — mostly formatting utilities. Pair with shadcn/ui Calendar for date picker UX
+#### 6. Image Optimization Pipeline — BlurHash + Sharp
+- **Cost**: FREE (all MIT) — Sharp runs in Cloud Functions
+- **What**: On upload: generate thumbnails + WebP. BlurHash for blur placeholders
+- **Why**: Property photos are heaviest assets. Optimization reduces load times significantly
+- **Impact**: Blur placeholders on cards, responsive image sizes, faster mobile loading
+- **Effort**: Medium — Cloud Function for processing, schema update for variants
 
 ---
 
 ### Tier 3 — Lower Priority (Advanced Features)
 
-> **All Tier 3 libraries are free and open-source.**
+> **All libraries are free and open-source.**
 
-#### 10. @hello-pangea/dnd — Drag & Drop for Kanban
-- **Cost**: FREE (Apache 2.0)
-- **What**: Fork of react-beautiful-dnd, purpose-built for list-based drag-and-drop
-- **Why**: Needed for the Kanban-style reservation board and construction project board. Smooth animations, excellent accessibility, keyboard DnD support
-- **Impact**: Enables Kanban board view for reservations and construction phase management
-- **Effort**: Medium — new feature, needs state management for drag operations
-- **Note**: Per user's decision, reservation Kanban cards are NOT draggable for status change (status changes require deliberate actions). DnD would be used for: photo reordering, priority ordering, timeline arrangement
-
-#### 11. dnd-kit — Photo Reordering & Grid DnD
+#### 7. @react-pdf/renderer — PDF Generation
 - **Cost**: FREE (MIT)
-- **What**: Flexible DnD library supporting grids, lists, and custom layouts
-- **Why**: Needed for property photo gallery management (drag to reorder photos), potentially for dashboard widget arrangement
-- **Impact**: Photo gallery manager where agencies drag-to-reorder property photos
-- **Effort**: Low — isolated to photo management component
+- **What**: Write PDFs using React components
+- **Why**: Generate property brochures, reservation confirmations, contractor assignment summaries
+- **Impact**: "Download Brochure" on properties, "Download Confirmation" on reservations
+- **Effort**: Medium — need PDF template design
 
-#### 12. @react-pdf/renderer — PDF Generation
+#### 8. react-dropzone — File Upload UX
 - **Cost**: FREE (MIT)
-- **What**: Write PDFs using React components and CSS Flexbox
-- **Why**: Generate property brochures (photo + specs + floor plan + price), reservation confirmations, contractor assignment summaries. Agencies can share professional documents with buyers
-- **Impact**: "Download Brochure" button on property detail, "Download Confirmation" on completed reservations, "Download Contract Summary" for contractor assignments
-- **Effort**: Medium — need to design PDF templates, handle image embedding
+- **What**: Drag-and-drop file upload zone
+- **Why**: Current uploads use basic file inputs. Dropzone adds visual feedback, multi-file support
+- **Impact**: Better photo upload experience, document upload UX
+- **Effort**: Low — wrapper component
 
-#### 13. react-dropzone — File Upload UX
+#### 9. TanStack Virtual — Virtual Scrolling
 - **Cost**: FREE (MIT)
-- **What**: Drag-and-drop file upload zone component
-- **Why**: Current file uploads use basic `<input type="file">`. react-dropzone provides a proper drop zone with visual feedback, file type validation, multiple file support
-- **Impact**: Property photo uploads (drag 5 photos), document uploads (contracts, permits), profile photo upload — all with drag-drop, preview, and progress
-- **Effort**: Low — wrapper component, pairs with Firebase Storage `uploadBytesResumable` for progress tracking
+- **What**: Virtualization for large lists
+- **Why**: As listings grow, rendering 100+ cards hurts performance
+- **Impact**: Smooth scrolling on large property lists, contractor directory
+- **Effort**: Low-Medium
 
-#### 14. TanStack Virtual — Virtual Scrolling
+#### 10. ReactFire — Firebase Hooks
 - **Cost**: FREE (MIT)
-- **What**: Virtualization for large lists (only renders visible items)
-- **Why**: As property listings grow, rendering 100+ cards simultaneously hurts performance. Virtual scrolling renders only ~10-15 visible items
-- **Impact**: Smooth scrolling on property browse pages, contractor directory, message lists with hundreds of conversations
-- **Effort**: Low-Medium — wrap existing list components with virtualizer
-
-#### 15. ReactFire — Firebase Hooks
-- **Cost**: FREE (MIT)
-- **What**: Official Firebase + React integration with hooks and Suspense support
-- **Why**: Current Firebase usage wraps `onSnapshot` manually in `useEffect` with cleanup. ReactFire provides `useFirestoreCollectionData`, `useUser`, etc. with automatic cleanup and Suspense integration
-- **Impact**: Cleaner code, automatic loading states via Suspense boundaries, less boilerplate for real-time subscriptions
-- **Effort**: Medium — gradual migration of existing Firebase hooks
+- **What**: Official Firebase + React integration with hooks and Suspense
+- **Why**: Current Firebase usage is manual onSnapshot in useEffect. ReactFire provides cleaner hooks
+- **Impact**: Cleaner code, automatic loading states via Suspense
+- **Effort**: Medium — gradual migration
 
 ---
 
 ## Skill Categories Summary
 
-### Animation & Motion Design
-| Skill | Tool | Use Case |
-|-------|------|----------|
-| Page transitions | Motion | Smooth route changes |
-| Card animations | Motion | Property grid load, filter transitions |
-| Micro-interactions | Motion | Button hover, toggle switches, icon animations |
-| Number animations | Motion | Dashboard stat counters |
-| Scroll animations | Motion / CSS | Reveal elements on scroll (landing page) |
-| Loading shimmer | CSS keyframes | Upgrade skeleton loaders from pulse to shimmer |
+### Animation & Motion Design — COMPLETE
+| Skill | Tool | Status |
+|-------|------|--------|
+| Page transitions | Motion (Framer Motion) | DONE — PageTransition component on all routes |
+| Card animations | Motion | DONE — AnimatedCard component, staggered entrance |
+| Micro-interactions | Motion | DONE — Button hover, toggle, icon animations |
+| Modal animations | Motion + AnimatePresence | DONE — Spring-based open/close on modals |
+| Loading shimmer | CSS keyframes | DONE — 5 shimmer skeleton components |
 
-### UI/UX Design
-| Skill | Tool | Use Case |
-|-------|------|----------|
-| Accessible components | shadcn/ui + Radix | All interactive elements |
-| Date picking | shadcn Calendar | Construction dates, meeting scheduling |
-| Combobox / Autocomplete | shadcn Combobox | Location search, contractor search |
-| Command palette | shadcn Command | Power user navigation (Cmd+K) |
-| Sheet panels | shadcn Sheet | Mobile-friendly side panels |
-| Data tables | TanStack Table | Property management, financial tracking |
-| Dashboard widgets | Tremor | Analytics, KPI cards, trend indicators |
+### UI/UX Design — PARTIALLY COMPLETE
+| Skill | Tool | Status |
+|-------|------|--------|
+| Glass design system | Tailwind CSS 4 + CSS custom properties | DONE |
+| Sidebar navigation | Custom components | DONE — Unified sidebar-only nav |
+| Form wizards | FormWizard component | DONE — 4-step property creation |
+| Form drafts | useFormDraft hook + DraftIndicator | DONE — Auto-save, resume |
+| Kanban board | KanbanBoard component | DONE — List/board toggle |
+| Photo lightbox | PhotoGallery component | DONE — Keyboard navigation |
+| Milestone timeline | MilestoneTimeline component | DONE — Phase bars, today line, overdue |
+| Document management | DocumentManager component | DONE — Upload, share, delete |
+| Availability badges | AvailabilityBadge component | DONE — Color-coded status |
+| Accessible components | shadcn/ui + Radix | REMAINING |
+| Date picking | shadcn Calendar | REMAINING |
+| Combobox / Autocomplete | shadcn Combobox | REMAINING |
+| Data tables | TanStack Table | REMAINING |
+| Dashboard widgets | Tremor | REMAINING |
 
-### Data & Search
-| Skill | Tool | Use Case |
-|-------|------|----------|
-| Full-text search | MiniSearch | Property search with typo tolerance (client-side, free) |
-| Faceted filtering | MiniSearch + Firestore | Multi-criteria property filtering |
+### Data & Search — PARTIALLY COMPLETE
+| Skill | Tool | Status |
+|-------|------|--------|
+| Filter bar | PropertyFilters, FlatFilters | DONE — Location, size, price, sort |
+| Sort options | SortBy type | DONE — newest, price_asc, price_desc, size_desc |
+| Full-text search | MiniSearch | REMAINING — fuzzy matching, typo tolerance |
 
-### Forms & Validation
-| Skill | Tool | Use Case |
-|-------|------|----------|
-| Schema validation | Zod | All forms — shared between client & server |
-| Progressive forms | Conform | Multi-step property creation wizard |
-| SSR form handling | Conform | Forms work without JS |
-| File validation | Zod + react-dropzone | Photo uploads with type/size checks |
+### Forms & Validation — COMPLETE
+| Skill | Tool | Status |
+|-------|------|--------|
+| Schema validation | Zod | DONE — 6 schemas with i18n error keys |
+| Field-level errors | useFormValidation hook | DONE |
+| Multi-step wizards | FormWizard component | DONE — 4-step property creation |
+| Auto-save drafts | useFormDraft hook | DONE — localStorage persistence |
+| Inline editing | AnimatePresence transitions | DONE — Customization option cards |
 
-### Performance & Optimization
-| Skill | Tool | Use Case |
-|-------|------|----------|
-| Image optimization | Sharp (Cloud Fn) | Generate thumbnails + WebP on upload |
-| Blur placeholders | BlurHash | Instant placeholder while images load |
-| Lazy loading | Native `loading="lazy"` | Below-fold images |
-| Virtual scrolling | TanStack Virtual | Large property lists |
-| Responsive images | `srcset` | Serve right size for viewport |
+### Performance & Optimization — PARTIALLY COMPLETE
+| Skill | Tool | Status |
+|-------|------|--------|
+| Lazy loading | Native `loading="lazy"` | DONE — All images |
+| Shimmer skeletons | CSS keyframes | DONE — 5 skeleton components |
+| Content loader | ContentLoader component | DONE — Standardized loading |
+| Image optimization | Sharp (Cloud Fn) | REMAINING |
+| Blur placeholders | BlurHash | REMAINING |
+| Virtual scrolling | TanStack Virtual | REMAINING |
 
-### Document & Export
-| Skill | Tool | Use Case |
-|-------|------|----------|
-| PDF generation | @react-pdf/renderer | Property brochures, reservation confirmations |
-| File management | react-dropzone + Firebase Storage | Photo gallery, document uploads |
+### Documents & Media — COMPLETE
+| Skill | Tool | Status |
+|-------|------|--------|
+| Photo gallery | PhotoGallery + PhotoUploader | DONE — Lightbox, keyboard nav |
+| Building documents | DocumentManager | DONE — Upload, share, type categorization |
+| Contractor documents | Storage functions | DONE — Certificates, insurance, licenses |
+| Contractor portfolio | Storage functions | DONE — Photos with captions |
+| Property photos | uploadPropertyPhoto | DONE — Generic upload function |
+| File management | 14 storage upload functions | DONE |
+| PDF generation | @react-pdf/renderer | REMAINING |
 
-### Real-time & State
-| Skill | Tool | Use Case |
-|-------|------|----------|
-| Firebase hooks | ReactFire | Cleaner real-time subscriptions |
-| Suspense integration | ReactFire + React 19 | Automatic loading states |
-| Optimistic updates | Zustand + Firebase | Instant UI feedback on actions |
+### Real-time & State — COMPLETE
+| Skill | Tool | Status |
+|-------|------|--------|
+| Messages | useMessages hook | DONE — Real-time subscriptions |
+| Notifications | useNotifications hook | DONE — Bell + center page |
+| Unread tracking | useUnreadMessages hook | DONE — Sidebar badges |
+| Favorites | useFavorites hook | DONE — localStorage persistence |
+
+### Accessibility — COMPLETE
+| Skill | Tool | Status |
+|-------|------|--------|
+| Skip-to-content | Native HTML | DONE |
+| Focus-visible | CSS focus-visible | DONE |
+| ARIA labels | HTML attributes | DONE |
+| Dialog accessibility | role + aria-modal | DONE |
+| Contrast | CSS fixes | DONE |
+| Reduced motion | prefers-reduced-motion | DONE |
+| Touch targets | 44px minimum | DONE |
+
+### Mobile UX — COMPLETE
+| Skill | Tool | Status |
+|-------|------|--------|
+| Responsive sidebar | MobileMenu component | DONE — Hidden on mobile, hamburger toggle |
+| Touch targets | Tailwind utilities | DONE — 44px minimum |
+| Responsive grids | Tailwind responsive classes | DONE |
+| Sticky inputs | CSS sticky | DONE — Message input on mobile |
 
 ---
 
-## Implementation Order (Recommended)
+## Implementation Phases — Status
 
-### Phase 1 — Foundation (Structure & Forms)
-1. **Conform + Zod** — Migrate forms starting with auth and property creation
-2. **shadcn/ui** — Install core components (Dialog, Select, Tabs, Calendar, Popover)
-3. **Sonner** — Replace custom toast system
-4. **date-fns** — Fix date handling, replace split selectors with Calendar
+### Phase 1 — Foundation (Structure & Forms) — COMPLETE
+1. **Zod** — DONE — 6 validation schemas, field-level errors, i18n translation keys
+2. **useFormValidation hook** — DONE — Real-time validation feedback
+3. **useFormDraft hook + DraftIndicator** — DONE — Auto-save form progress
+4. **date-fns** — DONE — Date formatting, relative time, deadline calculations
+5. **clsx + tailwind-merge** — DONE — Class name utilities
 
-### Phase 2 — Visual Polish (Animation & Images)
-5. **Motion** — Add page transitions, card animations, dashboard number animations
-6. **Image pipeline** — Sharp thumbnails, BlurHash, lazy loading
-7. **Skeleton upgrade** — Shimmer effect instead of pulse
-8. **react-dropzone** — Upgrade all file upload areas
+### Phase 2 — Visual Polish (Animation & Images) — COMPLETE
+6. **Motion (Framer Motion)** — DONE — PageTransition on all routes, AnimatedCard, micro-interactions, AnimatePresence
+7. **Lazy loading** — DONE — Native loading="lazy" on all images
+8. **Shimmer skeletons** — DONE — 5 skeleton components (Chart, Dashboard, FlatCard, Message, Reservation)
+9. **PhotoUploader + PhotoGallery** — DONE — Upload, lightbox, keyboard nav
+10. **ContentLoader** — DONE — Standardized loading transitions
 
-### Phase 3 — Core Features (Search & Interaction)
-9. **MiniSearch** — Client-side property search with typo tolerance
-10. **TanStack Table** — Data tables for management views
-11. **@hello-pangea/dnd** — Kanban board views
+### Phase 3 — Core Features (Milestones, Kanban, Documents) — COMPLETE
+11. **KanbanBoard** — DONE — Reservation Kanban with list/board toggle, click-based (not drag)
+12. **MilestoneTimeline** — DONE — Phase bars, diamond markers, today line, overdue warnings
+13. **DocumentManager** — DONE — Per-building document management with sharing controls
+14. **Enhanced public contractor profile** — DONE — Hero, categories, portfolio, stats
+15. **Enhanced messaging** — DONE — Unread badges, buyer/contractor tabs, context bars
 
-### Phase 4 — Advanced (Dashboard & Documents)
-12. **Tremor** — Enhanced dashboard components
-13. **@react-pdf/renderer** — Property brochures, confirmations
-14. **TanStack Virtual** — Virtual scrolling for large lists
-15. **ReactFire** — Gradual migration of Firebase hooks
+### Phase 4 — Polish (Mobile, Accessibility, Customization) — COMPLETE
+16. **Mobile UX** — DONE — Sidebar hidden, 44px targets, responsive grids, sticky input
+17. **Accessibility** — DONE — Skip-to-content, focus-visible, ARIA, prefers-reduced-motion
+18. **Inline editing** — DONE — Customization option cards with AnimatePresence
+19. **Form drafts** — DONE — useFormDraft + DraftIndicator in creation wizards
+20. **Contractor documents & portfolio** — DONE — Upload certificates, insurance, portfolio photos
+21. **Contractor availability** — DONE — AvailabilityBadge, profile selector, directory filter
+
+### Remaining (Future Phases)
+- shadcn/ui components (Calendar, Combobox, Command palette)
+- Sonner (toast replacement)
+- MiniSearch (full-text search with fuzzy matching)
+- TanStack Table (sortable/paginated data tables)
+- Tremor (enhanced dashboard widgets)
+- Image optimization pipeline (Sharp + BlurHash)
+- @react-pdf/renderer (PDF brochures, confirmations)
+- react-dropzone (drag-and-drop file upload zones)
+- TanStack Virtual (virtual scrolling for large lists)
+- ReactFire (Firebase hooks with Suspense)
+- Team management for agencies
 
 ---
 
 ## Cost & Bundle Summary
 
-### Cost: Everything is FREE
+### Currently Installed (FREE)
 
-| Library | License | Cost | Size (gzipped) |
-|---------|---------|------|----------------|
-| shadcn/ui (Radix primitives) | MIT | FREE | ~5-15KB per component |
-| Conform | MIT | FREE | ~8KB |
-| Zod | MIT | FREE | ~13KB |
-| Sonner | MIT | FREE | ~3KB |
-| MiniSearch | MIT | FREE | ~5KB |
-| Motion (Framer Motion) | MIT | FREE | ~32KB |
-| TanStack Table | MIT | FREE | ~30KB |
-| Tremor | Apache 2.0 | FREE | ~50KB |
-| Sharp (Cloud Functions) | Apache 2.0 | FREE (library) | Server-side only |
-| BlurHash | MIT | FREE | ~3KB |
-| date-fns | MIT | FREE | ~5-10KB (tree-shaken) |
-| @hello-pangea/dnd | Apache 2.0 | FREE | ~30KB |
-| dnd-kit | MIT | FREE | ~20KB |
-| @react-pdf/renderer | MIT | FREE | ~80KB |
-| react-dropzone | MIT | FREE | ~8KB |
-| TanStack Virtual | MIT | FREE | ~10KB |
-| ReactFire | MIT | FREE | ~12KB |
+| Library | License | Size (gzipped) |
+|---------|---------|----------------|
+| motion (Framer Motion) | MIT | ~32KB |
+| zod | MIT | ~13KB |
+| clsx | MIT | ~1KB |
+| tailwind-merge | MIT | ~5KB |
+| date-fns | MIT | ~5-10KB (tree-shaken) |
+| react-compare-slider | MIT | ~3KB |
+| recharts | MIT | ~50KB |
 
-**Total if all added**: ~300KB gzipped (loaded on-demand via code-splitting, not all at once)
-**Realistic first load increase**: ~50-70KB (only Tier 1 loads initially, rest lazy-loaded)
+### Remaining Recommended (all FREE)
+
+| Library | License | Size (gzipped) |
+|---------|---------|----------------|
+| shadcn/ui (Radix primitives) | MIT | ~5-15KB per component |
+| Sonner | MIT | ~3KB |
+| MiniSearch | MIT | ~5KB |
+| TanStack Table | MIT | ~30KB |
+| Tremor | Apache 2.0 | ~50KB |
+| Sharp (Cloud Functions) | Apache 2.0 | Server-side only |
+| BlurHash | MIT | ~3KB |
+| @react-pdf/renderer | MIT | ~80KB |
+| react-dropzone | MIT | ~8KB |
+| TanStack Virtual | MIT | ~10KB |
+| ReactFire | MIT | ~12KB |
 
 ### Paid Alternatives (NOT recommended now, but good to know for future scaling)
 
