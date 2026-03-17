@@ -7,6 +7,7 @@ import Input from "./ui/Input";
 import Select from "./ui/Select";
 import { searchContractors } from "../lib/firestore";
 import { CONTRACTOR_CATEGORIES } from "@gemmaham/shared";
+import AvailabilityBadge from "./AvailabilityBadge";
 import type { ContractorProfile, ContractorCategory, ContractorSubcategory } from "@gemmaham/shared";
 
 interface Props {
@@ -23,6 +24,7 @@ export default function ContractorSearch({ isOpen, onClose, onAssign, existingCo
     const [selectedCategory, setSelectedCategory] = useState<ContractorCategory | "">("");
     const [selectedSubcategory, setSelectedSubcategory] = useState<ContractorSubcategory | "">("");
     const [nameSearch, setNameSearch] = useState("");
+    const [onlyAvailable, setOnlyAvailable] = useState(false);
     const [results, setResults] = useState<ContractorProfile[]>([]);
     const [searching, setSearching] = useState(false);
     const [searched, setSearched] = useState(false);
@@ -71,6 +73,7 @@ export default function ContractorSearch({ isOpen, onClose, onAssign, existingCo
         setNameSearch("");
         setSelectedCategory("");
         setSelectedSubcategory("");
+        setOnlyAvailable(false);
         onClose();
     };
 
@@ -165,6 +168,15 @@ export default function ContractorSearch({ isOpen, onClose, onAssign, existingCo
                             onKeyDown={(e) => e.key === "Enter" && handleDirectorySearch()}
                         />
                     )}
+                    <label className="flex items-center gap-2 text-sm text-foreground/70 cursor-pointer select-none">
+                        <input
+                            type="checkbox"
+                            checked={onlyAvailable}
+                            onChange={(e) => setOnlyAvailable(e.target.checked)}
+                            className="accent-primary"
+                        />
+                        {t("contractor.showAvailableOnly")}
+                    </label>
                     <Button size="sm" onClick={handleDirectorySearch} disabled={searching}>
                         <Search size={16} className="mr-1" /> {t("common.search")}
                     </Button>
@@ -185,7 +197,7 @@ export default function ContractorSearch({ isOpen, onClose, onAssign, existingCo
 
             {results.length > 0 && (
                 <div className="mt-4 space-y-2 max-h-64 overflow-y-auto">
-                    {results.map((c) => {
+                    {results.filter((c) => !onlyAvailable || c.availability === "available").map((c) => {
                         const assigned = isAlreadyAssigned(c.id);
                         return (
                             <div key={c.id} className="flex items-center gap-3 p-3 bg-background rounded-xl border border-foreground/6">
@@ -204,6 +216,7 @@ export default function ContractorSearch({ isOpen, onClose, onAssign, existingCo
                                             ? ` · ${c.categories.slice(0, 2).map((cat) => t(`contractorCategories.categories.${cat.category}`)).join(", ")}${c.categories.length > 2 ? ` +${c.categories.length - 2}` : ""}`
                                             : ` · ${t(`contractor.specialties.${c.specialty}`)}`}
                                     </p>
+                                    <AvailabilityBadge availability={c.availability} availableFrom={c.availableFrom} />
                                 </div>
                                 {assigned ? (
                                     <span className="text-xs text-green-600 flex items-center gap-1">

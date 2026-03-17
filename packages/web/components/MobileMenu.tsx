@@ -38,7 +38,7 @@ export default function MobileMenu({ isOpen, onClose, auth, onSignOut }: MobileM
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-50 lg:hidden">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
@@ -124,7 +124,7 @@ function NavLink({ to, onClick, children }: { to: string; onClick: () => void; c
         <Link
             to={to}
             onClick={onClick}
-            className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-foreground/5 transition-colors"
+            className="block px-3 py-3 rounded-lg text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-foreground/5 transition-colors min-h-[44px]"
         >
             {children}
         </Link>

@@ -65,7 +65,7 @@ export default function ContractorDashboard() {
 
                         <ContentLoader loading={loading} skeleton={<DashboardSkeleton />}>
                                 {/* Stat cards */}
-                                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                                     <StatCard icon={Wrench} value={inProgress.length} label={t("contractor.activeProjects")} linkTo="/contractor/projects" />
                                     <StatCard icon={FolderKanban} value={assignments.length} label={t("dashboard.totalProjects")} linkTo="/contractor/projects" />
                                     <StatCard icon={CheckCircle} value={completed.length} label={t("dashboard.completed")} />

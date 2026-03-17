@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
-import type { ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 
 interface ContentLoaderProps {
     /** Whether data is still loading */
@@ -10,6 +10,13 @@ interface ContentLoaderProps {
     children: ReactNode;
     /** Optional className for the wrapper */
     className?: string;
+}
+
+function usePrefersReducedMotion(): boolean {
+    return useMemo(
+        () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+        [],
+    );
 }
 
 /**
@@ -24,6 +31,16 @@ interface ContentLoaderProps {
  * ```
  */
 export function ContentLoader({ loading, skeleton, children, className }: ContentLoaderProps) {
+    const prefersReducedMotion = usePrefersReducedMotion();
+
+    if (prefersReducedMotion) {
+        return (
+            <div className={className}>
+                {loading ? skeleton : children}
+            </div>
+        );
+    }
+
     return (
         <div className={className}>
             <AnimatePresence mode="wait">

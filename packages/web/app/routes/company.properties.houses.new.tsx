@@ -14,6 +14,8 @@ import { uploadHouseCover, uploadHouseFloorPlan } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import { houseSchema } from "../../lib/validation";
 import { useFormValidation } from "../../lib/hooks/useFormValidation";
+import { useFormDraft } from "../../lib/hooks/useFormDraft";
+import { DraftIndicator } from "../../components/ui/DraftIndicator";
 import type { AuthContext, HouseType, AreaUnit } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
 
@@ -51,7 +53,7 @@ export default function CompanyAddHouse() {
     const [photos, setPhotos] = useState<string[]>([]);
     const { errors: fieldErrors, validate, clearError } = useFormValidation(houseSchema);
 
-    const [form, setForm] = useState({
+    const { values: form, setValue: setDraftField, hasDraft, draftSavedAt, clearDraft, discardDraft, setAllValues: setForm } = useFormDraft("draft-house-new", {
         title: "",
         description: "",
         address: "",
@@ -74,7 +76,7 @@ export default function CompanyAddHouse() {
     });
 
     const updateField = (field: string, value: string | boolean) => {
-        setForm((prev) => ({ ...prev, [field]: value }));
+        setDraftField(field, value);
         clearError(field);
         setStepErrors((prev) => {
             const next = { ...prev };
@@ -194,6 +196,7 @@ export default function CompanyAddHouse() {
                 await updateHouse(houseId, { floorPlanUrl: url });
             }
 
+            clearDraft();
             addToast("success", t("toast.changesSaved"));
             navigate("/company/properties");
         } catch (err) {
@@ -501,6 +504,8 @@ export default function CompanyAddHouse() {
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-3xl">
                         <h1 className="font-serif text-2xl font-bold mb-6">{t("houses.create")}</h1>
+
+                        <DraftIndicator show={hasDraft} savedAt={draftSavedAt} onDiscard={discardDraft} />
 
                         <FormWizard
                             steps={wizardSteps}

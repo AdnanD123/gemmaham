@@ -114,13 +114,13 @@ export function FormWizard({
             </div>
 
             {/* Navigation buttons */}
-            <div className="flex justify-between pt-4 border-t border-foreground/6">
+            <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t border-foreground/6">
                 <Button
                     type="button"
                     variant="ghost"
                     onClick={onBack}
                     disabled={currentStep === 0}
-                    className={currentStep === 0 ? "invisible" : ""}
+                    className={`w-full sm:w-auto ${currentStep === 0 ? "invisible" : ""}`}
                 >
                     <ChevronLeft size={18} className="mr-1 inline" />
                     {t("wizard.back")}
@@ -131,6 +131,7 @@ export function FormWizard({
                         type="button"
                         onClick={onNext}
                         disabled={nextDisabled || submitting}
+                        className="w-full sm:w-auto"
                     >
                         {nextLabel || t("wizard.next")}
                         <ChevronRight size={18} className="ml-1 inline" />

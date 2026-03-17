@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import type { ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 
 interface AnimatedCardProps {
     children: ReactNode;
@@ -8,7 +8,20 @@ interface AnimatedCardProps {
     hover?: boolean;
 }
 
+function usePrefersReducedMotion(): boolean {
+    return useMemo(
+        () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+        [],
+    );
+}
+
 export function AnimatedCard({ children, className, index = 0, hover = true }: AnimatedCardProps) {
+    const prefersReducedMotion = usePrefersReducedMotion();
+
+    if (prefersReducedMotion) {
+        return <div className={className}>{children}</div>;
+    }
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -35,6 +48,12 @@ export function AnimatedCard({ children, className, index = 0, hover = true }: A
 }
 
 export function AnimatedGrid({ children, className }: { children: ReactNode; className?: string }) {
+    const prefersReducedMotion = usePrefersReducedMotion();
+
+    if (prefersReducedMotion) {
+        return <div className={className}>{children}</div>;
+    }
+
     return (
         <motion.div
             initial="hidden"

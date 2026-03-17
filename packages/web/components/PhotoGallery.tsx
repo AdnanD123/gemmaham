@@ -48,7 +48,8 @@ export const PhotoGallery = ({ photos, alt = "Property photo" }: PhotoGalleryPro
             <button
               key={url}
               onClick={() => openLightbox(i)}
-              className={`relative overflow-hidden rounded-2xl border border-foreground/6 shadow-card cursor-pointer group ${
+              aria-label={`${alt} ${i + 1} — ${t("photos.openLightbox")}`}
+              className={`relative overflow-hidden rounded-2xl border border-foreground/6 shadow-card cursor-pointer group focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${
                 i === 0 ? "col-span-2 row-span-2" : ""
               }`}
             >
@@ -70,6 +71,9 @@ export const PhotoGallery = ({ photos, alt = "Property photo" }: PhotoGalleryPro
       <AnimatePresence>
         {lightboxIndex !== null && (
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={t("photos.gallery")}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -99,7 +103,7 @@ export const PhotoGallery = ({ photos, alt = "Property photo" }: PhotoGalleryPro
               {/* Close button */}
               <button
                 onClick={closeLightbox}
-                className="absolute -top-3 -right-3 p-2 rounded-full bg-surface text-foreground border border-foreground/6 shadow-card hover:bg-foreground/10 transition-colors"
+                className="absolute top-2 right-2 sm:-top-3 sm:-right-3 p-3 sm:p-2 rounded-full bg-surface text-foreground border border-foreground/6 shadow-card hover:bg-foreground/10 transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
                 aria-label={t("photos.close")}
               >
                 <X size={20} />
@@ -110,17 +114,17 @@ export const PhotoGallery = ({ photos, alt = "Property photo" }: PhotoGalleryPro
                 <>
                   <button
                     onClick={goPrev}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-surface/80 text-foreground border border-foreground/6 shadow-card hover:bg-surface transition-colors backdrop-blur-sm"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-3 sm:p-2 rounded-full bg-surface/80 text-foreground border border-foreground/6 shadow-card hover:bg-surface transition-colors backdrop-blur-sm focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
                     aria-label={t("photos.previous")}
                   >
-                    <ChevronLeft size={24} />
+                    <ChevronLeft size={28} className="sm:w-6 sm:h-6" />
                   </button>
                   <button
                     onClick={goNext}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-surface/80 text-foreground border border-foreground/6 shadow-card hover:bg-surface transition-colors backdrop-blur-sm"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-3 sm:p-2 rounded-full bg-surface/80 text-foreground border border-foreground/6 shadow-card hover:bg-surface transition-colors backdrop-blur-sm focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
                     aria-label={t("photos.next")}
                   >
-                    <ChevronRight size={24} />
+                    <ChevronRight size={28} className="sm:w-6 sm:h-6" />
                   </button>
                 </>
               )}

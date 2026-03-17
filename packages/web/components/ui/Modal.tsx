@@ -84,7 +84,7 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
                     >
                         <div className="flex items-center justify-between p-6 border-b border-foreground/6">
                             <h2 id={titleId} className="text-xl font-bold">{title}</h2>
-                            <button onClick={onClose} aria-label="Close" className="p-1 hover:bg-surface-highlight rounded-lg transition-colors">
+                            <button onClick={onClose} aria-label="Close" className="p-1 hover:bg-surface-highlight rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2">
                                 <X size={20} />
                             </button>
                         </div>

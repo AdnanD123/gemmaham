@@ -87,16 +87,23 @@ export default function App() {
 
   return (
     <ToastProvider>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg"
+      >
+        Skip to main content
+      </a>
       <main className="min-h-screen bg-background text-foreground relative z-10">
         {showNavbar && <Navbar auth={auth} />}
         {showSidebar && (
           <HomeSidebar auth={auth} collapsed={collapsed} onToggle={handleToggle} />
         )}
         <div
+          id="main-content"
           className={`transition-all duration-300 ${
             showNavbar ? "pt-14" : ""
           } ${
-            showSidebar ? (collapsed ? "pl-14" : "pl-56") : ""
+            showSidebar ? (collapsed ? "lg:pl-14" : "lg:pl-56") : ""
           }`}
         >
           <Outlet context={auth} />

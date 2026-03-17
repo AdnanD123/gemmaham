@@ -115,6 +115,39 @@ export const uploadContractorProfileLogo = async (
   return getDownloadURL(storageRef);
 };
 
+const CONTRACTOR_DOCUMENT_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ...IMAGE_TYPES,
+];
+
+export const uploadContractorDocument = async (
+  contractorId: string,
+  file: File,
+  onProgress?: (progress: number) => void,
+): Promise<string> => {
+  validateFile(file, 10, CONTRACTOR_DOCUMENT_TYPES);
+  const name = `${Date.now()}-${file.name.replace(/[^a-z0-9._-]/gi, "_")}`;
+  const storageRef = ref(storage, `contractors/${contractorId}/documents/${name}`);
+  await uploadBytes(storageRef, file, { contentType: file.type });
+  onProgress?.(100);
+  return getDownloadURL(storageRef);
+};
+
+export const uploadContractorPortfolio = async (
+  contractorId: string,
+  file: File,
+  onProgress?: (progress: number) => void,
+): Promise<string> => {
+  validateFile(file, 10, IMAGE_TYPES);
+  const name = `${Date.now()}-${file.name.replace(/[^a-z0-9._-]/gi, "_")}`;
+  const storageRef = ref(storage, `contractors/${contractorId}/portfolio/${name}`);
+  await uploadBytes(storageRef, file, { contentType: file.type });
+  onProgress?.(100);
+  return getDownloadURL(storageRef);
+};
+
 export const uploadHouseCover = async (
   companyId: string,
   houseId: string,

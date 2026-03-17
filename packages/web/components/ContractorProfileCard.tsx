@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Wrench } from "lucide-react";
 import Badge from "./ui/Badge";
+import AvailabilityBadge from "./AvailabilityBadge";
 import type { ContractorProfile } from "@gemmaham/shared";
 
 interface Props {
@@ -29,6 +30,9 @@ const ContractorProfileCard = memo(function ContractorProfileCard({ contractor }
                     <div className="flex-1 min-w-0">
                         <h3 className="font-bold truncate">{contractor.displayName}</h3>
                         <p className="text-sm text-foreground/50 truncate">{contractor.companyName}</p>
+                        <div className="mt-1">
+                            <AvailabilityBadge availability={contractor.availability} availableFrom={contractor.availableFrom} />
+                        </div>
                     </div>
                 </div>
 

@@ -188,7 +188,8 @@ export default function MilestoneTimeline({ buildingId, currentPhase }: Props) {
                                 <button
                                     type="button"
                                     onClick={() => setShowForm(false)}
-                                    className="text-foreground/40 hover:text-foreground transition-colors"
+                                    aria-label={t("common.close")}
+                                    className="text-foreground/40 hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 rounded"
                                 >
                                     <X size={16} />
                                 </button>
@@ -238,7 +239,8 @@ export default function MilestoneTimeline({ buildingId, currentPhase }: Props) {
             {milestones.length > 0 && (
                 <div className="bg-surface rounded-2xl border border-foreground/6 p-5">
                     {/* Phase bar */}
-                    <div className="flex rounded-lg overflow-hidden h-8 mb-6">
+                    <div className="overflow-x-auto -mx-5 px-5 mb-6">
+                    <div className="flex rounded-lg overflow-hidden h-8 min-w-[480px]">
                         {PHASES.map((phase, i) => {
                             const isActive = i === currentPhaseIndex;
                             const isPast = i < currentPhaseIndex;
@@ -259,6 +261,7 @@ export default function MilestoneTimeline({ buildingId, currentPhase }: Props) {
                                 </div>
                             );
                         })}
+                    </div>
                     </div>
 
                     {/* Timeline track */}
@@ -326,7 +329,7 @@ export default function MilestoneTimeline({ buildingId, currentPhase }: Props) {
             {/* Milestone Cards */}
             {milestones.length === 0 ? (
                 <div className="text-center py-8">
-                    <p className="text-foreground/40">{t("milestones.empty")}</p>
+                    <p className="text-foreground/50">{t("milestones.empty")}</p>
                 </div>
             ) : (
                 <div className="space-y-3">
@@ -354,7 +357,8 @@ export default function MilestoneTimeline({ buildingId, currentPhase }: Props) {
                                         {/* Completed checkbox */}
                                         <button
                                             onClick={() => handleToggleCompleted(milestone)}
-                                            className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                                            aria-label={milestone.completed ? `Mark ${milestone.title} as incomplete` : `Mark ${milestone.title} as completed`}
+                                            className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${
                                                 milestone.completed
                                                     ? "bg-secondary border-secondary text-white"
                                                     : "border-foreground/20 hover:border-primary"

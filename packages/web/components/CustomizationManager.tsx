@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, Lock, Unlock, Copy } from "lucide-react";
+import { Plus, Trash2, Lock, Unlock, Copy, Pencil, Save, X } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
@@ -20,6 +21,15 @@ interface Props {
     flats: Flat[];
 }
 
+interface EditForm {
+    title: string;
+    description: string;
+    optionsText: string;
+    defaultOption: string;
+    priceImpact: string;
+    deadline: string;
+}
+
 const emptyForm = {
     category: "other" as CustomizationCategory,
     title: "",
@@ -30,6 +40,17 @@ const emptyForm = {
     deadline: "",
     contractorId: "",
 };
+
+function optionToEditForm(opt: CustomizationOption): EditForm {
+    return {
+        title: opt.title,
+        description: opt.description,
+        optionsText: opt.options.join(", "),
+        defaultOption: opt.defaultOption,
+        priceImpact: opt.priceImpact != null ? String(opt.priceImpact) : "",
+        deadline: opt.deadline || "",
+    };
+}
 
 export default function CustomizationManager({ buildingId, flats }: Props) {
     const { t } = useTranslation();
@@ -45,6 +66,11 @@ export default function CustomizationManager({ buildingId, flats }: Props) {
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
     const [copyTarget, setCopyTarget] = useState<string | null>(null);
     const [form, setForm] = useState({ ...emptyForm });
+
+    // Edit mode state
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState<EditForm>({ title: "", description: "", optionsText: "", defaultOption: "", priceImpact: "", deadline: "" });
+    const [editSubmitting, setEditSubmitting] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -92,7 +118,7 @@ export default function CustomizationManager({ buildingId, flats }: Props) {
                 description: form.description,
                 options: form.optionsText.split(",").map((s) => s.trim()).filter(Boolean),
                 defaultOption: form.defaultOption,
-                priceImpact: form.priceImpact || null,
+                priceImpact: form.priceImpact ? Number(form.priceImpact) || null : null,
                 deadline: form.deadline || null,
                 locked: false,
             });
@@ -157,6 +183,40 @@ export default function CustomizationManager({ buildingId, flats }: Props) {
         }
     };
 
+    const startEditing = (opt: CustomizationOption) => {
+        setEditingId(opt.id);
+        setEditForm(optionToEditForm(opt));
+    };
+
+    const cancelEditing = () => {
+        setEditingId(null);
+    };
+
+    const handleEditSave = async (optId: string) => {
+        if (!selectedFlat) return;
+        setEditSubmitting(true);
+        try {
+            const parsedOptions = editForm.optionsText.split(",").map((s) => s.trim()).filter(Boolean);
+            await updateCustomizationOption(selectedFlat, optId, {
+                title: editForm.title,
+                description: editForm.description,
+                options: parsedOptions,
+                defaultOption: editForm.defaultOption,
+                priceImpact: editForm.priceImpact ? Number(editForm.priceImpact) || null : null,
+                deadline: editForm.deadline || null,
+            });
+            const refreshed = await getCustomizationOptions(selectedFlat);
+            setOptions(refreshed);
+            setEditingId(null);
+            addToast("success", t("customizations.editOption"));
+        } catch (e) {
+            console.error("Failed to update option:", e);
+            addToast("error", t("toast.optionFailed"));
+        } finally {
+            setEditSubmitting(false);
+        }
+    };
+
     const categoryOptions = [
         { value: "flooring", label: t("customizations.cat.flooring") },
         { value: "kitchen", label: t("customizations.cat.kitchen") },
@@ -182,6 +242,10 @@ export default function CustomizationManager({ buildingId, flats }: Props) {
             value: f.id,
             label: f.unitNumber ? `${f.unitNumber} — ${f.title}` : f.title,
         }));
+
+    // Derive select options for default choice in edit mode
+    const editChoices = editForm.optionsText.split(",").map((s) => s.trim()).filter(Boolean);
+    const editDefaultOptions = editChoices.map((c) => ({ value: c, label: c }));
 
     return (
         <div>
@@ -276,56 +340,144 @@ export default function CustomizationManager({ buildingId, flats }: Props) {
                         <div className="space-y-3">
                             {options.map((opt) => {
                                 const contractor = contractors.find((c) => c.id === opt.contractorId);
+                                const isEditing = editingId === opt.id;
+
                                 return (
                                     <div
                                         key={opt.id}
-                                        className={`p-4 bg-surface rounded-xl border-2 border-foreground/10 ${opt.locked ? "opacity-50" : ""}`}
+                                        className={`p-4 bg-surface rounded-xl border-2 border-foreground/10 ${opt.locked && !isEditing ? "opacity-50" : ""}`}
                                     >
-                                        <div className="flex items-start justify-between gap-2">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    {opt.locked && <Lock size={14} className="text-foreground/40" />}
-                                                    <h4 className="font-medium">{opt.title}</h4>
-                                                    <Badge variant="default">{t(`customizations.cat.${opt.category}`)}</Badge>
-                                                    {contractor && (
-                                                        <span className="text-xs text-foreground/40">→ {contractor.name}</span>
-                                                    )}
-                                                </div>
-                                                {opt.description && <p className="text-sm text-foreground/60">{opt.description}</p>}
-                                                <div className="flex flex-wrap gap-2 mt-2">
-                                                    {opt.options.map((choice) => (
-                                                        <span
-                                                            key={choice}
-                                                            className={`text-xs px-2 py-1 rounded-full border ${
-                                                                choice === opt.defaultOption
-                                                                    ? "bg-primary/10 text-primary border-primary/30"
-                                                                    : "bg-foreground/5 text-foreground/60 border-foreground/10"
-                                                            }`}
+                                        <AnimatePresence mode="wait">
+                                            {isEditing ? (
+                                                <motion.div
+                                                    key="edit"
+                                                    initial={{ opacity: 0, y: -4 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: 4 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="space-y-3"
+                                                >
+                                                    <div className="flex items-center justify-between mb-1">
+                                                        <h4 className="font-medium text-sm flex items-center gap-2">
+                                                            <Pencil size={14} className="text-primary" />
+                                                            {t("customizations.editOption")}
+                                                        </h4>
+                                                        <Badge variant="default">{t(`customizations.cat.${opt.category}`)}</Badge>
+                                                    </div>
+                                                    <Input
+                                                        label={t("customizations.optionTitle")}
+                                                        value={editForm.title}
+                                                        onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                                                        required
+                                                    />
+                                                    <Textarea
+                                                        label={t("customizations.optionDesc")}
+                                                        value={editForm.description}
+                                                        onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+                                                    />
+                                                    <Input
+                                                        label={t("customizations.choices")}
+                                                        placeholder={t("customizations.choicesPlaceholder")}
+                                                        value={editForm.optionsText}
+                                                        onChange={(e) => setEditForm((f) => ({ ...f, optionsText: e.target.value }))}
+                                                        required
+                                                    />
+                                                    <div className="grid grid-cols-3 gap-4">
+                                                        <Select
+                                                            label={t("customizations.default")}
+                                                            value={editChoices.includes(editForm.defaultOption) ? editForm.defaultOption : ""}
+                                                            onChange={(e) => setEditForm((f) => ({ ...f, defaultOption: e.target.value }))}
+                                                            options={editDefaultOptions}
+                                                        />
+                                                        <Input
+                                                            label={t("customizations.priceImpact")}
+                                                            placeholder="+€2,000"
+                                                            value={editForm.priceImpact}
+                                                            onChange={(e) => setEditForm((f) => ({ ...f, priceImpact: e.target.value }))}
+                                                        />
+                                                        <Input
+                                                            label={t("customizations.deadline")}
+                                                            type="date"
+                                                            value={editForm.deadline}
+                                                            onChange={(e) => setEditForm((f) => ({ ...f, deadline: e.target.value }))}
+                                                        />
+                                                    </div>
+                                                    <div className="flex gap-2 pt-2">
+                                                        <Button
+                                                            size="sm"
+                                                            disabled={editSubmitting || !editForm.title || editChoices.length === 0}
+                                                            onClick={() => handleEditSave(opt.id)}
                                                         >
-                                                            {choice}
-                                                            {choice === opt.defaultOption && " ✓"}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                                <div className="flex gap-4 mt-2 text-xs text-foreground/40">
-                                                    {opt.priceImpact && <span>{t("customizations.priceImpact")}: {opt.priceImpact}</span>}
-                                                    {opt.deadline && <span>{t("customizations.deadline")}: {opt.deadline}</span>}
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-1 shrink-0">
-                                                <Button size="sm" variant="ghost" onClick={() => toggleLock(opt)} title={opt.locked ? "Unlock" : "Lock"}>
-                                                    {opt.locked ? <Unlock size={14} /> : <Lock size={14} />}
-                                                </Button>
-                                                <Button size="sm" variant="ghost" onClick={() => setDeleteTarget(opt.id)}>
-                                                    <Trash2 size={14} />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                        {opt.locked && (
-                                            <p className="text-xs text-foreground/40 mt-2 flex items-center gap-1">
-                                                <Lock size={12} /> {t("customizations.lockedLabel")}
-                                            </p>
-                                        )}
+                                                            <Save size={14} className="mr-1" />
+                                                            {editSubmitting ? t("common.processing") : t("customizations.save")}
+                                                        </Button>
+                                                        <Button size="sm" variant="ghost" onClick={cancelEditing} disabled={editSubmitting}>
+                                                            <X size={14} className="mr-1" />
+                                                            {t("customizations.cancel")}
+                                                        </Button>
+                                                    </div>
+                                                </motion.div>
+                                            ) : (
+                                                <motion.div
+                                                    key="view"
+                                                    initial={{ opacity: 0, y: -4 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: 4 }}
+                                                    transition={{ duration: 0.2 }}
+                                                >
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                {opt.locked && <Lock size={14} className="text-foreground/40" />}
+                                                                <h4 className="font-medium">{opt.title}</h4>
+                                                                <Badge variant="default">{t(`customizations.cat.${opt.category}`)}</Badge>
+                                                                {contractor && (
+                                                                    <span className="text-xs text-foreground/40">&rarr; {contractor.name}</span>
+                                                                )}
+                                                            </div>
+                                                            {opt.description && <p className="text-sm text-foreground/60">{opt.description}</p>}
+                                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                                {opt.options.map((choice) => (
+                                                                    <span
+                                                                        key={choice}
+                                                                        className={`text-xs px-2 py-1 rounded-full border ${
+                                                                            choice === opt.defaultOption
+                                                                                ? "bg-primary/10 text-primary border-primary/30"
+                                                                                : "bg-foreground/5 text-foreground/60 border-foreground/10"
+                                                                        }`}
+                                                                    >
+                                                                        {choice}
+                                                                        {choice === opt.defaultOption && " \u2713"}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                            <div className="flex gap-4 mt-2 text-xs text-foreground/40">
+                                                                {opt.priceImpact && <span>{t("customizations.priceImpact")}: {opt.priceImpact}</span>}
+                                                                {opt.deadline && <span>{t("customizations.deadline")}: {opt.deadline}</span>}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex gap-1 shrink-0">
+                                                            {!opt.locked && (
+                                                                <Button size="sm" variant="ghost" onClick={() => startEditing(opt)} title={t("customizations.edit")}>
+                                                                    <Pencil size={14} />
+                                                                </Button>
+                                                            )}
+                                                            <Button size="sm" variant="ghost" onClick={() => toggleLock(opt)} title={opt.locked ? "Unlock" : "Lock"}>
+                                                                {opt.locked ? <Unlock size={14} /> : <Lock size={14} />}
+                                                            </Button>
+                                                            <Button size="sm" variant="ghost" onClick={() => setDeleteTarget(opt.id)}>
+                                                                <Trash2 size={14} />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                    {opt.locked && (
+                                                        <p className="text-xs text-foreground/40 mt-2 flex items-center gap-1">
+                                                            <Lock size={12} /> {t("customizations.lockedLabel")}
+                                                        </p>
+                                                    )}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                 );
                             })}

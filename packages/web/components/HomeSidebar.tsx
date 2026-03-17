@@ -84,7 +84,7 @@ export default function HomeSidebar({ auth, collapsed, onToggle }: HomeSidebarPr
 
     return (
         <aside
-            className={`fixed left-0 top-14 h-[calc(100vh-56px)] z-40 flex flex-col transition-all duration-300 overflow-visible ${
+            className={`fixed left-0 top-14 h-[calc(100vh-56px)] z-40 hidden lg:flex flex-col transition-all duration-300 overflow-visible ${
                 collapsed ? "w-[52px]" : "w-56"
             }`}
             style={{
@@ -97,7 +97,7 @@ export default function HomeSidebar({ auth, collapsed, onToggle }: HomeSidebarPr
             {/* Toggle */}
             <button
                 onClick={onToggle}
-                className="flex items-center justify-center w-full h-9 text-foreground/25 hover:text-foreground/60 transition-colors shrink-0"
+                className="flex items-center justify-center w-full h-9 text-foreground/25 hover:text-foreground/60 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
                 style={{ borderBottom: "1px solid var(--color-glass-border)" }}
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
@@ -105,7 +105,7 @@ export default function HomeSidebar({ auth, collapsed, onToggle }: HomeSidebarPr
             </button>
 
             {/* Links */}
-            <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-visible">
+            <nav aria-label="Sidebar navigation" className="flex-1 px-2 py-3 space-y-0.5 overflow-visible">
                 {auth.loading && (
                     <div className="space-y-1.5 px-1">
                         {[...Array(4)].map((_, i) => (
@@ -126,7 +126,7 @@ export default function HomeSidebar({ auth, collapsed, onToggle }: HomeSidebarPr
                                     active
                                         ? "bg-primary/10 text-primary"
                                         : "text-foreground/45 hover:text-foreground/80 hover:bg-foreground/4"
-                                }`}
+                                } focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2`}
                             >
                                 {active && (
                                     <span

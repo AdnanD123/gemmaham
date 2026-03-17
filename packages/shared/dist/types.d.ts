@@ -31,6 +31,7 @@ export interface BuildingMilestone {
 }
 export type CustomizationCategory = "flooring" | "kitchen" | "bathroom" | "walls" | "electrical" | "other";
 export type RequestStatus = "pending" | "approved" | "rejected" | "in_progress" | "completed" | "cancelled";
+export type ContractorAvailability = "available" | "busy" | "unavailable";
 export type ContractorStatus = "upcoming" | "in_progress" | "completed";
 export type ContractorCategory = "planning_engineering" | "structural_shell" | "roofing" | "hvac" | "plumbing_sanitary" | "electrical_trade" | "interior_finishing" | "windows_doors" | "facade_exterior" | "insulation_waterproofing" | "elevators_lifts" | "fire_protection" | "metalwork" | "landscaping_outdoor";
 export type ContractorSubcategory = "architectural_design" | "structural_calculation" | "building_permits" | "project_management" | "energy_consulting" | "surveying" | "foundation_work" | "masonry" | "concrete_work" | "steel_construction" | "demolition" | "roof_construction" | "flat_roofing" | "roof_insulation" | "guttering" | "chimney_work" | "central_heating" | "floor_heating" | "air_conditioning" | "ventilation" | "heat_pumps" | "solar_thermal" | "radiators" | "thermostat_controls" | "fireplace_stove" | "water_supply" | "bathroom_installation" | "kitchen_plumbing" | "drainage" | "gas_installation" | "underfloor_heating_plumbing" | "rainwater_harvesting" | "water_treatment" | "power_distribution" | "lighting" | "smart_home" | "fire_alarms" | "intercom" | "ev_charging" | "photovoltaic" | "security_systems" | "data_network" | "audio_video" | "outdoor_lighting" | "drywall" | "plastering" | "flooring_install" | "painting" | "carpentry" | "kitchen_installation" | "bathroom_finishing" | "tiling" | "wallpaper" | "ceiling_work" | "built_in_wardrobes" | "window_installation" | "door_installation" | "glass_work" | "roller_shutters" | "garage_doors" | "insect_protection" | "sun_protection" | "interior_doors" | "entrance_doors" | "terrace_doors" | "external_plastering" | "external_insulation" | "cladding" | "balconies" | "scaffolding" | "thermal_insulation" | "sound_insulation" | "basement_waterproofing" | "moisture_protection" | "passenger_elevators" | "freight_elevators" | "stairlifts" | "elevator_maintenance" | "fire_doors" | "sprinkler_systems" | "fire_escape" | "fire_protection_coating" | "railings" | "steel_stairs" | "metal_facades" | "locksmith" | "garden_design" | "paving" | "fencing" | "playground" | "irrigation" | "outdoor_kitchen" | "swimming_pool" | "terrace_decking";
@@ -348,6 +349,18 @@ export interface Contractor {
     scopeConfig: SubcategoryScope[] | null;
     createdAt: TimestampLike;
 }
+export type ContractorDocumentType = "certificate" | "insurance" | "license" | "other";
+export interface ContractorDocument {
+    name: string;
+    url: string;
+    type: ContractorDocumentType;
+    uploadedAt: string;
+}
+export interface ContractorPortfolioItem {
+    url: string;
+    caption?: string;
+    projectName?: string;
+}
 export interface ContractorProfile {
     id: string;
     email: string;
@@ -361,6 +374,10 @@ export interface ContractorProfile {
     description: string | null;
     logoUrl: string | null;
     website: string | null;
+    availability?: ContractorAvailability;
+    availableFrom?: string;
+    documents?: ContractorDocument[];
+    portfolio?: ContractorPortfolioItem[];
     profileCompleted: boolean;
     createdAt: TimestampLike;
     updatedAt: TimestampLike;

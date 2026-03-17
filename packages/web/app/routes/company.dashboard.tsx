@@ -227,7 +227,7 @@ export default function CompanyDashboard() {
                                 )}
 
                                 {/* Stat cards */}
-                                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-8">
                                     <StatCard icon={Building2} value={stats.buildings} label={t("buildings.myBuildings")} linkTo="/company/buildings" />
                                     <StatCard icon={DoorOpen} value={stats.flats} label={t("properties.flats")} linkTo="/company/properties" />
                                     <StatCard icon={Home} value={stats.houses} label={t("properties.houses")} linkTo="/company/properties" />

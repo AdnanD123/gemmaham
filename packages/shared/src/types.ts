@@ -68,6 +68,9 @@ export type CustomizationCategory = "flooring" | "kitchen" | "bathroom" | "walls
 // ─── Customization Request Status ───────────────────────
 export type RequestStatus = "pending" | "approved" | "rejected" | "in_progress" | "completed" | "cancelled";
 
+// ─── Contractor Availability ────────────────────────────
+export type ContractorAvailability = "available" | "busy" | "unavailable";
+
 // ─── Contractor Status ──────────────────────────────────
 export type ContractorStatus = "upcoming" | "in_progress" | "completed";
 
@@ -522,6 +525,23 @@ export interface Contractor {
   createdAt: TimestampLike;
 }
 
+// ─── Contractor Document ────────────────────────────────
+export type ContractorDocumentType = "certificate" | "insurance" | "license" | "other";
+
+export interface ContractorDocument {
+  name: string;
+  url: string;
+  type: ContractorDocumentType;
+  uploadedAt: string;
+}
+
+// ─── Contractor Portfolio Item ─────────────────────────
+export interface ContractorPortfolioItem {
+  url: string;
+  caption?: string;
+  projectName?: string;
+}
+
 // ─── Contractor Profile (top-level collection, registered users) ─
 export interface ContractorProfile {
   id: string;
@@ -536,6 +556,10 @@ export interface ContractorProfile {
   description: string | null;
   logoUrl: string | null;
   website: string | null;
+  availability?: ContractorAvailability;
+  availableFrom?: string;
+  documents?: ContractorDocument[];
+  portfolio?: ContractorPortfolioItem[];
   profileCompleted: boolean;
   createdAt: TimestampLike;
   updatedAt: TimestampLike;
