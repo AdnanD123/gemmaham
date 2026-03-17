@@ -9,12 +9,13 @@ import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
 import ConstructionTimeline from "../../components/ConstructionTimeline";
 import ContractorList from "../../components/ContractorList";
+import InviteContractorModal from "../../components/InviteContractorModal";
 import CustomizationManager from "../../components/CustomizationManager";
 import ApplicationList from "../../components/ApplicationList";
 import DocumentManager from "../../components/DocumentManager";
 import MilestoneTimeline from "../../components/MilestoneTimeline";
 import { SkeletonLine, SkeletonBlock } from "../../components/ui/Skeleton";
-import { getBuilding, updateBuilding, listBuildingFlats, createFlat, updateFlat, initFlatCustomizationConfig, getBuildingDocuments } from "../../lib/firestore";
+import { getBuilding, updateBuilding, listBuildingFlats, createFlat, updateFlat, initFlatCustomizationConfig, getBuildingDocuments, getCompany } from "../../lib/firestore";
 import { uploadBuildingCover, uploadFloorPlan } from "../../lib/storage";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, Building, Flat, BuildingStatus, ConstructionPhase, FlatStatus, AreaUnit } from "@gemmaham/shared";
@@ -36,6 +37,8 @@ export default function CompanyBuildingDetail() {
     const [activeTab, setActiveTab] = useState<Tab>("details");
     const { addToast } = useToast();
     const [docCount, setDocCount] = useState(0);
+    const [showInviteModal, setShowInviteModal] = useState(false);
+    const [companyName, setCompanyName] = useState("");
 
     const [showAddUnit, setShowAddUnit] = useState(false);
     const [addingUnit, setAddingUnit] = useState(false);
@@ -133,6 +136,10 @@ export default function CompanyBuildingDetail() {
                 setFlats(f);
                 const docs = await getBuildingDocuments(id);
                 setDocCount(docs.length);
+                if (auth.companyId) {
+                    const company = await getCompany(auth.companyId);
+                    if (company) setCompanyName(company.name);
+                }
             } catch (e) {
                 console.error("Failed to load building:", e);
             } finally {
@@ -309,76 +316,20 @@ export default function CompanyBuildingDetail() {
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <label className="block text-sm font-medium">{t("buildings.startDate")}</label>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <Select
-                                                    value={form.startDate.split("-")[0] || ""}
-                                                    onChange={(e) => {
-                                                        const month = form.startDate.split("-")[1] || "01";
-                                                        updateField("startDate", `${e.target.value}-${month}`);
-                                                    }}
-                                                    options={[
-                                                        { value: "", label: t("buildings.year") },
-                                                        ...Array.from({ length: 10 }, (_, i) => {
-                                                            const y = String(new Date().getFullYear() + i);
-                                                            return { value: y, label: y };
-                                                        }),
-                                                    ]}
-                                                    required
-                                                />
-                                                <Select
-                                                    value={form.startDate.split("-")[1] || ""}
-                                                    onChange={(e) => {
-                                                        const year = form.startDate.split("-")[0] || String(new Date().getFullYear());
-                                                        updateField("startDate", `${year}-${e.target.value}`);
-                                                    }}
-                                                    options={[
-                                                        { value: "", label: t("buildings.month") },
-                                                        ...Array.from({ length: 12 }, (_, i) => {
-                                                            const m = String(i + 1).padStart(2, "0");
-                                                            return { value: m, label: new Date(2000, i).toLocaleString(undefined, { month: "long" }) };
-                                                        }),
-                                                    ]}
-                                                    required
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="block text-sm font-medium">{t("buildings.estimatedCompletion")}</label>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <Select
-                                                    value={form.estimatedCompletion.split("-")[0] || ""}
-                                                    onChange={(e) => {
-                                                        const month = form.estimatedCompletion.split("-")[1] || "01";
-                                                        updateField("estimatedCompletion", `${e.target.value}-${month}`);
-                                                    }}
-                                                    options={[
-                                                        { value: "", label: t("buildings.year") },
-                                                        ...Array.from({ length: 10 }, (_, i) => {
-                                                            const y = String(new Date().getFullYear() + i);
-                                                            return { value: y, label: y };
-                                                        }),
-                                                    ]}
-                                                    required
-                                                />
-                                                <Select
-                                                    value={form.estimatedCompletion.split("-")[1] || ""}
-                                                    onChange={(e) => {
-                                                        const year = form.estimatedCompletion.split("-")[0] || String(new Date().getFullYear());
-                                                        updateField("estimatedCompletion", `${year}-${e.target.value}`);
-                                                    }}
-                                                    options={[
-                                                        { value: "", label: t("buildings.month") },
-                                                        ...Array.from({ length: 12 }, (_, i) => {
-                                                            const m = String(i + 1).padStart(2, "0");
-                                                            return { value: m, label: new Date(2000, i).toLocaleString(undefined, { month: "long" }) };
-                                                        }),
-                                                    ]}
-                                                    required
-                                                />
-                                            </div>
-                                        </div>
+                                        <Input
+                                            label={t("buildings.startDate")}
+                                            type="date"
+                                            value={form.startDate}
+                                            onChange={(e) => updateField("startDate", e.target.value)}
+                                            required
+                                        />
+                                        <Input
+                                            label={t("buildings.estimatedCompletion")}
+                                            type="date"
+                                            value={form.estimatedCompletion}
+                                            onChange={(e) => updateField("estimatedCompletion", e.target.value)}
+                                            required
+                                        />
                                     </div>
 
                                     <label className="flex items-center gap-2 cursor-pointer">
@@ -551,7 +502,23 @@ export default function CompanyBuildingDetail() {
 
                         {/* Tab: Contractors */}
                         {activeTab === "contractors" && id && (
-                            <ContractorList buildingId={id} companyId={auth.companyId || ""} />
+                            <div>
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-lg font-semibold">{t("buildings.tabContractors")}</h2>
+                                    <Button size="sm" onClick={() => setShowInviteModal(true)}>
+                                        {t("invitations.inviteContractor")}
+                                    </Button>
+                                </div>
+                                <ContractorList buildingId={id} companyId={auth.companyId || ""} />
+                                <InviteContractorModal
+                                    isOpen={showInviteModal}
+                                    onClose={() => setShowInviteModal(false)}
+                                    buildingId={id}
+                                    companyId={auth.companyId || ""}
+                                    buildingTitle={building.title}
+                                    companyName={companyName}
+                                />
+                            </div>
                         )}
 
                         {/* Tab: Applications */}

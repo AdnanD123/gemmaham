@@ -15,6 +15,35 @@ import type { AuthContext, House, Company, FinancingMethod, UrgencyLevel } from 
 import { PageTransition } from "../../components/ui/PageTransition";
 import { PhotoGallery } from "../../components/PhotoGallery";
 
+function HouseBrochureButton({ house, company }: { house: House; company: Company }) {
+    const { t } = useTranslation();
+    const [ready, setReady] = useState(false);
+    const [BrochurePDF, setBrochurePDF] = useState<React.ComponentType<any> | null>(null);
+    const [DownloadBtn, setDownloadBtn] = useState<React.ComponentType<any> | null>(null);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        Promise.all([
+            import("../../components/pdf/PropertyBrochurePDF"),
+            import("../../components/pdf/PDFDownloadButton"),
+        ]).then(([brochure, btn]) => {
+            setBrochurePDF(() => brochure.default);
+            setDownloadBtn(() => btn.default);
+            setReady(true);
+        });
+    }, []);
+
+    if (!ready || !BrochurePDF || !DownloadBtn) return null;
+
+    return (
+        <DownloadBtn
+            document={<BrochurePDF property={house} company={company} photos={house.photos || []} />}
+            fileName={`${house.title.replace(/\s+/g, "-")}-brochure.pdf`}
+            label={t("pdf.downloadBrochure")}
+        />
+    );
+}
+
 export default function HouseDetail() {
     const { t } = useTranslation();
     const { id } = useParams();
@@ -174,7 +203,12 @@ export default function HouseDetail() {
                 </div>
 
                 <p className="text-foreground/50 mb-4">{house.address}</p>
-                <p className="text-primary font-bold text-2xl mb-6">{house.currency} {house.price.toLocaleString()}</p>
+                <div className="flex items-center justify-between mb-6">
+                    <p className="text-primary font-bold text-2xl">{house.currency} {house.price.toLocaleString()}</p>
+                    {typeof window !== "undefined" && company && (
+                        <HouseBrochureButton house={house} company={company} />
+                    )}
+                </div>
 
                 {/* Specs grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

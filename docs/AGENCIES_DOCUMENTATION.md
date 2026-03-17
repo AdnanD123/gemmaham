@@ -151,22 +151,23 @@ The **Agency** is a real estate company that lists properties (flats, houses, bu
 
 ---
 
+## Phase 5 — Recently Completed
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| **Team Management** | DONE | `/company/settings/team` — invite members by email, assign roles (owner/manager/agent), remove members, cancel invites |
+| **Date Pickers** | DONE | All date inputs now use HTML5 `<input type="date" />` consistently |
+| **Construction Update Editing** | DONE | Edit button on each update with inline form (title, description, phase, progress) |
+| **Contractor Invitations** | DONE | "Invite Contractor" button on building detail → modal with search, message, and send |
+| **PDF Generation** | DONE | "Download Brochure" button on flat/house detail pages via @react-pdf/renderer |
+
 ## Remaining Improvements
-
-### P1 — Important
-
-| Area | Issue | Target State |
-|------|-------|-------------|
-| **Team Management** | Single-user model per company | `/company/settings/team` — invite team members by email, assign roles (owner/manager/agent), manage permissions |
-| **Date Pickers** | Some date inputs use split year/month dropdowns | Use proper HTML5 date inputs or date picker component consistently across all forms |
 
 ### P2 — Nice to Have
 
 | Area | Issue | Target State |
 |------|-------|-------------|
-| **Building Updates** | No edit on existing construction updates | Add edit capability and date field per update |
-| **Contractor Invitation** | Agencies browse contractors but cannot invite directly | "Invite to Apply" button on contractor cards (sends message about a specific building) |
-| **PDF Generation** | No downloadable documents | "Download Brochure" on properties, "Download Confirmation" on reservations |
+| **Dashboard Widgets** | Stats and charts only | Add notification feed, quick actions, recent messages preview |
 
 ---
 

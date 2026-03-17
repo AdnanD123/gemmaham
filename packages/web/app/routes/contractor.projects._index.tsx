@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
-import { useOutletContext, Link } from "react-router";
+import { useOutletContext, Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
+import { List, CalendarDays } from "lucide-react";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import { ContentLoader } from "../../components/ui/ContentLoader";
+import ContractorCalendar from "../../components/ContractorCalendar";
 import { getContractorAssignments } from "../../lib/firestore";
 import type { AuthContext, Contractor } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
 
 type Assignment = Contractor & { buildingName: string };
+type ViewMode = "list" | "calendar";
 
 export default function ContractorProjects() {
     const { t } = useTranslation();
     const auth = useOutletContext<AuthContext>();
+    const navigate = useNavigate();
     const [assignments, setAssignments] = useState<Assignment[]>([]);
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState<ViewMode>("list");
 
     useEffect(() => {
         if (!auth.user) return;
@@ -68,7 +73,25 @@ export default function ContractorProjects() {
             <PageTransition>
             <div className="flex">
                 <main className="flex-1 p-6 max-w-4xl">
-                    <h1 className="font-serif text-2xl font-bold mb-6">{t("nav.projects")}</h1>
+                    <div className="flex items-center justify-between mb-6">
+                        <h1 className="font-serif text-2xl font-bold">{t("nav.projects")}</h1>
+                        <div className="flex gap-1 bg-foreground/5 rounded-lg p-1">
+                            <button
+                                onClick={() => setViewMode("list")}
+                                className={`p-2 rounded-md transition-colors ${viewMode === "list" ? "bg-primary text-white" : "text-foreground/50 hover:text-foreground"}`}
+                                title={t("contractor.listView")}
+                            >
+                                <List size={16} />
+                            </button>
+                            <button
+                                onClick={() => setViewMode("calendar")}
+                                className={`p-2 rounded-md transition-colors ${viewMode === "calendar" ? "bg-primary text-white" : "text-foreground/50 hover:text-foreground"}`}
+                                title={t("contractor.calendarView")}
+                            >
+                                <CalendarDays size={16} />
+                            </button>
+                        </div>
+                    </div>
 
                     <ContentLoader loading={loading} skeleton={
                         <div className="space-y-3">
@@ -79,6 +102,11 @@ export default function ContractorProjects() {
                     }>
                         {assignments.length === 0 ? (
                             <p className="text-foreground/50 text-center py-12">{t("contractor.noAssignments")}</p>
+                        ) : viewMode === "calendar" ? (
+                            <ContractorCalendar
+                                assignments={assignments}
+                                onSelect={(buildingId) => navigate(`/contractor/projects/${buildingId}`)}
+                            />
                         ) : (
                         <>
                             {grouped.in_progress.length > 0 && (

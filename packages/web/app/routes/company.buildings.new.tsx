@@ -171,76 +171,20 @@ export default function CompanyAddBuilding() {
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium">{t("buildings.startDate")}</label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <Select
-                                            value={form.startDate.split("-")[0] || ""}
-                                            onChange={(e) => {
-                                                const month = form.startDate.split("-")[1] || "01";
-                                                updateField("startDate", `${e.target.value}-${month}`);
-                                            }}
-                                            options={[
-                                                { value: "", label: t("buildings.year") },
-                                                ...Array.from({ length: 10 }, (_, i) => {
-                                                    const y = String(new Date().getFullYear() + i);
-                                                    return { value: y, label: y };
-                                                }),
-                                            ]}
-                                            required
-                                        />
-                                        <Select
-                                            value={form.startDate.split("-")[1] || ""}
-                                            onChange={(e) => {
-                                                const year = form.startDate.split("-")[0] || String(new Date().getFullYear());
-                                                updateField("startDate", `${year}-${e.target.value}`);
-                                            }}
-                                            options={[
-                                                { value: "", label: t("buildings.month") },
-                                                ...Array.from({ length: 12 }, (_, i) => {
-                                                    const m = String(i + 1).padStart(2, "0");
-                                                    return { value: m, label: new Date(2000, i).toLocaleString(undefined, { month: "long" }) };
-                                                }),
-                                            ]}
-                                            required
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium">{t("buildings.estimatedCompletion")}</label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <Select
-                                            value={form.estimatedCompletion.split("-")[0] || ""}
-                                            onChange={(e) => {
-                                                const month = form.estimatedCompletion.split("-")[1] || "01";
-                                                updateField("estimatedCompletion", `${e.target.value}-${month}`);
-                                            }}
-                                            options={[
-                                                { value: "", label: t("buildings.year") },
-                                                ...Array.from({ length: 10 }, (_, i) => {
-                                                    const y = String(new Date().getFullYear() + i);
-                                                    return { value: y, label: y };
-                                                }),
-                                            ]}
-                                            required
-                                        />
-                                        <Select
-                                            value={form.estimatedCompletion.split("-")[1] || ""}
-                                            onChange={(e) => {
-                                                const year = form.estimatedCompletion.split("-")[0] || String(new Date().getFullYear());
-                                                updateField("estimatedCompletion", `${year}-${e.target.value}`);
-                                            }}
-                                            options={[
-                                                { value: "", label: t("buildings.month") },
-                                                ...Array.from({ length: 12 }, (_, i) => {
-                                                    const m = String(i + 1).padStart(2, "0");
-                                                    return { value: m, label: new Date(2000, i).toLocaleString(undefined, { month: "long" }) };
-                                                }),
-                                            ]}
-                                            required
-                                        />
-                                    </div>
-                                </div>
+                                <Input
+                                    label={t("buildings.startDate")}
+                                    type="date"
+                                    value={form.startDate}
+                                    onChange={(e) => updateField("startDate", e.target.value)}
+                                    required
+                                />
+                                <Input
+                                    label={t("buildings.estimatedCompletion")}
+                                    type="date"
+                                    value={form.estimatedCompletion}
+                                    onChange={(e) => updateField("estimatedCompletion", e.target.value)}
+                                    required
+                                />
                             </div>
 
                             <label className="flex items-center gap-2 cursor-pointer">

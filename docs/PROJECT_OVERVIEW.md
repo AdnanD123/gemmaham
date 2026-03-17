@@ -46,6 +46,8 @@ roomify/
 | tailwind-merge | 3.5.0 | Tailwind class conflict resolution |
 | date-fns | 4.1.0 | Date formatting, relative time, date math |
 | react-compare-slider | 3.1.0 | Before/after image comparison slider |
+| minisearch | latest | Client-side full-text search with fuzzy matching |
+| @react-pdf/renderer | latest | PDF generation for brochures, confirmations |
 
 ---
 
@@ -146,6 +148,8 @@ Roles are stored as **Firebase Auth custom claims** and enforced via `<RoleGuard
 | `contractors/{id}` (profiles) | email, displayName, companyName, categories, subcategoryKeys, availability, availableFrom, documents[], portfolio[] |
 | `customizationRequests/{id}` | flatId, userId, reservationId, selectedOption, status |
 | `applications/{id}` | buildingId, contractorUserId, status, message, proposedRate, companyNotes |
+| `contractorInvitations/{id}` | buildingId, companyId, contractorId, message, status (pending/accepted/declined) |
+| `invites/{id}` | email, companyId, role, token, status (pending/accepted/expired/cancelled), expiresAt |
 | `rateLimits/{id}` | Rate limiting for AI renders |
 
 ### Subcollections
@@ -157,6 +161,8 @@ Roles are stored as **Firebase Auth custom claims** and enforced via `<RoleGuard
 | `buildings/{id}/updates/{id}` | Construction progress updates |
 | `buildings/{id}/contractors/{id}` | Assigned contractors (with scopeConfig, progressPercent) |
 | `buildings/{id}/documents/{id}` | Shared building documents (plans, permits, contracts) |
+| `buildings/{id}/milestones/{id}` | Construction milestones with phases and deadlines |
+| `companies/{id}/members/{uid}` | Team members (role, status, invitedBy, joinedAt) |
 | `conversations/{id}/messages/{id}` | Chat messages |
 
 ### Key Enums & Types
@@ -179,12 +185,13 @@ Roles are stored as **Firebase Auth custom claims** and enforced via `<RoleGuard
 
 ---
 
-## Cloud Functions (7)
+## Cloud Functions (8)
 
 | Function | Trigger | Purpose |
 |----------|---------|---------|
 | `generate3DView` | HTTP Callable | Converts 2D floor plans to photorealistic 3D renders via Vertex AI (Gemini). Rate limited: 10/user/day |
 | `setUserClaims` | HTTP Callable | Sets Auth custom claims (role, companyId) after registration |
+| `acceptTeamInvite` | HTTP Callable | Validates team invite token, sets claims, creates member doc, updates user profile |
 | `onReservationCreate` | Firestore onCreate | Calculates queue position, sets 14-day expiry, notifies company |
 | `onReservationUpdate` | Firestore onUpdate | Sends notifications on status changes, meeting scheduling |
 | `onMessageCreate` | Firestore onCreate | Updates conversation metadata (lastMessage, unread counts) |
@@ -251,6 +258,14 @@ Roles are stored as **Firebase Auth custom claims** and enforced via `<RoleGuard
 - **Documents & portfolio**: contractors upload certificates, insurance, licenses; portfolio photos with captions (ContractorDocument, ContractorPortfolioItem types)
 - **Availability management**: AvailabilityBadge component, profile availability selector, "show available only" filter in contractor directory
 - **Public contractor profile**: full redesign with hero section, categories, project history, stats
+- **Contractor invitations**: agencies can directly invite contractors to apply for building projects via InviteContractorModal
+- **Calendar view**: contractors can toggle between list and calendar views on their projects page (ContractorCalendar component)
+
+### Team Management
+- **Multi-user agencies**: companies can invite team members by email with role assignment (owner/manager/agent)
+- Team settings page at `/company/settings/team` with member list, invite form, and pending invites
+- `acceptTeamInvite` Cloud Function handles invite acceptance flow (validates token, sets claims, creates member doc)
+- Firestore rules updated with `companies/{id}/members/{uid}` subcollection
 
 ### Construction Milestones
 - **BuildingMilestone type** with id, title, date, phase, description, completed status
@@ -267,6 +282,18 @@ Roles are stored as **Firebase Auth custom claims** and enforced via `<RoleGuard
 - **PhotoUploader component**: upload multiple property photos with progress
 - **PhotoGallery component**: lightbox viewer with keyboard navigation (arrow keys, Escape)
 - `photos: string[]` field on both Flat and House types
+
+### Full-Text Property Search
+- **MiniSearch** integration for client-side fuzzy search with typo tolerance
+- `usePropertySearch` hook indexes properties on title, description, address
+- Search bar integrated into PropertyFilters component on `/properties`
+- Debounced input with clear button, instant results
+
+### PDF Generation
+- **@react-pdf/renderer** for client-side PDF generation (lazy-loaded for SSR compatibility)
+- 3 PDF templates: PropertyBrochurePDF, ReservationConfirmationPDF, ContractorAssignmentPDF
+- PDFDownloadButton wrapper with loading state
+- Download buttons on flat detail, house detail pages
 - Storage function `uploadPropertyPhoto` for generic property photo uploads
 
 ### Search & Filtering
@@ -464,11 +491,11 @@ VITE_FIREBASE_FUNCTIONS_REGION  # default: us-central1
 
 | Metric | Count |
 |--------|-------|
-| Routes | 74 |
-| Components | 68 files |
-| Hooks | 9 custom hooks |
-| Cloud Functions | 7 |
-| Firestore Collections | 12 top-level + 6 subcollections |
+| Routes | 75 |
+| Components | 73 files |
+| Hooks | 10 custom hooks |
+| Cloud Functions | 8 |
+| Firestore Collections | 14 top-level + 8 subcollections |
 | Languages | 3 (EN, BS, DE) |
 | Contractor Categories | 14 main + 100+ subcategories |
 | Translation Keys | ~1,500+ per language |

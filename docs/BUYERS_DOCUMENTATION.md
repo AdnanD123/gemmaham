@@ -120,6 +120,14 @@ The **Buyer** is a person looking to purchase, rent, or reserve a flat or house.
 
 ---
 
+## Phase 5 — Recently Completed
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| **Customization Price Summary** | DONE | Total price impact card, per-flat subtotals, per-request price display on `/user/requests` |
+| **Full-Text Property Search** | DONE | Fuzzy search bar on `/properties` with typo tolerance via MiniSearch |
+| **PDF Brochures** | DONE | "Download Brochure" button on flat/house detail pages |
+
 ## Remaining Improvements
 
 ### P2 — Nice to Have
@@ -128,7 +136,6 @@ The **Buyer** is a person looking to purchase, rent, or reserve a flat or house.
 |------|-------|-------------|
 | **Dashboard Enhancements** | Dashboard has stat cards and property list | Add notification feed widget, upcoming meetings widget, recent messages preview, quick actions |
 | **Reservation Calendar** | Reservations shown in tab list only | Add meeting calendar view option alongside existing tab view |
-| **Customization Price Summary** | Individual option prices shown per selection | Add total price impact summary per flat across all selections on `/user/requests` |
 
 ---
 

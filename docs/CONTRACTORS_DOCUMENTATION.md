@@ -119,6 +119,13 @@ The **Contractor** is a tradesperson or service company (electrician, plumber, i
 
 ---
 
+## Phase 5 — Recently Completed
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| **Calendar View** | DONE | List/Calendar toggle on `/contractor/projects` with month grid, color-coded assignments, click-to-navigate |
+| **Contractor Invitations** | DONE | New "Invitations" tab on `/contractor/applications` — accept/decline invitations from agencies |
+
 ## Remaining Improvements
 
 ### P2 — Nice to Have
@@ -127,7 +134,6 @@ The **Contractor** is a tradesperson or service company (electrician, plumber, i
 |------|-------|-------------|
 | **Browse UX** | Basic grid of project cards | Add filters by category match (show projects needing my trades), by location, by phase. Sort by newest, deadline |
 | **Enhanced Project View** | Project detail shows assignment + building info + progress | Add visual timeline with contractor's assignment period highlighted, progress history with photos, deadline markers with urgency coloring |
-| **Calendar View** | No calendar for scheduling | Simple calendar view showing assignment start/end dates across projects |
 
 ---
 
@@ -144,8 +150,8 @@ The **Contractor** is a tradesperson or service company (electrician, plumber, i
 - **Status**: Complete (P2 filter enhancements optional)
 
 ### `/contractor/applications` — My Applications
-- **Purpose**: Track all submitted applications
-- **Current**: Tabbed list (all/pending/accepted/rejected), application cards with status, company notes, building link, proposed rate
+- **Purpose**: Track all submitted applications and invitations
+- **Current**: Tabbed list (all/pending/accepted/rejected/invitations), application cards with status, company notes, building link, proposed rate. Invitations tab shows incoming invitations from agencies with accept/decline actions.
 - **Status**: Complete
 
 ### `/contractor/projects` — My Projects

@@ -22,7 +22,8 @@
     "browseProjects": "Pregledaj projekte",
     "myApplications": "Moje prijave",
     "myProjects": "Moji projekti",
-    "favorites": "Favoriti"
+    "favorites": "Favoriti",
+    "teamSettings": "Tim"
   },
   "home": {
     "badge": "AI platforma",
@@ -264,6 +265,8 @@
     "updateAdded": "Ažuriranje gradnje dodano.",
     "updateAddFailed": "Dodavanje ažuriranja nije uspjelo.",
     "updateDeleted": "Ažuriranje obrisano.",
+    "updateEdited": "Ažuriranje uspješno uređeno.",
+    "updateEditFailed": "Uređivanje ažuriranja nije uspjelo.",
     "contractorAdded": "Izvođač dodan.",
     "contractorUpdated": "Izvođač ažuriran.",
     "contractorDeleted": "Izvođač obrisan.",
@@ -279,7 +282,21 @@
     "requestCancelled": "Zahtjev otkazan.",
     "requestSent": "Zahtjev za prilagodbu poslan!",
     "savedWithoutLogo": "Profil sačuvan, ali logo nije mogao biti uploadovan (dozvole za storage nisu konfigurisane).",
-    "profileDeleted": "Profil obrisan."
+    "profileDeleted": "Profil obrisan.",
+    "inviteSent": "Pozivnica uspješno poslana.",
+    "inviteSendFailed": "Slanje pozivnice nije uspjelo.",
+    "memberRemoved": "Član tima uklonjen.",
+    "memberRemoveFailed": "Uklanjanje člana nije uspjelo.",
+    "roleChanged": "Uloga uspješno ažurirana.",
+    "roleChangeFailed": "Ažuriranje uloge nije uspjelo.",
+    "inviteCancelled": "Pozivnica otkazana.",
+    "inviteCancelFailed": "Otkazivanje pozivnice nije uspjelo.",
+    "invitationSent": "Pozivnica poslana izvođaču.",
+    "invitationSendFailed": "Slanje pozivnice nije uspjelo.",
+    "invitationAccepted": "Pozivnica prihvaćena. Prijava podnesena.",
+    "invitationAcceptFailed": "Prihvatanje pozivnice nije uspjelo.",
+    "invitationDeclined": "Pozivnica odbijena.",
+    "invitationDeclineFailed": "Odbijanje pozivnice nije uspjelo."
   },
   "theme": {
     "light": "Svijetlo",
@@ -486,7 +503,9 @@
     "noUpdates": "Još nema ažuriranja gradnje.",
     "deleteUpdateTitle": "Obriši ažuriranje",
     "deleteUpdateMsg": "Jeste li sigurni da želite obrisati ovo ažuriranje?",
-    "timeline": "Vremenska linija gradnje"
+    "timeline": "Vremenska linija gradnje",
+    "editUpdate": "Uredi ažuriranje",
+    "saveUpdate": "Spremi promjene"
   },
   "contractors": {
     "title": "Izvođači",
@@ -535,6 +554,9 @@
     "assignedBuildings": "Dodijeljene zgrade",
     "activeProjects": "Aktivni projekti",
     "noAssignments": "Još niste dodijeljeni nijednoj zgradi.",
+    "calendarView": "Kalendarski prikaz",
+    "listView": "Lista",
+    "calendarToday": "Danas",
     "messages": "Poruke",
     "viewMessages": "Pogledaj poruke",
     "editProfile": "Moj profil",
@@ -658,6 +680,11 @@
     "notesPlaceholder": "Posebni zahtjevi...",
     "submitRequest": "Pošalji zahtjev",
     "noLongerAvailable": "Više nije dostupno — rad izvođača završen",
+    "totalImpact": "Ukupan uticaj na cijenu",
+    "totalSelections": "Ukupno odabira",
+    "pendingImpact": "Na čekanju",
+    "approvedImpact": "Odobreno",
+    "included": "Uključeno",
     "defaultIncluded": "Podrazumijevano (uključeno)",
     "cat": {
       "flooring": "Podovi",
@@ -1535,5 +1562,57 @@
     "step2Desc": "Objavite nekretnine koje kupci mogu pregledati i rezervisati",
     "step3Title": "Konfigurirajte opcije prilagodbe",
     "step3Desc": "Omogućite kupcima da personaliziraju svoje jedinice"
+  },
+  "team": {
+    "title": "Upravljanje timom",
+    "description": "Upravljajte članovima tima vaše agencije i šaljite pozivnice.",
+    "members": "Članovi tima",
+    "inviteMember": "Pozovi člana tima",
+    "email": "Email adresa",
+    "emailPlaceholder": "kolega@primjer.com",
+    "role": "Uloga",
+    "sendInvite": "Pošalji pozivnicu",
+    "pendingInvites": "Pozivnice na čekanju",
+    "noPendingInvites": "Nema pozivnica na čekanju.",
+    "noMembers": "Još nema članova tima. Pošaljite pozivnicu za početak.",
+    "removeMember": "Ukloni člana",
+    "removeConfirm": "Jeste li sigurni da želite ukloniti ovog člana tima? Izgubit će pristup resursima kompanije.",
+    "changeRole": "Promijeni ulogu",
+    "roleOwner": "Vlasnik",
+    "roleManager": "Menadžer",
+    "roleAgent": "Agent",
+    "statusActive": "Aktivan",
+    "statusPending": "Na čekanju",
+    "statusRemoved": "Uklonjen",
+    "inviteExpires": "Ističe",
+    "you": "(Vi)",
+    "cancelInvite": "Otkaži pozivnicu"
+  },
+  "search": {
+    "placeholder": "Pretraži nekretnine po imenu, opisu ili adresi...",
+    "noResults": "Nijedna nekretnina ne odgovara pretrazi.",
+    "clear": "Obriši pretragu"
+  },
+  "invitations": {
+    "title": "Pozivnice",
+    "inviteContractor": "Pozovi izvođača",
+    "searchContractors": "Pretraži izvođače...",
+    "selectContractor": "Odaberite izvođača za pozivanje",
+    "message": "Poruka (opcionalno)",
+    "messagePlaceholder": "Dodajte napomenu o projektu...",
+    "sendInvitation": "Pošalji pozivnicu",
+    "noContractorsFound": "Izvođači nisu pronađeni.",
+    "accept": "Prihvati",
+    "decline": "Odbij",
+    "noInvitations": "Još nema pozivnica.",
+    "fromCompany": "Od",
+    "forBuilding": "Za projekat",
+    "invitedOn": "Pozvani"
+  },
+  "pdf": {
+    "downloadBrochure": "Preuzmi brošuru",
+    "downloadConfirmation": "Preuzmi potvrdu",
+    "downloadAssignment": "Preuzmi sažetak",
+    "generating": "Generisanje..."
   }
 }

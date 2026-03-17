@@ -9,7 +9,7 @@
 | **Forms** | Zod schemas + useFormValidation hook + useFormDraft hook | High | INSTALLED (zod 4.3.6) — 6 validation schemas, field-level errors, auto-save drafts |
 | **Charts** | Recharts (bar, pie, area) with ChartContainer wrapper | Medium-High | 4 chart components + container |
 | **Images** | Lazy loading on all images, PhotoGallery with lightbox + keyboard nav | High | PhotoUploader + PhotoGallery components |
-| **Search** | Enhanced filters: location, size range, price range, sort (newest/price/size) | Medium-High | PropertyFilters + FlatFilters components, SortBy type |
+| **Search** | MiniSearch full-text search + enhanced filters (location, size, price, sort) | High | INSTALLED (minisearch) — usePropertySearch hook, fuzzy matching, prefix search |
 | **Tables** | Manual HTML tables | Low | No sorting, pagination, or column management |
 | **Drag & Drop** | None | — | Not needed yet (Kanban is click-based, not drag) |
 | **Maps** | None | — | Skipped — not needed yet |
@@ -17,7 +17,7 @@
 | **File Upload** | Manual file input with preview, uploadPropertyPhoto, uploadBuildingDocument, etc. | Medium-High | 14 storage upload functions |
 | **Toasts** | Custom ToastContext | High | Works well |
 | **Skeletons** | Shimmer skeleton loaders (5 skeleton components) | High | ChartSkeleton, DashboardSkeleton, FlatCardSkeleton, MessageSkeleton, ReservationSkeleton |
-| **PDF** | None | — | Needed for contracts, brochures |
+| **PDF** | @react-pdf/renderer — property brochures, reservation confirmations, contractor summaries | High | INSTALLED (@react-pdf/renderer) — 3 PDF templates, lazy-loaded |
 | **Real-time** | Raw Firestore `onSnapshot` + custom hooks | Medium | useMessages, useNotifications, useUnreadMessages |
 | **Class Utilities** | clsx + tailwind-merge | High | INSTALLED (clsx 2.1.1, tailwind-merge 3.5.0) |
 | **Milestones** | MilestoneTimeline with phase bars, diamond markers, today line | High | BuildingMilestone type + component |
@@ -70,13 +70,11 @@
 - **Impact**: Replace custom ToastContext with lighter, more capable solution
 - **Effort**: Low — drop-in replacement, minimal migration
 
-#### 3. MiniSearch — Client-Side Property Search
+#### 3. MiniSearch — Client-Side Property Search — INSTALLED
 - **Cost**: FREE (MIT)
+- **Status**: INSTALLED and integrated. `usePropertySearch` hook in `packages/web/lib/hooks/usePropertySearch.ts`
 - **What**: Lightweight client-side full-text search with fuzzy matching and field boosting
-- **Why**: Current filters are Firestore-based — no full-text search or typo tolerance. MiniSearch adds instant search with typo tolerance
-- **Impact**: Search bar on `/properties` that searches across titles, descriptions, addresses instantly
-- **Limitation**: Best for up to ~5,000 properties
-- **Effort**: Low — index properties from Firestore on page load
+- **Integration**: Search bar on `/properties` page via PropertyFilters component, indexes title/description/address with fuzzy: 0.2, prefix: true
 
 ---
 
@@ -111,12 +109,12 @@
 
 > **All libraries are free and open-source.**
 
-#### 7. @react-pdf/renderer — PDF Generation
+#### 7. @react-pdf/renderer — PDF Generation — INSTALLED
 - **Cost**: FREE (MIT)
-- **What**: Write PDFs using React components
-- **Why**: Generate property brochures, reservation confirmations, contractor assignment summaries
-- **Impact**: "Download Brochure" on properties, "Download Confirmation" on reservations
-- **Effort**: Medium — need PDF template design
+- **Status**: INSTALLED and integrated. 3 PDF templates in `packages/web/components/pdf/`
+- **What**: Write PDFs using React components (lazy-loaded for SSR compatibility)
+- **Templates**: PropertyBrochurePDF, ReservationConfirmationPDF, ContractorAssignmentPDF
+- **Integration**: PDFDownloadButton wrapper on flat/house detail pages
 
 #### 8. react-dropzone — File Upload UX
 - **Cost**: FREE (MIT)
@@ -205,7 +203,7 @@
 | Contractor portfolio | Storage functions | DONE — Photos with captions |
 | Property photos | uploadPropertyPhoto | DONE — Generic upload function |
 | File management | 14 storage upload functions | DONE |
-| PDF generation | @react-pdf/renderer | REMAINING |
+| PDF generation | @react-pdf/renderer | DONE — 3 templates, lazy-loaded |
 
 ### Real-time & State — COMPLETE
 | Skill | Tool | Status |
@@ -267,18 +265,25 @@
 20. **Contractor documents & portfolio** — DONE — Upload certificates, insurance, portfolio photos
 21. **Contractor availability** — DONE — AvailabilityBadge, profile selector, directory filter
 
+### Phase 5 — Production Readiness — COMPLETE
+22. **Team management** — DONE — Multi-user agencies with invite flow, roles (owner/manager/agent)
+23. **Date picker standardization** — DONE — All forms use HTML5 date inputs
+24. **Construction update editing** — DONE — Inline edit form on timeline updates
+25. **Contractor invitations** — DONE — Agency-initiated invite-to-apply flow
+26. **Full-text search** — DONE — MiniSearch with fuzzy matching on properties page
+27. **Customization price summary** — DONE — Total impact card, per-flat subtotals, per-request prices
+28. **Contractor calendar** — DONE — Month grid view with color-coded assignments
+29. **PDF generation** — DONE — Property brochures, reservation confirmations, contractor summaries
+
 ### Remaining (Future Phases)
 - shadcn/ui components (Calendar, Combobox, Command palette)
 - Sonner (toast replacement)
-- MiniSearch (full-text search with fuzzy matching)
 - TanStack Table (sortable/paginated data tables)
 - Tremor (enhanced dashboard widgets)
 - Image optimization pipeline (Sharp + BlurHash)
-- @react-pdf/renderer (PDF brochures, confirmations)
 - react-dropzone (drag-and-drop file upload zones)
 - TanStack Virtual (virtual scrolling for large lists)
 - ReactFire (Firebase hooks with Suspense)
-- Team management for agencies
 
 ---
 
@@ -295,6 +300,8 @@
 | date-fns | MIT | ~5-10KB (tree-shaken) |
 | react-compare-slider | MIT | ~3KB |
 | recharts | MIT | ~50KB |
+| minisearch | MIT | ~5KB |
+| @react-pdf/renderer | MIT | ~527KB (lazy-loaded) |
 
 ### Remaining Recommended (all FREE)
 
@@ -302,12 +309,10 @@
 |---------|---------|----------------|
 | shadcn/ui (Radix primitives) | MIT | ~5-15KB per component |
 | Sonner | MIT | ~3KB |
-| MiniSearch | MIT | ~5KB |
 | TanStack Table | MIT | ~30KB |
 | Tremor | Apache 2.0 | ~50KB |
 | Sharp (Cloud Functions) | Apache 2.0 | Server-side only |
 | BlurHash | MIT | ~3KB |
-| @react-pdf/renderer | MIT | ~80KB |
 | react-dropzone | MIT | ~8KB |
 | TanStack Virtual | MIT | ~10KB |
 | ReactFire | MIT | ~12KB |

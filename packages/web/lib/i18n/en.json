@@ -23,7 +23,8 @@
     "myApplications": "My Applications",
     "myProjects": "My Projects",
     "favorites": "Favorites",
-    "finances": "Finances"
+    "finances": "Finances",
+    "teamSettings": "Team"
   },
   "home": {
     "badge": "AI-Powered Platform",
@@ -265,6 +266,8 @@
     "updateAdded": "Construction update added.",
     "updateAddFailed": "Failed to add update.",
     "updateDeleted": "Update deleted.",
+    "updateEdited": "Update edited successfully.",
+    "updateEditFailed": "Failed to edit update.",
     "contractorAdded": "Contractor added.",
     "contractorUpdated": "Contractor updated.",
     "contractorDeleted": "Contractor deleted.",
@@ -280,7 +283,21 @@
     "requestCancelled": "Request cancelled.",
     "requestSent": "Customization request sent!",
     "savedWithoutLogo": "Profile saved, but logo could not be uploaded (storage permissions not configured).",
-    "profileDeleted": "Profile deleted."
+    "profileDeleted": "Profile deleted.",
+    "inviteSent": "Invitation sent successfully.",
+    "inviteSendFailed": "Failed to send invitation.",
+    "memberRemoved": "Team member removed.",
+    "memberRemoveFailed": "Failed to remove team member.",
+    "roleChanged": "Role updated successfully.",
+    "roleChangeFailed": "Failed to update role.",
+    "inviteCancelled": "Invitation cancelled.",
+    "inviteCancelFailed": "Failed to cancel invitation.",
+    "invitationSent": "Invitation sent to contractor.",
+    "invitationSendFailed": "Failed to send invitation.",
+    "invitationAccepted": "Invitation accepted. Application submitted.",
+    "invitationAcceptFailed": "Failed to accept invitation.",
+    "invitationDeclined": "Invitation declined.",
+    "invitationDeclineFailed": "Failed to decline invitation."
   },
   "theme": {
     "light": "Light",
@@ -494,7 +511,9 @@
     "noUpdates": "No construction updates yet.",
     "deleteUpdateTitle": "Delete Update",
     "deleteUpdateMsg": "Are you sure you want to delete this construction update?",
-    "timeline": "Construction Timeline"
+    "timeline": "Construction Timeline",
+    "editUpdate": "Edit Update",
+    "saveUpdate": "Save Changes"
   },
   "contractors": {
     "title": "Contractors",
@@ -543,6 +562,9 @@
     "assignedBuildings": "Assigned Buildings",
     "activeProjects": "Active Projects",
     "noAssignments": "You haven't been assigned to any buildings yet.",
+    "calendarView": "Calendar View",
+    "listView": "List View",
+    "calendarToday": "Today",
     "messages": "Messages",
     "viewMessages": "View Messages",
     "editProfile": "My Profile",
@@ -672,6 +694,11 @@
     "notesPlaceholder": "Any special requests...",
     "submitRequest": "Submit Request",
     "noLongerAvailable": "No longer available — contractor work complete",
+    "totalImpact": "Total Price Impact",
+    "totalSelections": "Total Selections",
+    "pendingImpact": "Pending",
+    "approvedImpact": "Approved",
+    "included": "Included",
     "defaultIncluded": "Default (included)",
     "cat": {
       "flooring": "Flooring",
@@ -1573,5 +1600,57 @@
     "step2Desc": "List properties for buyers to browse and reserve",
     "step3Title": "Configure customization options",
     "step3Desc": "Let buyers personalize their units with custom finishes"
+  },
+  "team": {
+    "title": "Team Management",
+    "description": "Manage your agency team members and send invitations.",
+    "members": "Team Members",
+    "inviteMember": "Invite Team Member",
+    "email": "Email Address",
+    "emailPlaceholder": "colleague@example.com",
+    "role": "Role",
+    "sendInvite": "Send Invite",
+    "pendingInvites": "Pending Invitations",
+    "noPendingInvites": "No pending invitations.",
+    "noMembers": "No team members yet. Send an invite to get started.",
+    "removeMember": "Remove Member",
+    "removeConfirm": "Are you sure you want to remove this team member? They will lose access to company resources.",
+    "changeRole": "Change Role",
+    "roleOwner": "Owner",
+    "roleManager": "Manager",
+    "roleAgent": "Agent",
+    "statusActive": "Active",
+    "statusPending": "Pending",
+    "statusRemoved": "Removed",
+    "inviteExpires": "Expires",
+    "you": "(You)",
+    "cancelInvite": "Cancel Invite"
+  },
+  "search": {
+    "placeholder": "Search properties by name, description, or address...",
+    "noResults": "No properties match your search.",
+    "clear": "Clear search"
+  },
+  "invitations": {
+    "title": "Invitations",
+    "inviteContractor": "Invite Contractor",
+    "searchContractors": "Search contractors...",
+    "selectContractor": "Select a contractor to invite",
+    "message": "Message (optional)",
+    "messagePlaceholder": "Add a note about the project...",
+    "sendInvitation": "Send Invitation",
+    "noContractorsFound": "No contractors found.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "noInvitations": "No invitations yet.",
+    "fromCompany": "From",
+    "forBuilding": "For project",
+    "invitedOn": "Invited on"
+  },
+  "pdf": {
+    "downloadBrochure": "Download Brochure",
+    "downloadConfirmation": "Download Confirmation",
+    "downloadAssignment": "Download Summary",
+    "generating": "Generating..."
   }
 }

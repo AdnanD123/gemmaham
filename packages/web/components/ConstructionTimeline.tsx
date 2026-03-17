@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, ImagePlus } from "lucide-react";
+import { Plus, Trash2, ImagePlus, Pencil, X } from "lucide-react";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Textarea from "./ui/Textarea";
 import Select from "./ui/Select";
 import Badge from "./ui/Badge";
 import ConfirmDialog from "./ui/ConfirmDialog";
-import { addConstructionUpdate, getConstructionUpdates, deleteConstructionUpdate } from "../lib/firestore";
+import { addConstructionUpdate, getConstructionUpdates, deleteConstructionUpdate, updateConstructionUpdate } from "../lib/firestore";
 import { uploadConstructionPhoto } from "../lib/storage";
 import { useToast } from "../lib/contexts/ToastContext";
 import type { ConstructionUpdate, ConstructionPhase } from "@gemmaham/shared";
@@ -25,6 +25,47 @@ export default function ConstructionTimeline({ buildingId, companyId }: Props) {
     const [showForm, setShowForm] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState({
+        title: "",
+        description: "",
+        phase: "foundation" as ConstructionPhase,
+        progressPercent: "0",
+    });
+    const [editSubmitting, setEditSubmitting] = useState(false);
+
+    const startEditing = (update: ConstructionUpdate) => {
+        setEditingId(update.id);
+        setEditForm({
+            title: update.title,
+            description: update.description,
+            phase: update.phase,
+            progressPercent: String(update.progressPercent),
+        });
+    };
+
+    const handleEditSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingId) return;
+        setEditSubmitting(true);
+        try {
+            await updateConstructionUpdate(buildingId, editingId, {
+                title: editForm.title,
+                description: editForm.description,
+                phase: editForm.phase,
+                progressPercent: Number(editForm.progressPercent),
+            });
+            const refreshed = await getConstructionUpdates(buildingId);
+            setUpdates(refreshed);
+            setEditingId(null);
+            addToast("success", t("toast.updateEdited"));
+        } catch (e) {
+            console.error("Failed to edit update:", e);
+            addToast("error", t("toast.updateEditFailed"));
+        } finally {
+            setEditSubmitting(false);
+        }
+    };
 
     const [form, setForm] = useState({
         title: "",
@@ -185,45 +226,86 @@ export default function ConstructionTimeline({ buildingId, companyId }: Props) {
                                 <div className="absolute left-2.5 top-2 w-3 h-3 rounded-full bg-primary border-2 border-background" />
 
                                 <div className="p-4 bg-surface rounded-2xl border border-foreground/6">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <h3 className="font-medium">{update.title}</h3>
-                                                <Badge variant="default">{t(`buildings.phase.${update.phase}`)}</Badge>
+                                    {editingId === update.id ? (
+                                        <form onSubmit={handleEditSubmit} className="space-y-3">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <h3 className="font-medium text-sm">{t("construction.editUpdate")}</h3>
+                                                <button type="button" onClick={() => setEditingId(null)} className="text-foreground/40 hover:text-foreground transition-colors">
+                                                    <X size={16} />
+                                                </button>
                                             </div>
-                                            <p className="text-sm text-foreground/60">{update.description}</p>
-                                        </div>
-                                        <Button size="sm" variant="ghost" onClick={() => setDeleteTarget(update.id)}>
-                                            <Trash2 size={14} />
-                                        </Button>
-                                    </div>
-
-                                    {/* Progress bar */}
-                                    <div className="mt-3">
-                                        <div className="flex items-center justify-between text-xs text-foreground/50 mb-1">
-                                            <span>{t("construction.progress")}</span>
-                                            <span>{update.progressPercent}%</span>
-                                        </div>
-                                        <div className="w-full h-2 bg-foreground/4 rounded-full overflow-hidden">
-                                            <div
-                                                className="h-full bg-primary rounded-full transition-all"
-                                                style={{ width: `${update.progressPercent}%` }}
+                                            <Input
+                                                label={t("construction.updateTitle")}
+                                                value={editForm.title}
+                                                onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                                                required
                                             />
-                                        </div>
-                                    </div>
+                                            <Textarea
+                                                label={t("construction.updateDesc")}
+                                                value={editForm.description}
+                                                onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+                                            />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <Select label={t("buildings.currentPhase")} value={editForm.phase} onChange={(e) => setEditForm((f) => ({ ...f, phase: e.target.value as ConstructionPhase }))} options={phaseOptions} />
+                                                <Input label={t("construction.progress")} type="number" min="0" max="100" value={editForm.progressPercent} onChange={(e) => setEditForm((f) => ({ ...f, progressPercent: e.target.value }))} />
+                                            </div>
+                                            <div className="flex gap-2 pt-1">
+                                                <Button type="submit" size="sm" disabled={editSubmitting}>
+                                                    {editSubmitting ? t("common.processing") : t("construction.saveUpdate")}
+                                                </Button>
+                                                <Button type="button" size="sm" variant="ghost" onClick={() => setEditingId(null)}>
+                                                    {t("common.cancel")}
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    ) : (
+                                        <>
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <h3 className="font-medium">{update.title}</h3>
+                                                        <Badge variant="default">{t(`buildings.phase.${update.phase}`)}</Badge>
+                                                    </div>
+                                                    <p className="text-sm text-foreground/60">{update.description}</p>
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <Button size="sm" variant="ghost" onClick={() => startEditing(update)}>
+                                                        <Pencil size={14} />
+                                                    </Button>
+                                                    <Button size="sm" variant="ghost" onClick={() => setDeleteTarget(update.id)}>
+                                                        <Trash2 size={14} />
+                                                    </Button>
+                                                </div>
+                                            </div>
 
-                                    {/* Photos */}
-                                    {update.images.length > 0 && (
-                                        <div className="flex gap-2 mt-3 flex-wrap">
-                                            {update.images.map((img, i) => (
-                                                <img
-                                                    key={i}
-                                                    src={img}
-                                                    alt=""
-                                                    className="w-24 h-24 rounded-lg object-cover border border-foreground/6"
-                                                />
-                                            ))}
-                                        </div>
+                                            {/* Progress bar */}
+                                            <div className="mt-3">
+                                                <div className="flex items-center justify-between text-xs text-foreground/50 mb-1">
+                                                    <span>{t("construction.progress")}</span>
+                                                    <span>{update.progressPercent}%</span>
+                                                </div>
+                                                <div className="w-full h-2 bg-foreground/4 rounded-full overflow-hidden">
+                                                    <div
+                                                        className="h-full bg-primary rounded-full transition-all"
+                                                        style={{ width: `${update.progressPercent}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Photos */}
+                                            {update.images.length > 0 && (
+                                                <div className="flex gap-2 mt-3 flex-wrap">
+                                                    {update.images.map((img, i) => (
+                                                        <img
+                                                            key={i}
+                                                            src={img}
+                                                            alt=""
+                                                            className="w-24 h-24 rounded-lg object-cover border border-foreground/6"
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </div>

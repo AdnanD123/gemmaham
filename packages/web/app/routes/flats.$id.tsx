@@ -43,6 +43,32 @@ function getDaysRemaining(deadline: string | null): number | null {
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
+function LazyBrochureButton({ flat, company }: { flat: Flat; company: Company }) {
+    const { t } = useTranslation();
+    const [BrochurePDF, setBrochurePDF] = useState<typeof import("../../components/pdf/PropertyBrochurePDF").default | null>(null);
+    const [DownloadBtn, setDownloadBtn] = useState<typeof import("../../components/pdf/PDFDownloadButton").default | null>(null);
+
+    useEffect(() => {
+        Promise.all([
+            import("../../components/pdf/PropertyBrochurePDF"),
+            import("../../components/pdf/PDFDownloadButton"),
+        ]).then(([brochure, btn]) => {
+            setBrochurePDF(() => brochure.default);
+            setDownloadBtn(() => btn.default);
+        });
+    }, []);
+
+    if (!BrochurePDF || !DownloadBtn) return null;
+
+    return (
+        <DownloadBtn
+            document={<BrochurePDF property={flat} company={company} photos={flat.photos || []} />}
+            fileName={`${flat.title.replace(/\s+/g, "-")}-brochure.pdf`}
+            label={t("pdf.downloadBrochure")}
+        />
+    );
+}
+
 export default function FlatDetail() {
     const { t } = useTranslation();
     const { id } = useParams();
@@ -661,9 +687,14 @@ export default function FlatDetail() {
                                 <MapPin size={14} /> {flat.address}
                             </p>
 
-                            <p className="text-primary font-bold text-3xl mt-4">
-                                {flat.currency} {flat.price.toLocaleString()}
-                            </p>
+                            <div className="flex items-center justify-between mt-4">
+                                <p className="text-primary font-bold text-3xl">
+                                    {flat.currency} {flat.price.toLocaleString()}
+                                </p>
+                                {typeof window !== "undefined" && company && (
+                                    <LazyBrochureButton flat={flat} company={company} />
+                                )}
+                            </div>
 
                             <div className="grid grid-cols-3 gap-3 mt-4">
                                 <div className="text-center p-3 bg-background rounded-lg">

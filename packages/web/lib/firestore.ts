@@ -34,12 +34,14 @@ import {
   type BuildingMilestone,
   type Contractor, type ContractorInput, type ContractorProfile,
   type ContractorApplication, type ContractorApplicationInput, type ApplicationStatus,
+  type ContractorInvitation, type ContractorInvitationInput, type ContractorInvitationStatus,
   type ContractorCategory, type ContractorSubcategory,
   type SubcategoryScope, type FlatContractorScope, type FlatCustomizationConfig,
   type CustomizationOption, type CustomizationOptionInput,
   type CustomizationRequest, type CustomizationRequestInput,
   type RequestStatus,
   type BuildingDocument,
+  type TeamMember, type TeamMemberRole, type TeamInvite,
 } from "@gemmaham/shared";
 
 // ─── Helper ──────────────────────────────────────────────
@@ -878,6 +880,14 @@ export const deleteConstructionUpdate = async (buildingId: string, updateId: str
   await deleteDoc(doc(db, "buildings", buildingId, "updates", updateId));
 };
 
+export const updateConstructionUpdate = async (
+  buildingId: string,
+  updateId: string,
+  data: Partial<Omit<ConstructionUpdate, "id" | "buildingId" | "createdAt">>,
+): Promise<void> => {
+  await updateDoc(doc(db, "buildings", buildingId, "updates", updateId), data);
+};
+
 // ─── Building Milestones ────────────────────────────────
 export const addBuildingMilestone = async (
   buildingId: string,
@@ -1422,6 +1432,56 @@ export const withdrawApplication = async (applicationId: string): Promise<void> 
   });
 };
 
+// ─── Contractor Invitations ────────────────────────────
+export const createContractorInvitation = async (data: ContractorInvitationInput): Promise<string> => {
+  const ref = await addDoc(collection(db, "contractorInvitations"), {
+    ...data,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return ref.id;
+};
+
+export const getContractorInvitations = async (contractorId: string): Promise<ContractorInvitation[]> => {
+  const q = query(
+    collection(db, "contractorInvitations"),
+    where("contractorId", "==", contractorId),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => docToData<ContractorInvitation>(d));
+};
+
+export const getCompanyInvitations = async (companyId: string, buildingId?: string): Promise<ContractorInvitation[]> => {
+  let q;
+  if (buildingId) {
+    q = query(
+      collection(db, "contractorInvitations"),
+      where("companyId", "==", companyId),
+      where("buildingId", "==", buildingId),
+      orderBy("createdAt", "desc"),
+    );
+  } else {
+    q = query(
+      collection(db, "contractorInvitations"),
+      where("companyId", "==", companyId),
+      orderBy("createdAt", "desc"),
+    );
+  }
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => docToData<ContractorInvitation>(d));
+};
+
+export const updateContractorInvitationStatus = async (
+  invitationId: string,
+  status: ContractorInvitationStatus,
+): Promise<void> => {
+  await updateDoc(doc(db, "contractorInvitations", invitationId), {
+    status,
+    updatedAt: serverTimestamp(),
+  });
+};
+
 // ─── Favorites ──────────────────────────────────────────
 export interface FavoriteDoc {
   propertyId: string;
@@ -1520,4 +1580,63 @@ export const listBrowsableProjects = async (): Promise<Building[]> => {
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => docToData<Building>(d));
+};
+
+// ─── Team Management ────────────────────────────────────
+export const getTeamMembers = async (companyId: string): Promise<TeamMember[]> => {
+  const q = query(
+    collection(db, "companies", companyId, "members"),
+    where("status", "!=", "removed"),
+    orderBy("status"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => docToData<TeamMember>(d));
+};
+
+export const createTeamInvite = async (data: Omit<TeamInvite, "id" | "createdAt">): Promise<string> => {
+  const ref = await addDoc(collection(db, "invites"), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+  return ref.id;
+};
+
+export const getTeamInvites = async (companyId: string): Promise<TeamInvite[]> => {
+  const q = query(
+    collection(db, "invites"),
+    where("companyId", "==", companyId),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => docToData<TeamInvite>(d));
+};
+
+export const getPendingInviteForEmail = async (email: string): Promise<TeamInvite | null> => {
+  const q = query(
+    collection(db, "invites"),
+    where("email", "==", email),
+    where("status", "==", "pending"),
+    limit(1),
+  );
+  const snap = await getDocs(q);
+  return snap.empty ? null : docToData<TeamInvite>(snap.docs[0]);
+};
+
+export const cancelTeamInvite = async (inviteId: string): Promise<void> => {
+  await updateDoc(doc(db, "invites", inviteId), { status: "cancelled" });
+};
+
+export const removeTeamMember = async (companyId: string, userId: string): Promise<void> => {
+  await updateDoc(doc(db, "companies", companyId, "members", userId), { status: "removed" });
+};
+
+export const updateTeamMemberRole = async (companyId: string, userId: string, role: TeamMemberRole): Promise<void> => {
+  await updateDoc(doc(db, "companies", companyId, "members", userId), { role });
+};
+
+export const addTeamMember = async (companyId: string, member: Omit<TeamMember, "id">): Promise<void> => {
+  await setDoc(doc(db, "companies", companyId, "members", member.userId), {
+    ...member,
+    companyId,
+  });
 };

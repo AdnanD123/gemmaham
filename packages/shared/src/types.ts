@@ -36,7 +36,7 @@ export type HouseType = "detached" | "semi_detached" | "villa" | "townhouse" | "
 export type ReservationStatus = "requested" | "approved" | "reserved" | "completed" | "rejected" | "cancelled" | "expired";
 
 // ─── Notification Type ──────────────────────────────────
-export type NotificationType = "reservation_status" | "meeting_scheduled" | "reservation_expiring" | "customization_status" | "new_request" | "contractor_assigned" | "application_received" | "application_accepted" | "application_rejected";
+export type NotificationType = "reservation_status" | "meeting_scheduled" | "reservation_expiring" | "customization_status" | "new_request" | "contractor_assigned" | "application_received" | "application_accepted" | "application_rejected" | "contractor_invited";
 
 // ─── Application Status ────────────────────────────────
 export type ApplicationStatus = "pending" | "accepted" | "rejected" | "withdrawn";
@@ -190,6 +190,38 @@ export interface Company {
 }
 
 export type CompanyInput = Omit<Company, "id" | "createdAt" | "updatedAt">;
+
+// ─── Team Management ─────────────────────────────────────
+export type TeamMemberRole = "owner" | "manager" | "agent";
+export type TeamMemberStatus = "pending" | "active" | "removed";
+export type TeamInviteStatus = "pending" | "accepted" | "expired" | "cancelled";
+
+export interface TeamMember {
+  id: string;
+  userId: string;
+  companyId: string;
+  email: string;
+  displayName: string;
+  role: TeamMemberRole;
+  status: TeamMemberStatus;
+  invitedBy: string;
+  invitedAt: TimestampLike;
+  joinedAt: TimestampLike | null;
+}
+
+export interface TeamInvite {
+  id: string;
+  email: string;
+  companyId: string;
+  companyName: string;
+  role: TeamMemberRole;
+  token: string;
+  status: TeamInviteStatus;
+  invitedBy: string;
+  inviterName: string;
+  expiresAt: TimestampLike;
+  createdAt: TimestampLike;
+}
 
 // ─── User Document (for uploads) ─────────────────────────
 export interface UserDocument {
@@ -649,6 +681,25 @@ export interface ContractorApplication {
 }
 
 export type ContractorApplicationInput = Omit<ContractorApplication, "id" | "createdAt" | "updatedAt">;
+
+// ─── Contractor Invitation ──────────────────────────────
+export type ContractorInvitationStatus = "pending" | "accepted" | "declined";
+
+export interface ContractorInvitation {
+  id: string;
+  buildingId: string;
+  companyId: string;
+  contractorId: string;
+  contractorName: string;
+  buildingTitle: string;
+  companyName: string;
+  message: string;
+  status: ContractorInvitationStatus;
+  createdAt: TimestampLike;
+  updatedAt: TimestampLike;
+}
+
+export type ContractorInvitationInput = Omit<ContractorInvitation, "id" | "createdAt" | "updatedAt">;
 
 // ─── Building Document ──────────────────────────────────
 export type BuildingDocumentType = "plan" | "permit" | "contract" | "specification" | "other";

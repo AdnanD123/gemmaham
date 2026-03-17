@@ -58,6 +58,7 @@ export default function HomeSidebar({ auth, collapsed, onToggle }: HomeSidebarPr
         { to: "/company/requests", label: t("nav.requests"), icon: ClipboardCheck },
         { to: "/company/messages", label: t("nav.messages"), icon: MessageSquare },
         { to: "/company/finances", label: t("nav.finances"), icon: DollarSign },
+        { to: "/company/settings/team", label: t("nav.teamSettings"), icon: UserCog },
     ];
 
     const contractorLinks = [

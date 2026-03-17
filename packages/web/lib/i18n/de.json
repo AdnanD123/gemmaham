@@ -22,7 +22,8 @@
     "browseProjects": "Projekte durchsuchen",
     "myApplications": "Meine Bewerbungen",
     "myProjects": "Meine Projekte",
-    "favorites": "Favoriten"
+    "favorites": "Favoriten",
+    "teamSettings": "Team"
   },
   "home": {
     "badge": "KI-gestützte Plattform",
@@ -264,6 +265,8 @@
     "updateAdded": "Baufortschritt hinzugefügt.",
     "updateAddFailed": "Fortschritt konnte nicht hinzugefügt werden.",
     "updateDeleted": "Fortschritt gelöscht.",
+    "updateEdited": "Fortschritt erfolgreich bearbeitet.",
+    "updateEditFailed": "Fortschritt konnte nicht bearbeitet werden.",
     "contractorAdded": "Auftragnehmer hinzugefügt.",
     "contractorUpdated": "Auftragnehmer aktualisiert.",
     "contractorDeleted": "Auftragnehmer gelöscht.",
@@ -279,7 +282,21 @@
     "requestCancelled": "Anfrage storniert.",
     "requestSent": "Anpassungsanfrage gesendet!",
     "savedWithoutLogo": "Profil gespeichert, aber Logo konnte nicht hochgeladen werden (Storage-Berechtigungen nicht konfiguriert).",
-    "profileDeleted": "Profil gelöscht."
+    "profileDeleted": "Profil gelöscht.",
+    "inviteSent": "Einladung erfolgreich gesendet.",
+    "inviteSendFailed": "Einladung konnte nicht gesendet werden.",
+    "memberRemoved": "Teammitglied entfernt.",
+    "memberRemoveFailed": "Teammitglied konnte nicht entfernt werden.",
+    "roleChanged": "Rolle erfolgreich aktualisiert.",
+    "roleChangeFailed": "Rolle konnte nicht aktualisiert werden.",
+    "inviteCancelled": "Einladung storniert.",
+    "inviteCancelFailed": "Einladung konnte nicht storniert werden.",
+    "invitationSent": "Einladung an Auftragnehmer gesendet.",
+    "invitationSendFailed": "Einladung konnte nicht gesendet werden.",
+    "invitationAccepted": "Einladung angenommen. Bewerbung eingereicht.",
+    "invitationAcceptFailed": "Einladung konnte nicht angenommen werden.",
+    "invitationDeclined": "Einladung abgelehnt.",
+    "invitationDeclineFailed": "Einladung konnte nicht abgelehnt werden."
   },
   "theme": {
     "light": "Hell",
@@ -486,7 +503,9 @@
     "noUpdates": "Noch keine Baufortschritte.",
     "deleteUpdateTitle": "Fortschritt löschen",
     "deleteUpdateMsg": "Sind Sie sicher, dass Sie diesen Baufortschritt löschen möchten?",
-    "timeline": "Bau-Zeitleiste"
+    "timeline": "Bau-Zeitleiste",
+    "editUpdate": "Fortschritt bearbeiten",
+    "saveUpdate": "Änderungen speichern"
   },
   "contractors": {
     "title": "Auftragnehmer",
@@ -535,6 +554,9 @@
     "assignedBuildings": "Zugewiesene Gebäude",
     "activeProjects": "Aktive Projekte",
     "noAssignments": "Sie wurden noch keinem Gebäude zugewiesen.",
+    "calendarView": "Kalenderansicht",
+    "listView": "Listenansicht",
+    "calendarToday": "Heute",
     "messages": "Nachrichten",
     "viewMessages": "Nachrichten anzeigen",
     "editProfile": "Mein Profil",
@@ -658,6 +680,11 @@
     "notesPlaceholder": "Besondere Wünsche...",
     "submitRequest": "Anfrage senden",
     "noLongerAvailable": "Nicht mehr verfügbar — Arbeit des Auftragnehmers abgeschlossen",
+    "totalImpact": "Gesamtpreisauswirkung",
+    "totalSelections": "Gesamtauswahl",
+    "pendingImpact": "Ausstehend",
+    "approvedImpact": "Genehmigt",
+    "included": "Inbegriffen",
     "defaultIncluded": "Standard (enthalten)",
     "cat": {
       "flooring": "Bodenbelag",
@@ -1535,5 +1562,57 @@
     "step2Desc": "Listen Sie Immobilien auf, die Käufer durchsuchen und reservieren können",
     "step3Title": "Anpassungsoptionen konfigurieren",
     "step3Desc": "Lassen Sie Käufer ihre Einheiten mit individuellen Ausstattungen personalisieren"
+  },
+  "team": {
+    "title": "Teamverwaltung",
+    "description": "Verwalten Sie Ihre Agentur-Teammitglieder und senden Sie Einladungen.",
+    "members": "Teammitglieder",
+    "inviteMember": "Teammitglied einladen",
+    "email": "E-Mail-Adresse",
+    "emailPlaceholder": "kollege@beispiel.com",
+    "role": "Rolle",
+    "sendInvite": "Einladung senden",
+    "pendingInvites": "Ausstehende Einladungen",
+    "noPendingInvites": "Keine ausstehenden Einladungen.",
+    "noMembers": "Noch keine Teammitglieder. Senden Sie eine Einladung, um zu beginnen.",
+    "removeMember": "Mitglied entfernen",
+    "removeConfirm": "Sind Sie sicher, dass Sie dieses Teammitglied entfernen möchten? Der Zugang zu Unternehmensressourcen wird entzogen.",
+    "changeRole": "Rolle ändern",
+    "roleOwner": "Eigentümer",
+    "roleManager": "Manager",
+    "roleAgent": "Agent",
+    "statusActive": "Aktiv",
+    "statusPending": "Ausstehend",
+    "statusRemoved": "Entfernt",
+    "inviteExpires": "Läuft ab",
+    "you": "(Sie)",
+    "cancelInvite": "Einladung stornieren"
+  },
+  "search": {
+    "placeholder": "Immobilien nach Name, Beschreibung oder Adresse suchen...",
+    "noResults": "Keine Immobilien entsprechen Ihrer Suche.",
+    "clear": "Suche löschen"
+  },
+  "invitations": {
+    "title": "Einladungen",
+    "inviteContractor": "Auftragnehmer einladen",
+    "searchContractors": "Auftragnehmer suchen...",
+    "selectContractor": "Wählen Sie einen Auftragnehmer zum Einladen",
+    "message": "Nachricht (optional)",
+    "messagePlaceholder": "Fügen Sie eine Notiz zum Projekt hinzu...",
+    "sendInvitation": "Einladung senden",
+    "noContractorsFound": "Keine Auftragnehmer gefunden.",
+    "accept": "Annehmen",
+    "decline": "Ablehnen",
+    "noInvitations": "Noch keine Einladungen.",
+    "fromCompany": "Von",
+    "forBuilding": "Für Projekt",
+    "invitedOn": "Eingeladen am"
+  },
+  "pdf": {
+    "downloadBrochure": "Broschüre herunterladen",
+    "downloadConfirmation": "Bestätigung herunterladen",
+    "downloadAssignment": "Zusammenfassung herunterladen",
+    "generating": "Wird generiert..."
   }
 }

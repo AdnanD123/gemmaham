@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Search, X } from "lucide-react";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import Select from "./ui/Select";
@@ -7,6 +8,8 @@ import type { PropertyFilters as PropertyFiltersType, PropertyType, HouseType, S
 
 interface Props {
     onFilter: (filters: PropertyFiltersType) => void;
+    searchQuery?: string;
+    onSearchChange?: (query: string) => void;
 }
 
 const houseTypeOptions = [
@@ -18,7 +21,7 @@ const houseTypeOptions = [
     { value: "cottage", label: "Cottage" },
 ];
 
-const PropertyFilters = ({ onFilter }: Props) => {
+const PropertyFilters = ({ onFilter, searchQuery = "", onSearchChange }: Props) => {
     const { t } = useTranslation();
     const [propertyType, setPropertyType] = useState<PropertyType | "all">("all");
     const [minPrice, setMinPrice] = useState("");
@@ -66,6 +69,28 @@ const PropertyFilters = ({ onFilter }: Props) => {
 
     return (
         <div className="p-4 bg-surface rounded-2xl border border-foreground/6 mb-6">
+            {/* Search bar */}
+            {onSearchChange && (
+                <div className="relative mb-4">
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" />
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        placeholder={t("search.placeholder")}
+                        className="w-full pl-9 pr-9 py-2.5 bg-background border border-foreground/6 rounded-xl text-sm focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors"
+                    />
+                    {searchQuery && (
+                        <button
+                            onClick={() => onSearchChange("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 hover:text-foreground transition-colors"
+                        >
+                            <X size={16} />
+                        </button>
+                    )}
+                </div>
+            )}
+
             {/* Type toggle */}
             <div className="flex gap-2 mb-4">
                 {(["all", "building", "house"] as const).map((type) => (

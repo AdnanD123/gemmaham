@@ -65,6 +65,26 @@ service cloud.firestore {
       allow create: if hasRole('company');
       allow update: if isCompanyMember(companyId);
       allow delete: if false;
+
+      // Team members subcollection
+      match /members/{memberId} {
+        allow read: if isCompanyMember(companyId);
+        allow write: if isCompanyMember(companyId);
+      }
+    }
+
+    // Team invites
+    match /invites/{inviteId} {
+      allow read: if isAuthenticated() && (
+        isCompanyMember(resource.data.companyId)
+        || resource.data.email == request.auth.token.email
+      );
+      allow create: if isAuthenticated() && isCompanyMember(request.resource.data.companyId);
+      allow update: if isAuthenticated() && (
+        isCompanyMember(resource.data.companyId)
+        || resource.data.email == request.auth.token.email
+      );
+      allow delete: if false;
     }
 
     // Houses
@@ -140,6 +160,20 @@ service cloud.firestore {
       allow update: if hasRole('company')
                     || (isOwner(resource.data.userId)
                         && request.resource.data.status == 'cancelled');
+      allow delete: if false;
+    }
+
+    // Contractor Invitations
+    match /contractorInvitations/{invitationId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.contractorId
+        || isCompanyMember(resource.data.companyId)
+      );
+      allow create: if isAuthenticated() && isCompanyMember(request.resource.data.companyId);
+      allow update: if isAuthenticated() && (
+        request.auth.uid == resource.data.contractorId
+        || isCompanyMember(resource.data.companyId)
+      );
       allow delete: if false;
     }
 

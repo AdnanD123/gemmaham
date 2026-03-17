@@ -1,38 +1,70 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { ClipboardList, Building2, Calendar, MessageSquare } from "lucide-react";
+import { ClipboardList, Building2, Calendar, MessageSquare, Mail } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
+import Button from "../../components/ui/Button";
 import { SkeletonBlock } from "../../components/ui/Skeleton";
 import { ContentLoader } from "../../components/ui/ContentLoader";
-import { getContractorApplications, getBuilding, getCompany } from "../../lib/firestore";
+import {
+    getContractorApplications,
+    getContractorInvitations,
+    updateContractorInvitationStatus,
+    createApplication,
+    getBuilding,
+    getCompany,
+} from "../../lib/firestore";
 import { toMillis } from "@gemmaham/shared";
-import type { AuthContext, ContractorApplication, Building, Company, ApplicationStatus } from "@gemmaham/shared";
+import type {
+    AuthContext,
+    ContractorApplication,
+    ContractorInvitation,
+    Building,
+    Company,
+    ApplicationStatus,
+    ContractorInvitationStatus,
+} from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
+import { useToast } from "../../lib/contexts/ToastContext";
 
-type FilterTab = "all" | "pending" | "accepted" | "rejected";
+type FilterTab = "all" | "pending" | "accepted" | "rejected" | "invitations";
 
 export default function ContractorApplications() {
     const { t } = useTranslation();
     const { user } = useOutletContext<AuthContext>();
+    const { addToast } = useToast();
     const [applications, setApplications] = useState<ContractorApplication[]>([]);
+    const [invitations, setInvitations] = useState<ContractorInvitation[]>([]);
     const [buildings, setBuildings] = useState<Record<string, Building>>({});
     const [companies, setCompanies] = useState<Record<string, Company>>({});
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<FilterTab>("all");
+    const [processingInvitation, setProcessingInvitation] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user) return;
         (async () => {
             try {
-                const apps = await getContractorApplications(user.uid);
+                const [apps, invites] = await Promise.all([
+                    getContractorApplications(user.uid),
+                    getContractorInvitations(user.uid),
+                ]);
                 setApplications(apps);
+                setInvitations(invites);
 
                 // Fetch building and company data
-                const uniqueBuildingIds = [...new Set(apps.map((a) => a.buildingId))];
-                const uniqueCompanyIds = [...new Set(apps.map((a) => a.companyId))];
+                const allBuildingIds = [
+                    ...apps.map((a) => a.buildingId),
+                    ...invites.map((i) => i.buildingId),
+                ];
+                const allCompanyIds = [
+                    ...apps.map((a) => a.companyId),
+                    ...invites.map((i) => i.companyId),
+                ];
+                const uniqueBuildingIds = [...new Set(allBuildingIds)];
+                const uniqueCompanyIds = [...new Set(allCompanyIds)];
 
                 const buildingMap: Record<string, Building> = {};
                 const companyMap: Record<string, Company> = {};
@@ -71,10 +103,13 @@ export default function ContractorApplications() {
         { key: "pending", label: t("applications.filterPending") },
         { key: "accepted", label: t("applications.filterAccepted") },
         { key: "rejected", label: t("applications.filterRejected") },
+        { key: "invitations", label: t("invitations.title") },
     ];
 
     const filtered = activeTab === "all"
         ? applications
+        : activeTab === "invitations"
+        ? []
         : applications.filter((a) => a.status === activeTab);
 
     const getStatusVariant = (status: ApplicationStatus): "pending" | "accepted" | "rejected" | "withdrawn" => {
@@ -106,7 +141,69 @@ export default function ContractorApplications() {
         return `/buildings/${app.buildingId}`;
     };
 
+    const handleAcceptInvitation = async (invitation: ContractorInvitation) => {
+        if (!user) return;
+        setProcessingInvitation(invitation.id);
+        try {
+            await updateContractorInvitationStatus(invitation.id, "accepted");
+
+            // Create an application for the building
+            await createApplication({
+                buildingId: invitation.buildingId,
+                companyId: invitation.companyId,
+                contractorUserId: user.uid,
+                contractorName: invitation.contractorName,
+                contractorCompanyName: "",
+                contractorSpecialty: "other",
+                contractorCategories: [],
+                contractorLogoUrl: null,
+                message: invitation.message || "Accepted invitation",
+                proposedRate: null,
+                currency: "EUR",
+            });
+
+            setInvitations((prev) =>
+                prev.map((inv) =>
+                    inv.id === invitation.id ? { ...inv, status: "accepted" as ContractorInvitationStatus } : inv,
+                ),
+            );
+            addToast("success", t("toast.invitationAccepted"));
+        } catch (e) {
+            console.error("Failed to accept invitation:", e);
+            addToast("error", t("toast.invitationAcceptFailed"));
+        } finally {
+            setProcessingInvitation(null);
+        }
+    };
+
+    const handleDeclineInvitation = async (invitation: ContractorInvitation) => {
+        setProcessingInvitation(invitation.id);
+        try {
+            await updateContractorInvitationStatus(invitation.id, "declined");
+            setInvitations((prev) =>
+                prev.map((inv) =>
+                    inv.id === invitation.id ? { ...inv, status: "declined" as ContractorInvitationStatus } : inv,
+                ),
+            );
+            addToast("success", t("toast.invitationDeclined"));
+        } catch (e) {
+            console.error("Failed to decline invitation:", e);
+            addToast("error", t("toast.invitationDeclineFailed"));
+        } finally {
+            setProcessingInvitation(null);
+        }
+    };
+
     const renderEmptyState = () => {
+        if (activeTab === "invitations") {
+            return (
+                <div className="text-center py-12">
+                    <Mail size={40} className="mx-auto text-foreground/20 mb-3" />
+                    <p className="text-foreground/50">{t("invitations.noInvitations")}</p>
+                </div>
+            );
+        }
+
         const emptyKey = activeTab === "all"
             ? t("contractor.applications.noApplicationsAll")
             : t("contractor.applications.noApplicationsFiltered", { status: t(`applications.status.${activeTab}`) });
@@ -123,6 +220,73 @@ export default function ContractorApplications() {
                         {t("contractor.applications.browseProjects")}
                     </Link>
                 )}
+            </div>
+        );
+    };
+
+    const renderInvitationCard = (invitation: ContractorInvitation) => {
+        const statusBadgeVariant = invitation.status === "accepted"
+            ? "accepted"
+            : invitation.status === "declined"
+            ? "rejected"
+            : "pending";
+
+        return (
+            <div
+                key={invitation.id}
+                className="bg-surface rounded-2xl border border-foreground/6 overflow-hidden"
+            >
+                <div className="p-4">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                        <div>
+                            <h3 className="font-medium">{invitation.buildingTitle}</h3>
+                            <p className="text-sm text-foreground/50">
+                                {t("invitations.fromCompany")}: {invitation.companyName}
+                            </p>
+                        </div>
+                        <Badge variant={statusBadgeVariant}>
+                            {invitation.status === "accepted"
+                                ? t("invitations.accept")
+                                : invitation.status === "declined"
+                                ? t("invitations.decline")
+                                : t("applications.filterPending")}
+                        </Badge>
+                    </div>
+
+                    {invitation.message && (
+                        <div className="mt-2 flex items-start gap-1.5 text-sm text-foreground/50">
+                            <MessageSquare size={14} className="mt-0.5 flex-shrink-0" />
+                            <span>{truncateMessage(invitation.message)}</span>
+                        </div>
+                    )}
+
+                    <div className="mt-2 flex items-center gap-1 text-sm text-foreground/60">
+                        <Calendar size={14} />
+                        <span title={formatDate(invitation.createdAt)}>
+                            {t("invitations.invitedOn")} {formatRelative(invitation.createdAt)}
+                        </span>
+                    </div>
+
+                    {invitation.status === "pending" && (
+                        <div className="flex gap-2 mt-3">
+                            <Button
+                                size="sm"
+                                onClick={() => handleAcceptInvitation(invitation)}
+                                disabled={processingInvitation === invitation.id}
+                            >
+                                {t("invitations.accept")}
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleDeclineInvitation(invitation)}
+                                disabled={processingInvitation === invitation.id}
+                            >
+                                {t("invitations.decline")}
+                            </Button>
+                        </div>
+                    )}
+                </div>
             </div>
         );
     };
@@ -222,6 +386,8 @@ export default function ContractorApplications() {
                         {tabs.map((tab) => {
                             const count = tab.key === "all"
                                 ? applications.length
+                                : tab.key === "invitations"
+                                ? invitations.length
                                 : applications.filter((a) => a.status === tab.key).length;
                             return (
                                 <button
@@ -246,7 +412,15 @@ export default function ContractorApplications() {
                             ))}
                         </div>
                     }>
-                        {filtered.length === 0 ? (
+                        {activeTab === "invitations" ? (
+                            invitations.length === 0 ? (
+                                renderEmptyState()
+                            ) : (
+                                <div className="space-y-4">
+                                    {invitations.map(renderInvitationCard)}
+                                </div>
+                            )
+                        ) : filtered.length === 0 ? (
                             renderEmptyState()
                         ) : (
                             <div className="space-y-4">

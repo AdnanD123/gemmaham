@@ -6,3 +6,4 @@ export { onMessageCreate } from "./onMessageCreate.js";
 export { onReservationCreate } from "./onReservationCreate.js";
 export { onReservationUpdate } from "./onReservationUpdate.js";
 export { expireReservations } from "./expireReservations.js";
+export { acceptTeamInvite } from "./teamInvite.js";
