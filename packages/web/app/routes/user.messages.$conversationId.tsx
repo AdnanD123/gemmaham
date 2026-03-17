@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useOutletContext, Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Home, Building2 } from "lucide-react";
 import AuthGuard from "../../components/AuthGuard";
 import MessageThread from "../../components/MessageThread";
 import MessageInput from "../../components/MessageInput";
@@ -45,7 +45,35 @@ export default function UserConversation() {
                             {conv && (
                                 <div className="mt-2">
                                     <h2 className="font-bold text-lg">{conv.companyName}</h2>
-                                    <p className="text-xs text-foreground/50">Re: {conv.flatTitle}</p>
+                                    <div className="flex items-center gap-1.5 mt-1">
+                                        {conv.buildingId ? (
+                                            <Building2 size={13} className="text-foreground/40 shrink-0" />
+                                        ) : (
+                                            <Home size={13} className="text-foreground/40 shrink-0" />
+                                        )}
+                                        {conv.flatId ? (
+                                            <Link
+                                                to={`/properties/${conv.flatId}`}
+                                                className="text-sm text-foreground/50 hover:text-primary transition-colors"
+                                            >
+                                                {t("messages.regarding")} {conv.flatTitle}
+                                            </Link>
+                                        ) : conv.houseId ? (
+                                            <Link
+                                                to={`/properties/${conv.houseId}`}
+                                                className="text-sm text-foreground/50 hover:text-primary transition-colors"
+                                            >
+                                                {t("messages.regarding")} {conv.flatTitle}
+                                            </Link>
+                                        ) : (
+                                            <span className="text-sm text-foreground/50">
+                                                {t("messages.regarding")} {conv.flatTitle}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-sm text-foreground/50 mt-0.5 flex items-center gap-1">
+                                        {t("messages.with")} {conv.companyName}
+                                    </p>
                                 </div>
                             )}
                         </div>

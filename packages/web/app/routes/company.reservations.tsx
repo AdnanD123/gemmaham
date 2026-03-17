@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOutletContext } from "react-router";
 import { useTranslation } from "react-i18next";
-import { User, Phone, Mail, Calendar, Banknote, CheckCircle2, XCircle, Lock, Trophy } from "lucide-react";
+import { User, Phone, Mail, Calendar, Banknote, CheckCircle2, XCircle, Lock, Trophy, List, LayoutGrid, Home, CreditCard, Users, Zap } from "lucide-react";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
@@ -12,6 +12,7 @@ import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import ReservationTimeline from "../../components/ReservationTimeline";
 import ReservationListSkeleton from "../../components/skeletons/ReservationSkeleton";
 import { ContentLoader } from "../../components/ui/ContentLoader";
+import { KanbanBoard } from "../../components/KanbanBoard";
 import {
     getCompanyReservations, updateReservationStatus, getFlat,
     updateReservationMeeting, completeReservationMeeting, confirmDeposit,
@@ -21,6 +22,9 @@ import type { AuthContext, Reservation, ReservationStatus } from "@gemmaham/shar
 import { PageTransition } from "../../components/ui/PageTransition";
 
 type TabKey = "requests" | "active" | "history";
+type ViewMode = "list" | "board";
+
+const VIEW_PREF_KEY = "gemmaham_reservations_view";
 
 interface FlatGroup {
     flatId: string;
@@ -36,6 +40,19 @@ export default function CompanyReservations() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<TabKey>("requests");
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [viewMode, setViewMode] = useState<ViewMode>(() => {
+        if (typeof window !== "undefined") {
+            return (localStorage.getItem(VIEW_PREF_KEY) as ViewMode) || "list";
+        }
+        return "list";
+    });
+
+    const toggleViewMode = (mode: ViewMode) => {
+        setViewMode(mode);
+        if (typeof window !== "undefined") {
+            localStorage.setItem(VIEW_PREF_KEY, mode);
+        }
+    };
 
     // Reject modal
     const [rejectTarget, setRejectTarget] = useState<string | null>(null);
@@ -179,11 +196,52 @@ export default function CompanyReservations() {
             <div className="home">
                 <div className="flex">
                     <main className="flex-1 p-6 max-w-5xl">
-                        <h1 className="text-2xl font-serif font-bold mb-8">{t("company.reservationsTitle")}</h1>
+                        <div className="flex items-center justify-between mb-8">
+                            <h1 className="text-2xl font-serif font-bold">{t("company.reservationsTitle")}</h1>
+                            <div className="flex gap-1 bg-foreground/5 rounded-lg p-1">
+                                <button
+                                    type="button"
+                                    onClick={() => toggleViewMode("list")}
+                                    className={`p-1.5 rounded-md transition-colors ${
+                                        viewMode === "list"
+                                            ? "bg-primary text-white"
+                                            : "text-foreground/50 hover:text-foreground/70"
+                                    }`}
+                                    title={t("reservations.listView")}
+                                >
+                                    <List size={16} />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => toggleViewMode("board")}
+                                    className={`p-1.5 rounded-md transition-colors ${
+                                        viewMode === "board"
+                                            ? "bg-primary text-white"
+                                            : "text-foreground/50 hover:text-foreground/70"
+                                    }`}
+                                    title={t("reservations.boardView")}
+                                >
+                                    <LayoutGrid size={16} />
+                                </button>
+                            </div>
+                        </div>
 
                         <ContentLoader loading={loading} skeleton={<ReservationListSkeleton />}>
                             {reservations.length === 0 ? (
                                 <p className="text-center py-12 text-foreground/50">{t("company.noReservations")}</p>
+                            ) : viewMode === "board" ? (
+                                <KanbanBoard
+                                    reservations={reservations}
+                                    propertyTitles={flatTitles}
+                                    onApprove={(id) => handleStatusUpdate(id, "approved")}
+                                    onReject={(id) => { setRejectTarget(id); setRejectReason(""); }}
+                                    onScheduleMeeting={(id) => { setMeetingTarget(id); setMeetingDate(""); setMeetingNotes(""); }}
+                                    onCompleteMeeting={handleCompleteMeeting}
+                                    onConfirmDeposit={(id) => { setDepositTarget(id); setDepositAmount(""); }}
+                                    onMarkReserved={(id) => handleStatusUpdate(id, "reserved")}
+                                    onMarkCompleted={(id) => handleStatusUpdate(id, "completed")}
+                                    processing={processing}
+                                />
                             ) : (
                             <>
                                 {/* Tabs */}
@@ -260,6 +318,42 @@ export default function CompanyReservations() {
 
                                                                     {r.notes && (
                                                                         <p className="text-sm text-foreground/50 italic mb-2">"{r.notes}"</p>
+                                                                    )}
+
+                                                                    {/* Additional booking info */}
+                                                                    {(r.preferredMoveIn || r.financingMethod || r.occupants || r.urgency) && (
+                                                                        <div className="bg-foreground/5 rounded-lg p-3 mb-3">
+                                                                            <p className="text-xs font-medium text-foreground/40 mb-1.5">{t("reservation.additionalInfo")}</p>
+                                                                            <div className="flex flex-wrap gap-x-4 gap-y-1">
+                                                                                {r.preferredMoveIn && (
+                                                                                    <span className="flex items-center gap-1 text-xs text-foreground/60">
+                                                                                        <Home size={12} className="text-foreground/40" />
+                                                                                        {t("reservation.preferredMoveIn")}: {new Date(r.preferredMoveIn).toLocaleDateString()}
+                                                                                    </span>
+                                                                                )}
+                                                                                {r.financingMethod && (
+                                                                                    <span className="flex items-center gap-1 text-xs text-foreground/60">
+                                                                                        <CreditCard size={12} className="text-foreground/40" />
+                                                                                        {t(`reservation.${r.financingMethod}`)}
+                                                                                    </span>
+                                                                                )}
+                                                                                {r.occupants && (
+                                                                                    <span className="flex items-center gap-1 text-xs text-foreground/60">
+                                                                                        <Users size={12} className="text-foreground/40" />
+                                                                                        {r.occupants} {t("reservation.occupants").toLowerCase()}
+                                                                                    </span>
+                                                                                )}
+                                                                                {r.urgency && (
+                                                                                    <Badge variant={r.urgency === "urgent" ? "rejected" : r.urgency === "3months" ? "approved" : "default"} className="text-xs">
+                                                                                        <Zap size={10} className="mr-0.5" />
+                                                                                        {t(`reservation.${r.urgency === "3months" ? "within3Months" : r.urgency}`)}
+                                                                                    </Badge>
+                                                                                )}
+                                                                            </div>
+                                                                            {r.specialRequirements && (
+                                                                                <p className="text-xs text-foreground/50 mt-1.5 italic">"{r.specialRequirements}"</p>
+                                                                            )}
+                                                                        </div>
                                                                     )}
 
                                                                     {/* Meeting & deposit status */}

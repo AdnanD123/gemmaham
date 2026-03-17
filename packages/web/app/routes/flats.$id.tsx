@@ -7,6 +7,8 @@ import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
 import Modal from "../../components/ui/Modal";
 import Textarea from "../../components/ui/Textarea";
+import Input from "../../components/ui/Input";
+import Select from "../../components/ui/Select";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import {
     getFlat, getCompany, getBuilding, getCustomizationOptions,
@@ -17,7 +19,7 @@ import {
 } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import { SkeletonBlock, SkeletonLine } from "../../components/ui/Skeleton";
-import type { AuthContext, Flat, Company, Building, CustomizationOption, Contractor, CustomizationRequest, Reservation } from "@gemmaham/shared";
+import type { AuthContext, Flat, Company, Building, CustomizationOption, Contractor, CustomizationRequest, Reservation, FinancingMethod, UrgencyLevel } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
 import { PhotoGallery } from "../../components/PhotoGallery";
 
@@ -58,6 +60,11 @@ export default function FlatDetail() {
     // Reserve modal state
     const [reserveOpen, setReserveOpen] = useState(false);
     const [notes, setNotes] = useState("");
+    const [preferredMoveIn, setPreferredMoveIn] = useState("");
+    const [financingMethod, setFinancingMethod] = useState<FinancingMethod | "">("");
+    const [occupants, setOccupants] = useState("");
+    const [urgency, setUrgency] = useState<UrgencyLevel | "">("");
+    const [specialRequirements, setSpecialRequirements] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
     // Customization selection state: optionId → selected choice
@@ -252,11 +259,21 @@ export default function FlatDetail() {
                     notes,
                     companyNotes: null,
                     userSnapshot,
+                    ...(preferredMoveIn && { preferredMoveIn }),
+                    ...(financingMethod && { financingMethod }),
+                    ...(occupants && { occupants: parseInt(occupants, 10) }),
+                    ...(urgency && { urgency }),
+                    ...(specialRequirements && { specialRequirements }),
                 },
                 userSnapshot,
             );
             setReserveOpen(false);
             setNotes("");
+            setPreferredMoveIn("");
+            setFinancingMethod("");
+            setOccupants("");
+            setUrgency("");
+            setSpecialRequirements("");
             addToast("success", t("toast.reservationSent"));
             // Reload reservation state
             const reservation = await getUserReservationForFlat(auth.user.uid, flat.id);
@@ -836,6 +853,55 @@ export default function FlatDetail() {
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                     />
+
+                    {/* Additional Information */}
+                    <div className="border-t border-foreground/6 pt-4">
+                        <p className="text-sm font-medium mb-3">{t("reservation.additionalInfo")}</p>
+                        <div className="space-y-3">
+                            <Input
+                                label={t("reservation.preferredMoveIn")}
+                                type="date"
+                                value={preferredMoveIn}
+                                onChange={(e) => setPreferredMoveIn(e.target.value)}
+                            />
+                            <Select
+                                label={t("reservation.financingMethod")}
+                                value={financingMethod}
+                                onChange={(e) => setFinancingMethod(e.target.value as FinancingMethod | "")}
+                                options={[
+                                    { value: "", label: "—" },
+                                    { value: "cash", label: t("reservation.cash") },
+                                    { value: "mortgage", label: t("reservation.mortgage") },
+                                    { value: "other", label: t("reservation.other") },
+                                ]}
+                            />
+                            <Input
+                                label={t("reservation.occupants")}
+                                type="number"
+                                min={1}
+                                value={occupants}
+                                onChange={(e) => setOccupants(e.target.value)}
+                            />
+                            <Select
+                                label={t("reservation.urgency")}
+                                value={urgency}
+                                onChange={(e) => setUrgency(e.target.value as UrgencyLevel | "")}
+                                options={[
+                                    { value: "", label: "—" },
+                                    { value: "browsing", label: t("reservation.browsing") },
+                                    { value: "3months", label: t("reservation.within3Months") },
+                                    { value: "urgent", label: t("reservation.urgent") },
+                                ]}
+                            />
+                            <Textarea
+                                label={t("reservation.specialRequirements")}
+                                placeholder={t("reservation.specialRequirementsPlaceholder")}
+                                value={specialRequirements}
+                                onChange={(e) => setSpecialRequirements(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
                     <div className="flex gap-2 justify-end">
                         <Button variant="ghost" onClick={() => setReserveOpen(false)}>{t("flats.cancel")}</Button>
                         <Button onClick={handleReserve} disabled={submitting}>

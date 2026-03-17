@@ -310,7 +310,12 @@
     "startConversationWith": "Start a conversation with {{name}}",
     "startConversationHint": "Send a message to begin the conversation.",
     "viewProperty": "View property",
-    "addMessagePlaceholder": "Add a message..."
+    "addMessagePlaceholder": "Add a message...",
+    "buyers": "Buyers",
+    "contractors": "Contractors",
+    "regarding": "Re:",
+    "with": "With:",
+    "unread": "{{count}} unread"
   },
   "reservationCard": {
     "flat": "Flat"
@@ -360,7 +365,27 @@
     "userInfo": "Buyer Information",
     "timeline": "Status Timeline",
     "expiresIn": "Expires in {{days}} days",
-    "expired": "Request expired"
+    "expired": "Request expired",
+    "additionalInfo": "Additional Information",
+    "preferredMoveIn": "Preferred Move-in Date",
+    "financingMethod": "Financing Method",
+    "cash": "Cash",
+    "mortgage": "Mortgage",
+    "other": "Other",
+    "occupants": "Number of Occupants",
+    "urgency": "Urgency",
+    "browsing": "Just browsing",
+    "within3Months": "Within 3 months",
+    "urgent": "Urgent",
+    "specialRequirements": "Special Requirements",
+    "specialRequirementsPlaceholder": "Any special requirements or accessibility needs..."
+  },
+  "reservations": {
+    "boardView": "Board View",
+    "listView": "List View",
+    "daysInStatus": "{{count}} day in status",
+    "daysInStatus_other": "{{count}} days in status",
+    "expiringSoon": "Expiring soon"
   },
   "visualizer": {
     "exitEditor": "Exit Editor",
@@ -561,7 +586,16 @@
       "noApplicationsFiltered": "No {{status}} applications.",
       "browseProjects": "Browse available projects",
       "unknownBuilding": "Unknown Building"
-    }
+    },
+    "publicProfile": "Contractor Profile",
+    "contactInfo": "Contact Information",
+    "specialtiesSection": "Categories & Specialties",
+    "projectHistory": "Project History",
+    "completedProjects": "Completed Projects",
+    "inProgress": "In Progress",
+    "noProjects": "No completed projects yet.",
+    "contactContractor": "Contact Contractor",
+    "memberSince": "Member since {{date}}"
   },
   "customizations": {
     "options": "options",
@@ -1437,5 +1471,53 @@
     "bathroomsMax": "Maximum 10 bathrooms",
     "storiesMin": "Must have at least 1 story",
     "storiesMax": "Maximum 10 stories"
+  },
+  "wizard": {
+    "step": "Step {{current}} of {{total}}",
+    "next": "Next",
+    "back": "Back",
+    "review": "Review",
+    "publish": "Publish",
+    "basicInfo": "Basic Info",
+    "specifications": "Specifications",
+    "photos": "Photos",
+    "reviewPublish": "Review & Publish"
+  },
+  "milestones": {
+    "title": "Construction Milestones",
+    "titleLabel": "Milestone Title",
+    "add": "Add Milestone",
+    "added": "Milestone added successfully",
+    "addFailed": "Failed to add milestone",
+    "deleted": "Milestone deleted",
+    "date": "Target Date",
+    "phase": "Phase",
+    "description": "Description",
+    "completed": "Completed",
+    "overdue": "Overdue",
+    "approaching": "Approaching deadline",
+    "empty": "No milestones yet. Add milestones to track construction progress.",
+    "daysRemaining": "{{count}} day remaining",
+    "daysRemaining_other": "{{count}} days remaining",
+    "today": "Today",
+    "deleteTitle": "Delete Milestone",
+    "deleteMsg": "Are you sure you want to delete this milestone? This action cannot be undone."
+  },
+  "documents": {
+    "title": "Documents",
+    "upload": "Upload",
+    "name": "Document Name",
+    "type": "Document Type",
+    "plan": "Plan",
+    "permit": "Permit",
+    "contract": "Contract",
+    "specification": "Specification",
+    "other": "Other",
+    "sharedWithContractors": "Share with Contractors",
+    "sharedWithBuyers": "Share with Buyers",
+    "download": "Download",
+    "delete": "Delete Document",
+    "empty": "No documents uploaded yet.",
+    "uploadDocument": "Upload Document"
   }
 }

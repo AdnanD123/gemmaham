@@ -50,6 +50,18 @@ export type BuildingStatus = "planning" | "under_construction" | "near_completio
 // ─── Construction Phase ─────────────────────────────────
 export type ConstructionPhase = "foundation" | "structure" | "facade" | "interior" | "finishing" | "handover";
 
+// ─── Building Milestone ─────────────────────────────────
+export interface BuildingMilestone {
+  id: string;
+  buildingId: string;
+  title: string;
+  date: string;
+  phase: ConstructionPhase;
+  description?: string;
+  completed: boolean;
+  createdAt: TimestampLike;
+}
+
 // ─── Customization Category ─────────────────────────────
 export type CustomizationCategory = "flooring" | "kitchen" | "bathroom" | "walls" | "electrical" | "other";
 
@@ -321,6 +333,12 @@ export interface PropertyFilters {
   houseType?: HouseType;
 }
 
+// ─── Financing Method ────────────────────────────────────
+export type FinancingMethod = "cash" | "mortgage" | "other";
+
+// ─── Urgency Level ──────────────────────────────────────
+export type UrgencyLevel = "browsing" | "3months" | "urgent";
+
 // ─── Reservation ─────────────────────────────────────────
 export interface Reservation {
   id: string;
@@ -354,6 +372,13 @@ export interface Reservation {
 
   // User snapshot (for privacy — agency reads this, not user profile)
   userSnapshot: UserSnapshot;
+
+  // Additional booking info
+  preferredMoveIn?: string;
+  financingMethod?: FinancingMethod;
+  occupants?: number;
+  urgency?: UrgencyLevel;
+  specialRequirements?: string;
 
   // Audit trail
   statusHistory: StatusHistoryEntry[];
@@ -600,6 +625,21 @@ export interface ContractorApplication {
 }
 
 export type ContractorApplicationInput = Omit<ContractorApplication, "id" | "createdAt" | "updatedAt">;
+
+// ─── Building Document ──────────────────────────────────
+export type BuildingDocumentType = "plan" | "permit" | "contract" | "specification" | "other";
+
+export interface BuildingDocument {
+  id: string;
+  buildingId: string;
+  name: string;
+  type: BuildingDocumentType;
+  url: string;
+  uploadedBy: string;
+  sharedWithContractors: boolean;
+  sharedWithBuyers: boolean;
+  createdAt: TimestampLike;
+}
 
 // ─── Generate 3D Request ─────────────────────────────────
 export interface Generate3DRequest {

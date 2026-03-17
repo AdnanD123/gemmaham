@@ -20,7 +20,9 @@ import {
     Heart,
     DollarSign,
 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import type { AuthContext } from "@gemmaham/shared";
+import { useUnreadMessages } from "../lib/hooks/useUnreadMessages";
 
 interface HomeSidebarProps {
     auth: AuthContext;
@@ -31,6 +33,11 @@ interface HomeSidebarProps {
 export default function HomeSidebar({ auth, collapsed, onToggle }: HomeSidebarProps) {
     const { t } = useTranslation();
     const { pathname } = useLocation();
+    const { unreadCount } = useUnreadMessages(
+        auth.user?.uid ?? undefined,
+        auth.role ?? undefined,
+        auth.companyId,
+    );
 
     const userLinks = [
         { to: "/user/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard },
@@ -108,6 +115,7 @@ export default function HomeSidebar({ auth, collapsed, onToggle }: HomeSidebarPr
                 )}
                 {links.map(({ to, label, icon: Icon }) => {
                     const active = pathname === to || (to !== "/" && pathname.startsWith(to));
+                    const isMessagesLink = to.endsWith("/messages");
                     return (
                         <div key={to} className="relative group">
                             <Link
@@ -126,8 +134,38 @@ export default function HomeSidebar({ auth, collapsed, onToggle }: HomeSidebarPr
                                         style={{ marginLeft: "-8px" }}
                                     />
                                 )}
-                                <Icon size={17} className="shrink-0" strokeWidth={active ? 2 : 1.6} />
-                                {!collapsed && <span className="truncate">{label}</span>}
+                                <span className="relative shrink-0">
+                                    <Icon size={17} strokeWidth={active ? 2 : 1.6} />
+                                    <AnimatePresence>
+                                        {isMessagesLink && unreadCount > 0 && collapsed && (
+                                            <motion.span
+                                                initial={{ scale: 0 }}
+                                                animate={{ scale: 1 }}
+                                                exit={{ scale: 0 }}
+                                                className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold px-1 leading-none"
+                                            >
+                                                {unreadCount > 99 ? "99+" : unreadCount}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
+                                </span>
+                                {!collapsed && (
+                                    <span className="truncate flex items-center gap-2">
+                                        {label}
+                                        <AnimatePresence>
+                                            {isMessagesLink && unreadCount > 0 && (
+                                                <motion.span
+                                                    initial={{ scale: 0 }}
+                                                    animate={{ scale: 1 }}
+                                                    exit={{ scale: 0 }}
+                                                    className="inline-flex items-center justify-center min-w-[18px] h-[18px] rounded-full bg-red-500 text-white text-[10px] font-bold px-1 leading-none"
+                                                >
+                                                    {unreadCount > 99 ? "99+" : unreadCount}
+                                                </motion.span>
+                                            )}
+                                        </AnimatePresence>
+                                    </span>
+                                )}
                             </Link>
                             {collapsed && (
                                 <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-100">

@@ -306,7 +306,12 @@
     "startConversationWith": "Započnite razgovor sa {{name}}",
     "startConversationHint": "Pošaljite poruku da započnete razgovor.",
     "viewProperty": "Pogledaj nekretninu",
-    "addMessagePlaceholder": "Dodajte poruku..."
+    "addMessagePlaceholder": "Dodajte poruku...",
+    "buyers": "Kupci",
+    "contractors": "Izvođači",
+    "regarding": "Re:",
+    "with": "Sa:",
+    "unread": "{{count}} nepročitano"
   },
   "reservationCard": {
     "flat": "Stan"
@@ -352,7 +357,27 @@
     "userInfo": "Informacije o kupcu",
     "timeline": "Vremenska linija statusa",
     "expiresIn": "Ističe za {{days}} dana",
-    "expired": "Zahtjev istekao"
+    "expired": "Zahtjev istekao",
+    "additionalInfo": "Dodatne informacije",
+    "preferredMoveIn": "Željeni datum useljenja",
+    "financingMethod": "Način finansiranja",
+    "cash": "Gotovina",
+    "mortgage": "Hipoteka",
+    "other": "Ostalo",
+    "occupants": "Broj stanara",
+    "urgency": "Hitnost",
+    "browsing": "Samo razgledam",
+    "within3Months": "U roku od 3 mjeseca",
+    "urgent": "Hitno",
+    "specialRequirements": "Posebni zahtjevi",
+    "specialRequirementsPlaceholder": "Posebni zahtjevi ili potrebe za pristupačnost..."
+  },
+  "reservations": {
+    "boardView": "Prikaz ploče",
+    "listView": "Prikaz liste",
+    "daysInStatus": "{{count}} dan u statusu",
+    "daysInStatus_other": "{{count}} dana u statusu",
+    "expiringSoon": "Uskoro ističe"
   },
   "visualizer": {
     "exitEditor": "Izađi iz editora",
@@ -547,7 +572,16 @@
       "noApplicationsFiltered": "Nema {{status}} prijava.",
       "browseProjects": "Pregledajte dostupne projekte",
       "unknownBuilding": "Nepoznata zgrada"
-    }
+    },
+    "publicProfile": "Profil izvođača",
+    "contactInfo": "Kontakt informacije",
+    "specialtiesSection": "Kategorije i specijalnosti",
+    "projectHistory": "Historija projekata",
+    "completedProjects": "Završeni projekti",
+    "inProgress": "U toku",
+    "noProjects": "Još nema završenih projekata.",
+    "contactContractor": "Kontaktiraj izvođača",
+    "memberSince": "Član od {{date}}"
   },
   "customizations": {
     "options": "opcija",
@@ -1399,5 +1433,53 @@
     "bathroomsMax": "Maksimalno 10 kupatila",
     "storiesMin": "Mora imati najmanje 1 sprat",
     "storiesMax": "Maksimalno 10 spratova"
+  },
+  "wizard": {
+    "step": "Korak {{current}} od {{total}}",
+    "next": "Dalje",
+    "back": "Nazad",
+    "review": "Pregled",
+    "publish": "Objavi",
+    "basicInfo": "Osnovne informacije",
+    "specifications": "Specifikacije",
+    "photos": "Fotografije",
+    "reviewPublish": "Pregled i objava"
+  },
+  "milestones": {
+    "title": "Prekretnice gradnje",
+    "titleLabel": "Naziv prekretnice",
+    "add": "Dodaj prekretnicu",
+    "added": "Prekretnica uspješno dodana",
+    "addFailed": "Dodavanje prekretnice nije uspjelo",
+    "deleted": "Prekretnica obrisana",
+    "date": "Ciljni datum",
+    "phase": "Faza",
+    "description": "Opis",
+    "completed": "Završeno",
+    "overdue": "Prekoračen rok",
+    "approaching": "Rok se približava",
+    "empty": "Još nema prekretnica. Dodajte prekretnice za praćenje napretka gradnje.",
+    "daysRemaining": "{{count}} dan preostao",
+    "daysRemaining_other": "{{count}} dana preostalo",
+    "today": "Danas",
+    "deleteTitle": "Obriši prekretnicu",
+    "deleteMsg": "Jeste li sigurni da želite obrisati ovu prekretnicu? Ova radnja se ne može poništiti."
+  },
+  "documents": {
+    "title": "Dokumenti",
+    "upload": "Učitaj",
+    "name": "Naziv dokumenta",
+    "type": "Tip dokumenta",
+    "plan": "Plan",
+    "permit": "Dozvola",
+    "contract": "Ugovor",
+    "specification": "Specifikacija",
+    "other": "Ostalo",
+    "sharedWithContractors": "Podijeli s izvođačima",
+    "sharedWithBuyers": "Podijeli s kupcima",
+    "download": "Preuzmi",
+    "delete": "Obriši dokument",
+    "empty": "Još nema učitanih dokumenata.",
+    "uploadDocument": "Učitaj dokument"
   }
 }

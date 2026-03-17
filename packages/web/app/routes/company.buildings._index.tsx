@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, AlertTriangle } from "lucide-react";
 import RoleGuard from "../../components/RoleGuard";
 import Badge from "../../components/ui/Badge";
 import Button from "../../components/ui/Button";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import ReservationListSkeleton from "../../components/skeletons/ReservationSkeleton";
 import { ContentLoader } from "../../components/ui/ContentLoader";
-import { listCompanyBuildings, deleteBuilding } from "../../lib/firestore";
+import { listCompanyBuildings, deleteBuilding, getBuildingMilestones } from "../../lib/firestore";
 import { useToast } from "../../lib/contexts/ToastContext";
 import type { AuthContext, Building } from "@gemmaham/shared";
 import { PageTransition } from "../../components/ui/PageTransition";
@@ -20,6 +20,7 @@ export default function CompanyBuildingsList() {
     const [loading, setLoading] = useState(true);
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
+    const [overdueCounts, setOverdueCounts] = useState<Record<string, number>>({});
     const { addToast } = useToast();
 
     useEffect(() => {
@@ -31,6 +32,22 @@ export default function CompanyBuildingsList() {
             try {
                 const results = await listCompanyBuildings(auth.companyId!);
                 setBuildings(results);
+                // Fetch overdue milestones counts in parallel
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const counts: Record<string, number> = {};
+                await Promise.all(
+                    results.map(async (b) => {
+                        try {
+                            const milestones = await getBuildingMilestones(b.id);
+                            const overdue = milestones.filter(
+                                (m) => !m.completed && new Date(m.date) < today
+                            ).length;
+                            if (overdue > 0) counts[b.id] = overdue;
+                        } catch { /* ignore */ }
+                    })
+                );
+                setOverdueCounts(counts);
             } catch (e) {
                 console.error("Failed to load buildings:", e);
                 setBuildings([]);
@@ -142,6 +159,15 @@ export default function CompanyBuildingsList() {
                                                         <span>{building.floors} {t("buildings.floorsLabel")}</span>
                                                         <span>·</span>
                                                         <span>{t("buildings.est")}: {building.estimatedCompletion}</span>
+                                                        {overdueCounts[building.id] > 0 && (
+                                                            <>
+                                                                <span>·</span>
+                                                                <span className="inline-flex items-center gap-1 text-accent font-medium">
+                                                                    <AlertTriangle size={12} />
+                                                                    {overdueCounts[building.id]} {t("milestones.overdue")}
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </div>
                                                     <div className="flex gap-1">
                                                         <Link to={`/company/buildings/${building.id}`}>
